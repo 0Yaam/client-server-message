@@ -1,0 +1,22 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:MyApp.Models"
+             x:Class="MyApp.ChatView"
+             x:DataType="models:DanhBa">
+
+    <ScrollViewer>
+        <ItemsControl ItemsSource="{Binding TinNhans}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="models:TinNhanItem">
+                    <Border CornerRadius="10"
+                            Padding="10"
+                            Margin="20,5"
+                            Background="{Binding LaNguoiDung, Converter={StaticResource MessageColorConverter}}"
+                            HorizontalAlignment="{Binding LaNguoiDung, Converter={StaticResource MessageAlignConverter}}">
+                        <TextBlock Text="{Binding NoiDung}" Foreground="White"/>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</UserControl>
