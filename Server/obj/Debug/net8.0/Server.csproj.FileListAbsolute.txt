@@ -7,6 +7,7 @@ C:\Users\TruongDan\Documents\Works\Desktop\client-server-message\Server\obj\Debu
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-message\Server\obj\Debug\net8.0\Server.AssemblyInfoInputs.cache
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-message\Server\obj\Debug\net8.0\Server.AssemblyInfo.cs
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-message\Server\obj\Debug\net8.0\Server.csproj.CoreCompileInputs.cache
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-message\Server\obj\Debug\net8.0\Server.sourcelink.json
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-message\Server\obj\Debug\net8.0\Server.dll
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-message\Server\obj\Debug\net8.0\refint\Server.dll
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-message\Server\obj\Debug\net8.0\Server.pdb
