@@ -1,0 +1,19 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<!-- TextBox style -->
+	<Style Selector="TextBox">
+		<!-- ... (toàn bộ setter & nested styles như bạn đã có) ... -->
+	</Style>
+
+	<!-- Button.googleBtn -->
+	<Style Selector="Button.googleBtn">
+		<!-- ... template y như bạn gửi ... -->
+	</Style>
+
+	<!-- Button.submitBtn -->
+	<Style Selector="Button.submitBtn">
+		<!-- ... style y như bạn gửi ... -->
+	</Style>
+
+</Styles>
