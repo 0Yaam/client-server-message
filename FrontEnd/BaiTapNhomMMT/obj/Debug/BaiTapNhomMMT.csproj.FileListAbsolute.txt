@@ -1,0 +1,30 @@
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.csproj.AssemblyReference.cache
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.Form1.resources
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.Form2.resources
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.Properties.Resources.resources
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.csproj.GenerateResource.cache
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.csproj.CoreCompileInputs.cache
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\bin\Debug\BaiTapNhomMMT.exe.config
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\bin\Debug\BaiTapNhomMMT.exe
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\bin\Debug\BaiTapNhomMMT.pdb
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\bin\Debug\Guna.UI2.dll
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.csproj.CopyComplete
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.exe
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.pdb
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.FormLogin.resources
+D:\BT\BaiTapNhomMMT\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.DangKy.resources
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\bin\Debug\BaiTapNhomMMT.exe.config
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\bin\Debug\BaiTapNhomMMT.exe
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\bin\Debug\BaiTapNhomMMT.pdb
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\bin\Debug\Guna.UI2.dll
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.csproj.AssemblyReference.cache
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.DangKy.resources
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.FormLogin.resources
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.Form1.resources
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.Form2.resources
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.Properties.Resources.resources
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.csproj.GenerateResource.cache
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.csproj.CoreCompileInputs.cache
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.csproj.CopyComplete
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.exe
+D:\BT\Bài Nhóm\FrontEnd\BaiTapNhomMMT\obj\Debug\BaiTapNhomMMT.pdb
