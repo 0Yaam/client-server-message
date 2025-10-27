@@ -36,6 +36,9 @@
     <Reference Include="Guna.UI2, Version=2.0.4.7, Culture=neutral, PublicKeyToken=8b9d14aa5142e261, processorArchitecture=MSIL">
       <HintPath>..\packages\Guna.UI2.WinForms.2.0.4.7\lib\net472\Guna.UI2.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
@@ -58,10 +61,6 @@
     <Compile Include="Forms\ServerForm.Designer.cs">
       <DependentUpon>ServerForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="OL\Conversation.cs" />
-    <Compile Include="OL\Group.cs" />
-    <Compile Include="OL\Message.cs" />
-    <Compile Include="OL\User.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -90,6 +89,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ServerCore\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\Shared.csproj">
+      <Project>{09f0efc2-c1ed-44d3-9662-b18c258cb1f2}</Project>
+      <Name>Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

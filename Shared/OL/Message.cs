@@ -1,25 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace BaiTapNhomMMT.Backend.OL
+namespace Shared.OL
 {
     public class Message
     {
         public string Id { get; set; } = Guid.NewGuid().ToString("N");
         public string ConversationId { get; set; }
-        public string SenderId { get; set; }
+        public string SenderUsername { get; set; }
         public string Text { get; set; }
         public DateTime SentTime { get; set; } = DateTime.Now;
 
-        public Message(string convId, string senderId, string text)
+        public Message() { }
+
+        public Message(string conversationId, string senderUsername, string text)
         {
-            ConversationId = convId;
-            SenderId = senderId;
+            ConversationId = conversationId;
+            SenderUsername = senderUsername;
             Text = text;
+            SentTime = DateTime.Now;
         }
     }
-
 }

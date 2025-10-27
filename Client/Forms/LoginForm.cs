@@ -1,6 +1,10 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using Client.Services;
 using Guna.UI2.WinForms;
+using Shared.OL;
+using System;
+using System.Windows.Forms;
+using Client.Forms; 
+
 
 namespace Client
 {
@@ -16,16 +20,19 @@ namespace Client
             string username = txtUsername.Text.Trim();
             string password = txtPassword.Text.Trim();
 
-            if (username == "admin" && password == "123")
+            Account acc;
+            if (AccountJsonService.Login(username, password, out acc))
             {
-                MessageBox.Show("Đăng nhập thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Đăng nhập thành công!", "Thông báo");
 
-                // Mở Form2 (Telegram UI)
                 this.Hide();
+                var chat = new ChatForm();
+                chat.Show();
+
             }
             else
             {
-                MessageBox.Show("Sai tên đăng nhập hoặc mật khẩu!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Sai tài khoản hoặc mật khẩu!");
             }
         }
 

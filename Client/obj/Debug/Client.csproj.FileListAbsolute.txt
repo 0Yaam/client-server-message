@@ -11,3 +11,11 @@ C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Deb
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.csproj.Up2Date
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.exe
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.pdb
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\bin\Debug\Newtonsoft.Json.dll
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\bin\Debug\Shared.dll
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\bin\Debug\Shared.pdb
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\bin\Debug\Newtonsoft.Json.xml
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.exe.config
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.Forms.ChatForm.resources
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.Forms.Controls.ChatListItemControl.resources
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.Forms.Controls.MessageBubbleControl.resources
