@@ -1,0 +1,13 @@
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\bin\Debug\Client.exe.config
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\bin\Debug\Client.exe
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\bin\Debug\Client.pdb
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\bin\Debug\Guna.UI2.dll
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.csproj.AssemblyReference.cache
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.SignUpForm.resources
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.FormLogin.resources
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.Properties.Resources.resources
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.csproj.GenerateResource.cache
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.csproj.CoreCompileInputs.cache
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.csproj.Up2Date
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.exe
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Client\obj\Debug\Client.pdb
