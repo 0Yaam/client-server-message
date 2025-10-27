@@ -1,0 +1,14 @@
+[
+  {
+    "Username": "admin",
+    "PasswordHash": "123",
+    "Salt": "",
+    "Role": 1
+  },
+  {
+    "Username": "user",
+    "PasswordHash": "123",
+    "Salt": "",
+    "Role": 0
+  }
+]
