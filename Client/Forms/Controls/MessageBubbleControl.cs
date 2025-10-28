@@ -114,25 +114,38 @@ namespace Client.Forms.Controls
 
         public void UpdateLayoutBubble()
         {
-            // max width 70
-            if (Parent != null && Parent.ClientSize.Width > 0)
+            if (Parent != null)
             {
                 int maxWidth = (int)(Parent.ClientSize.Width * 0.70);
-                MaximumSize = new Size(maxWidth, 0);
+                this.MaximumSize = new Size(maxWidth, 0);
+                this.MinimumSize = new Size(100, 0);
             }
 
             if (IsOutgoing)
             {
                 BackColor = Color.FromArgb(179, 229, 252); // xanh nhạt
+                Padding = new Padding(10);
                 lblMessage.TextAlign = ContentAlignment.MiddleRight;
-                Anchor = AnchorStyles.Top | AnchorStyles.Right;
+
+                this.Dock = DockStyle.None;
+                this.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+
+                this.Margin = new Padding(50, 5, 10, 5);
             }
             else
             {
                 BackColor = Color.FromArgb(224, 224, 224); // xám nhạt
+                Padding = new Padding(10);
                 lblMessage.TextAlign = ContentAlignment.MiddleLeft;
-                Anchor = AnchorStyles.Top | AnchorStyles.Left;
+
+                this.Dock = DockStyle.None;
+                this.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+
+                this.Margin = new Padding(10, 5, 50, 5);
             }
+
+            SetRoundedCorners();
         }
+
     }
 }

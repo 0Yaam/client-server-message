@@ -127,31 +127,54 @@ namespace Client.Forms
 
         private void RenderUserList(string[] users)
         {
-            flpUsers.Controls.Clear();
-
-            foreach (var u in users)
+            // tránh layout thrash
+            flpUsers.SuspendLayout();
+            try
             {
-                var btn = new Button
-                {
-                    Text = u,
-                    AutoSize = false,
-                    Width = flpUsers.ClientSize.Width - 10,
-                    Height = 40,
-                    TextAlign = System.Drawing.ContentAlignment.MiddleLeft,
-                    BackColor = System.Drawing.Color.White,
-                    FlatStyle = FlatStyle.Flat,
-                    Tag = u,
-                    Margin = new Padding(5, 5, 5, 0)
-                };
-                btn.FlatAppearance.BorderSize = 0;
-                btn.Click += (s, e) =>
-                {
-                    foreach (Control c in flpUsers.Controls) c.BackColor = System.Drawing.Color.White;
-                    btn.BackColor = System.Drawing.Color.FromArgb(232, 240, 254);
+                flpUsers.Controls.Clear();
 
-                    SelectPeer((string)btn.Tag);
-                };
-                flpUsers.Controls.Add(btn);
+                foreach (var u in users)
+                {
+                    var item = new Controls.ChatListItemControl
+                    {
+                        Width = flpUsers.ClientSize.Width - 6,
+                        Margin = new Padding(3, 0, 3, 2)
+                    };
+                    item.Bind(username: u, displayName: u, lastMessage: "Nhấn để chat", time: DateTime.Now);
+
+                    item.ItemClicked += (s, e) =>
+                    {
+                        // unselect hết
+                        foreach (Control c in flpUsers.Controls)
+                            if (c is Controls.ChatListItemControl it) it.SetSelected(false);
+
+                        // select item này
+                        item.SetSelected(true);
+                        SelectPeer(item.Username); // set _currentPeer + clear messages (demo)
+                    };
+
+                    flpUsers.Controls.Add(item);
+                }
+            }
+            finally
+            {
+                flpUsers.ResumeLayout();
+            }
+        }
+
+
+
+        private void UpdateListItemLastMsg(string username, string text)
+        {
+            foreach (Control c in flpUsers.Controls)
+            {
+                var item = c as Controls.ChatListItemControl;
+                if (item != null && item.Username == username)
+                {
+                    item.LastMessage = text;
+                    item.Time = DateTime.Now;
+                    break;
+                }
             }
         }
 
@@ -164,7 +187,10 @@ namespace Client.Forms
                 Timestamp = DateTime.Now
             };
             flpMessages.Controls.Add(bubble);
+            bubble.UpdateLayoutBubble();
             flpMessages.ScrollControlIntoView(bubble);
+
+            UpdateListItemLastMsg(from, text);
         }
 
         private void AppendOutgoing(string text)
@@ -176,8 +202,13 @@ namespace Client.Forms
                 Timestamp = DateTime.Now
             };
             flpMessages.Controls.Add(bubble);
+            bubble.UpdateLayoutBubble();
             flpMessages.ScrollControlIntoView(bubble);
+
+            if (!string.IsNullOrEmpty(_currentPeer))
+                UpdateListItemLastMsg(_currentPeer, text);
         }
+
 
         protected override async void OnFormClosing(FormClosingEventArgs e)
         {
@@ -187,5 +218,9 @@ namespace Client.Forms
             base.OnFormClosing(e);
         }
 
+        private void btnLogout_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }
