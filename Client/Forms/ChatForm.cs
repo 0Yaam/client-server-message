@@ -144,13 +144,11 @@ namespace Client.Forms
 
                     item.ItemClicked += (s, e) =>
                     {
-                        // unselect hết
                         foreach (Control c in flpUsers.Controls)
                             if (c is Controls.ChatListItemControl it) it.SetSelected(false);
 
-                        // select item này
                         item.SetSelected(true);
-                        SelectPeer(item.Username); // set _currentPeer + clear messages (demo)
+                        SelectPeer(item.Username); 
                     };
 
                     flpUsers.Controls.Add(item);
