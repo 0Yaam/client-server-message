@@ -10,5 +10,11 @@
     "PasswordHash": "123",
     "Salt": "",
     "Role": 0
+  },
+    {
+    "Username": "thinh",
+    "PasswordHash": "123",
+    "Salt": "",
+    "Role": 0
   }
 ]

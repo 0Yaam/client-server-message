@@ -39,12 +39,12 @@
             this.txtMessage = new Guna.UI2.WinForms.Guna2TextBox();
             this.pnlInput = new Guna.UI2.WinForms.Guna2Panel();
             this.pnlChat = new Guna.UI2.WinForms.Guna2Panel();
-            this.flowMessages = new System.Windows.Forms.FlowLayoutPanel();
+            this.flpMessages = new System.Windows.Forms.FlowLayoutPanel();
             this.pnlHeader = new Guna.UI2.WinForms.Guna2Panel();
             this.lblHeader = new System.Windows.Forms.Label();
             this.txtSearch = new Guna.UI2.WinForms.Guna2TextBox();
             this.btnMenu = new Guna.UI2.WinForms.Guna2Button();
-            this.flowChatList = new System.Windows.Forms.FlowLayoutPanel();
+            this.flpUsers = new System.Windows.Forms.FlowLayoutPanel();
             this.guna2Panel1 = new Guna.UI2.WinForms.Guna2Panel();
             this.pnlLeft = new Guna.UI2.WinForms.Guna2Panel();
             this.guna2AnimateWindow1 = new Guna.UI2.WinForms.Guna2AnimateWindow(this.components);
@@ -59,19 +59,19 @@
             // ItemDangXuat
             // 
             this.ItemDangXuat.Name = "ItemDangXuat";
-            this.ItemDangXuat.Size = new System.Drawing.Size(180, 22);
+            this.ItemDangXuat.Size = new System.Drawing.Size(128, 22);
             this.ItemDangXuat.Text = "Đăng xuất";
             // 
             // ItemThemBan
             // 
             this.ItemThemBan.Name = "ItemThemBan";
-            this.ItemThemBan.Size = new System.Drawing.Size(180, 22);
+            this.ItemThemBan.Size = new System.Drawing.Size(128, 22);
             this.ItemThemBan.Text = "Thêm bạn";
             // 
             // ItemTaoNhom
             // 
             this.ItemTaoNhom.Name = "ItemTaoNhom";
-            this.ItemTaoNhom.Size = new System.Drawing.Size(180, 22);
+            this.ItemTaoNhom.Size = new System.Drawing.Size(128, 22);
             this.ItemTaoNhom.Text = "Tạo nhóm";
             // 
             // Menu
@@ -98,7 +98,7 @@
             // ItemXoaBan
             // 
             this.ItemXoaBan.Name = "ItemXoaBan";
-            this.ItemXoaBan.Size = new System.Drawing.Size(180, 22);
+            this.ItemXoaBan.Size = new System.Drawing.Size(128, 22);
             this.ItemXoaBan.Text = "Xóa Bạn";
             // 
             // btnLogout
@@ -127,6 +127,7 @@
             this.btnSend.Size = new System.Drawing.Size(74, 36);
             this.btnSend.TabIndex = 1;
             this.btnSend.Text = "Gửi";
+            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
             // txtMessage
             // 
@@ -161,7 +162,7 @@
             // 
             // pnlChat
             // 
-            this.pnlChat.Controls.Add(this.flowMessages);
+            this.pnlChat.Controls.Add(this.flpMessages);
             this.pnlChat.Controls.Add(this.pnlInput);
             this.pnlChat.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlChat.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(243)))), ((int)(((byte)(247)))));
@@ -171,19 +172,19 @@
             this.pnlChat.Size = new System.Drawing.Size(587, 418);
             this.pnlChat.TabIndex = 6;
             // 
-            // flowMessages
+            // flpMessages
             // 
-            this.flowMessages.AutoScroll = true;
-            this.flowMessages.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.flowMessages.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowMessages.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowMessages.Location = new System.Drawing.Point(0, 0);
-            this.flowMessages.Margin = new System.Windows.Forms.Padding(8);
-            this.flowMessages.Name = "flowMessages";
-            this.flowMessages.Padding = new System.Windows.Forms.Padding(11, 12, 11, 12);
-            this.flowMessages.Size = new System.Drawing.Size(587, 366);
-            this.flowMessages.TabIndex = 0;
-            this.flowMessages.WrapContents = false;
+            this.flpMessages.AutoScroll = true;
+            this.flpMessages.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.flpMessages.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flpMessages.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flpMessages.Location = new System.Drawing.Point(0, 0);
+            this.flpMessages.Margin = new System.Windows.Forms.Padding(8);
+            this.flpMessages.Name = "flpMessages";
+            this.flpMessages.Padding = new System.Windows.Forms.Padding(11, 12, 11, 12);
+            this.flpMessages.Size = new System.Drawing.Size(587, 366);
+            this.flpMessages.TabIndex = 0;
+            this.flpMessages.WrapContents = false;
             // 
             // pnlHeader
             // 
@@ -244,19 +245,19 @@
             this.btnMenu.TabIndex = 2;
             this.btnMenu.Text = "☰";
             // 
-            // flowChatList
+            // flpUsers
             // 
-            this.flowChatList.AutoScroll = true;
-            this.flowChatList.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.flowChatList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowChatList.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowChatList.Location = new System.Drawing.Point(0, 32);
-            this.flowChatList.Margin = new System.Windows.Forms.Padding(8);
-            this.flowChatList.Name = "flowChatList";
-            this.flowChatList.Padding = new System.Windows.Forms.Padding(11, 12, 11, 12);
-            this.flowChatList.Size = new System.Drawing.Size(213, 418);
-            this.flowChatList.TabIndex = 4;
-            this.flowChatList.WrapContents = false;
+            this.flpUsers.AutoScroll = true;
+            this.flpUsers.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.flpUsers.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flpUsers.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flpUsers.Location = new System.Drawing.Point(0, 32);
+            this.flpUsers.Margin = new System.Windows.Forms.Padding(8);
+            this.flpUsers.Name = "flpUsers";
+            this.flpUsers.Padding = new System.Windows.Forms.Padding(11, 12, 11, 12);
+            this.flpUsers.Size = new System.Drawing.Size(213, 418);
+            this.flpUsers.TabIndex = 4;
+            this.flpUsers.WrapContents = false;
             // 
             // guna2Panel1
             // 
@@ -273,7 +274,7 @@
             // pnlLeft
             // 
             this.pnlLeft.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.pnlLeft.Controls.Add(this.flowChatList);
+            this.pnlLeft.Controls.Add(this.flpUsers);
             this.pnlLeft.Controls.Add(this.guna2Panel1);
             this.pnlLeft.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlLeft.FillColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -316,12 +317,12 @@
         private Guna.UI2.WinForms.Guna2TextBox txtMessage;
         private Guna.UI2.WinForms.Guna2Panel pnlInput;
         private Guna.UI2.WinForms.Guna2Panel pnlChat;
-        private System.Windows.Forms.FlowLayoutPanel flowMessages;
+        private System.Windows.Forms.FlowLayoutPanel flpMessages;
         private Guna.UI2.WinForms.Guna2Panel pnlHeader;
         private System.Windows.Forms.Label lblHeader;
         private Guna.UI2.WinForms.Guna2TextBox txtSearch;
         private Guna.UI2.WinForms.Guna2Button btnMenu;
-        private System.Windows.Forms.FlowLayoutPanel flowChatList;
+        private System.Windows.Forms.FlowLayoutPanel flpUsers;
         private Guna.UI2.WinForms.Guna2Panel guna2Panel1;
         private Guna.UI2.WinForms.Guna2Panel pnlLeft;
         private Guna.UI2.WinForms.Guna2AnimateWindow guna2AnimateWindow1;

@@ -2,6 +2,7 @@
 using Server.ServerCore;
 using Shared.OL;
 using System;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -27,7 +28,6 @@ namespace Server.ServerCore
         {
             try
             {
-                // === BẮT BUỘC AUTH LÀ GÓI ĐẦU TIÊN ===
                 string firstLine = await ReadLineAsync(ct);
                 if (firstLine == null)
                 {
@@ -54,7 +54,6 @@ namespace Server.ServerCore
                     OnlineRegistry.Add(this);
                     await SendAsync(new { type = "AUTH_OK", username = Username, role = Role.ToString() }, ct);
 
-                    // === Sau khi AUTH_OK: vào vòng xử lý lệnh ===
                     await CommandLoopAsync(ct);
                 }
                 else
@@ -63,9 +62,8 @@ namespace Server.ServerCore
                     await CloseAsync();
                 }
             }
-            catch
-            {
-                // bạn có thể log
+            catch(Exception ex) {
+                Console.WriteLine(ex.ToString());
             }
             finally
             {
@@ -89,8 +87,45 @@ namespace Server.ServerCore
                     case "PING":
                         await SendAsync(new { type = "PONG", time = DateTime.UtcNow }, ct);
                         break;
+                    case "MSG_TO":
+                        string to = (string)cmd.to;
+                        string msg = (string)cmd.message;
+                        var target = OnlineRegistry.Get(to);
 
-                    // TODO: MSG_ALL, MSG_TO, LIST, CREATE_GROUP, MSG_GROUP, ...
+                        if (target != null)
+                        {
+                            // gửi cho người nhận
+                            await target.SendAsync(new
+                            {
+                                type = "MSG_RECV",
+                                from = this.Username,
+                                message = msg,
+                                time = DateTime.UtcNow
+                            }, ct);
+
+                            // echo forr sender
+                            await SendAsync(new
+                            {
+                                type = "MSG_SENT",
+                                to = to,
+                                message = msg,
+                                time = DateTime.UtcNow
+                            }, ct);
+                        }
+                        else
+                        {
+                            await SendAsync(new { type = "ERROR", text = "User offline" }, ct);
+                        }
+                        break;
+                    case "LIST":
+                        {
+                            Console.WriteLine($"LIST from {Username}");
+                            var all = OnlineRegistry.ListUsernames();
+                            var others = all.Where(u => !u.Equals(this.Username, StringComparison.OrdinalIgnoreCase)).ToArray();
+                            await SendAsync(new { type = "LIST_OK", users = others }, ct);
+                            break;
+                        }
+
                     default:
                         await SendAsync(new { type = "ERROR", text = "unknown command" }, ct);
                         break;
@@ -98,7 +133,6 @@ namespace Server.ServerCore
             }
         }
 
-        // ---------- tiện ích gửi/nhận JSON (newline-terminated cho nhanh demo) ----------
         private async Task SendAsync(object obj, CancellationToken ct)
         {
             var json = JsonConvert.SerializeObject(obj) + "\n";
@@ -114,7 +148,7 @@ namespace Server.ServerCore
             while (!ct.IsCancellationRequested)
             {
                 int read = await _ns.ReadAsync(buffer, 0, 1, ct);
-                if (read == 0) return null; // mất kết nối
+                if (read == 0) return null; 
                 if (buffer[0] == (byte)'\n') break;
                 ms.WriteByte(buffer[0]);
             }

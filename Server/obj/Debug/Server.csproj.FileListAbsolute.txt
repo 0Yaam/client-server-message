@@ -14,3 +14,4 @@ C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\obj\Deb
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\obj\Debug\Server.csproj.Up2Date
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\obj\Debug\Server.exe
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\obj\Debug\Server.pdb
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\obj\Debug\Server.exe.config
