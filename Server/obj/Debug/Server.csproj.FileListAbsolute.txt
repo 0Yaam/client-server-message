@@ -1,0 +1,16 @@
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\bin\Debug\Server.exe.config
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\bin\Debug\Server.exe
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\bin\Debug\Server.pdb
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\bin\Debug\Guna.UI2.dll
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\bin\Debug\Newtonsoft.Json.dll
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\bin\Debug\Shared.dll
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\bin\Debug\Shared.pdb
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\bin\Debug\Newtonsoft.Json.xml
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\obj\Debug\Server.csproj.AssemblyReference.cache
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\obj\Debug\Server.ServerForm.resources
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\obj\Debug\Server.Properties.Resources.resources
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\obj\Debug\Server.csproj.GenerateResource.cache
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\obj\Debug\Server.csproj.Up2Date
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\obj\Debug\Server.exe
+C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Server\obj\Debug\Server.pdb
