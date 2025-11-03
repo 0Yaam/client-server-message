@@ -7,6 +7,7 @@ namespace Client.Forms.Controls
 {
     public partial class ChatListItemControl : UserControl
     {
+
         // Data
         [Browsable(true)]
         [Category("Data")]
@@ -56,38 +57,39 @@ namespace Client.Forms.Controls
         public ChatListItemControl()
         {
             InitializeComponent();
-            DoubleBuffered = true;
+            this.DoubleBuffered = true;
+            if (this.Height < 56) this.Height = 60;
 
-            if (Height < 56) Height = 60;
-            BackColor = Color.White;
+            // forward click từ child lên cha 1 cách an toàn
+            EventHandler forward = (s, e) => ItemClicked?.Invoke(this, EventArgs.Empty);
+            this.Click += forward;
+            foreach (Control c in this.Controls) c.Click += forward;
 
-            // Forward click từ các control con lên control cha, KHÔNG gọi OnClick đệ quy
-            void ForwardClick(object s, EventArgs e) => ItemClicked?.Invoke(this, EventArgs.Empty);
-            this.Click += ForwardClick;
-            foreach (Control c in Controls) c.Click += ForwardClick;
-
-            // Hover nhẹ nhàng
-            this.MouseEnter += (_, __) => { if (!Selected) BackColor = HoverColor; };
-            this.MouseLeave += (_, __) => { if (!Selected) BackColor = Color.White; };
-            foreach (Control c in Controls)
+            this.MouseEnter += (s, e) => { if (!Selected) this.BackColor = HoverColor; };
+            this.MouseLeave += (s, e) => { if (!Selected) this.BackColor = Color.White; };
+            foreach (Control c in this.Controls)
             {
-                c.MouseEnter += (_, __) => { if (!Selected) BackColor = HoverColor; };
-                c.MouseLeave += (_, __) => { if (!Selected) BackColor = Color.White; };
+                c.MouseEnter += (s, e) => { if (!Selected) this.BackColor = HoverColor; };
+                c.MouseLeave += (s, e) => { if (!Selected) this.BackColor = Color.White; };
             }
         }
 
         public void SetSelected(bool selected)
         {
             Selected = selected;
-            BackColor = selected ? SelectedColor : Color.White;
+            this.BackColor = selected ? SelectedColor : Color.White;
         }
 
         public void Bind(string username, string displayName, string lastMessage, DateTime time)
         {
-            Username = username;
-            DisplayName = displayName;
-            LastMessage = lastMessage;
-            Time = time;
+            this.Username = username;
+            this.DisplayName = displayName ?? username;
+            this.LastMessage = lastMessage ?? "";
+            this.Time = time;
+
+            if (lblName != null) lblName.Text = this.DisplayName;
+            if (lblLastMessage != null) lblLastMessage.Text = this.LastMessage;
+            if (lblTime != null) lblTime.Text = time.ToString("HH:mm");
         }
 
         protected override void OnResize(EventArgs e)
@@ -121,5 +123,9 @@ namespace Client.Forms.Controls
             }
             catch { /* ignore */ }
         }
+
+
+
+
     }
 }

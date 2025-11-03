@@ -29,24 +29,48 @@ namespace Server.ServerCore
             try
             {
                 string firstLine = await ReadLineAsync(ct);
-                if (firstLine == null)
-                {
-                    await CloseAsync();
-                    return;
-                }
+                if (firstLine == null) { await CloseAsync(); return; }
 
                 dynamic obj = JsonConvert.DeserializeObject(firstLine);
-                if ((string)obj.type != "AUTH")
+                string firstType = (string)obj.type;
+
+                // ✅ Cho phép REGISTER là gói đầu tiên
+                if (firstType == "REGISTER")
                 {
-                    await SendAsync(new { type = "AUTH_FAIL", reason = "first packet must be AUTH" }, ct);
+                    string user = (string)obj.username;
+                    string pass = (string)obj.password;
+                    string displayName = (string)(obj.displayName ?? user);
+
+                    if (string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(pass))
+                    {
+                        await SendAsync(new { type = "REGISTER_FAIL", reason = "invalid_input" }, ct);
+                        await CloseAsync();
+                        return;
+                    }
+
+                    if (AuthManager.CreateUser(user, pass, displayName, out var newAcc))
+                        await SendAsync(new { type = "REGISTER_OK" }, ct);
+                    else
+                        await SendAsync(new { type = "REGISTER_FAIL", reason = "username_taken" }, ct);
+
+                    // đăng ký xong: đóng kết nối; client sẽ quay lại màn hình login
                     await CloseAsync();
                     return;
                 }
 
-                string user = (string)obj.username;
-                string pass = (string)obj.password;
+                // ❗ Vẫn giữ luật cũ cho các gói khác: phải AUTH
+                if (firstType != "AUTH")
+                {
+                    await SendAsync(new { type = "AUTH_FAIL", reason = "first packet must be AUTH or REGISTER" }, ct);
+                    await CloseAsync();
+                    return;
+                }
 
-                if (AuthManager.Validate(user, pass, out var acc))
+                // ====== AUTH flow cũ ======
+                string userName = (string)obj.username;
+                string passWord = (string)obj.password;
+
+                if (AuthManager.Validate(userName, passWord, out var acc))
                 {
                     Username = acc.Username;
                     Role = acc.Role;
@@ -54,7 +78,7 @@ namespace Server.ServerCore
                     OnlineRegistry.Add(this);
                     await SendAsync(new { type = "AUTH_OK", username = Username, role = Role.ToString() }, ct);
 
-                    await CommandLoopAsync(ct);
+                    await CommandLoopAsync(ct); // MSG_TO, LIST, ...
                 }
                 else
                 {
@@ -62,8 +86,9 @@ namespace Server.ServerCore
                     await CloseAsync();
                 }
             }
-            catch(Exception ex) {
-                Console.WriteLine(ex.ToString());
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
             }
             finally
             {
@@ -123,6 +148,25 @@ namespace Server.ServerCore
                             var all = OnlineRegistry.ListUsernames();
                             var others = all.Where(u => !u.Equals(this.Username, StringComparison.OrdinalIgnoreCase)).ToArray();
                             await SendAsync(new { type = "LIST_OK", users = others }, ct);
+                            break;
+                        }
+                    case "REGISTER":
+                        {
+                            string user = (string)cmd.username;
+                            string pass = (string)cmd.password;
+                            string displayName = (string)(cmd.displayName ?? user);
+
+                            if (string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(pass))
+                            {
+                                await SendAsync(new { type = "REGISTER_FAIL", reason = "invalid_input" }, ct);
+                                break;
+                            }
+
+                            if (AuthManager.CreateUser(user, pass, displayName, out var newAcc))
+                                await SendAsync(new { type = "REGISTER_OK" }, ct);
+                            else
+                                await SendAsync(new { type = "REGISTER_FAIL", reason = "username_taken" }, ct);
+
                             break;
                         }
 

@@ -7,7 +7,7 @@
         private Guna.UI2.WinForms.Guna2TextBox txtUsername;
         private Guna.UI2.WinForms.Guna2TextBox txtPassword;
         private Guna.UI2.WinForms.Guna2TextBox txtConfirm;
-        private Guna.UI2.WinForms.Guna2TextBox txtEmail;
+        private Guna.UI2.WinForms.Guna2TextBox txtDisplayName;
         private Guna.UI2.WinForms.Guna2Button btnRegister;
         private Guna.UI2.WinForms.Guna2Button btnBack;
         private Guna.UI2.WinForms.Guna2PictureBox logoBox;
@@ -32,7 +32,7 @@
             this.txtConfirm = new Guna.UI2.WinForms.Guna2TextBox();
             this.txtPassword = new Guna.UI2.WinForms.Guna2TextBox();
             this.txtUsername = new Guna.UI2.WinForms.Guna2TextBox();
-            this.txtEmail = new Guna.UI2.WinForms.Guna2TextBox();
+            this.txtDisplayName = new Guna.UI2.WinForms.Guna2TextBox();
             this.logoBox = new Guna.UI2.WinForms.Guna2PictureBox();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoBox)).BeginInit();
@@ -47,7 +47,7 @@
             this.pnlMain.Controls.Add(this.txtConfirm);
             this.pnlMain.Controls.Add(this.txtPassword);
             this.pnlMain.Controls.Add(this.txtUsername);
-            this.pnlMain.Controls.Add(this.txtEmail);
+            this.pnlMain.Controls.Add(this.txtDisplayName);
             this.pnlMain.Controls.Add(this.logoBox);
             this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlMain.FillColor = System.Drawing.SystemColors.GradientInactiveCaption;
@@ -55,6 +55,7 @@
             this.pnlMain.Name = "pnlMain";
             this.pnlMain.Size = new System.Drawing.Size(420, 550);
             this.pnlMain.TabIndex = 0;
+            this.pnlMain.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlMain_Paint);
             // 
             // guna2HtmlLabel1
             // 
@@ -62,7 +63,7 @@
             this.guna2HtmlLabel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.guna2HtmlLabel1.Location = new System.Drawing.Point(158, 131);
             this.guna2HtmlLabel1.Name = "guna2HtmlLabel1";
-            this.guna2HtmlLabel1.Size = new System.Drawing.Size(103, 31);
+            this.guna2HtmlLabel1.Size = new System.Drawing.Size(82, 27);
             this.guna2HtmlLabel1.TabIndex = 8;
             this.guna2HtmlLabel1.Text = "Đăng ký";
             // 
@@ -106,6 +107,7 @@
             this.txtConfirm.SelectedText = "";
             this.txtConfirm.Size = new System.Drawing.Size(280, 45);
             this.txtConfirm.TabIndex = 2;
+            this.txtConfirm.TextChanged += new System.EventHandler(this.txtConfirm_TextChanged);
             // 
             // txtPassword
             // 
@@ -121,6 +123,7 @@
             this.txtPassword.SelectedText = "";
             this.txtPassword.Size = new System.Drawing.Size(280, 45);
             this.txtPassword.TabIndex = 3;
+            this.txtPassword.TextChanged += new System.EventHandler(this.txtPassword_TextChanged);
             // 
             // txtUsername
             // 
@@ -135,20 +138,22 @@
             this.txtUsername.SelectedText = "";
             this.txtUsername.Size = new System.Drawing.Size(280, 45);
             this.txtUsername.TabIndex = 4;
+            this.txtUsername.TextChanged += new System.EventHandler(this.txtUsername_TextChanged);
             // 
-            // txtEmail
+            // txtDisplayName
             // 
-            this.txtEmail.BorderRadius = 10;
-            this.txtEmail.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txtEmail.DefaultText = "";
-            this.txtEmail.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtEmail.Location = new System.Drawing.Point(70, 190);
-            this.txtEmail.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
-            this.txtEmail.Name = "txtEmail";
-            this.txtEmail.PlaceholderText = "Email";
-            this.txtEmail.SelectedText = "";
-            this.txtEmail.Size = new System.Drawing.Size(280, 45);
-            this.txtEmail.TabIndex = 5;
+            this.txtDisplayName.BorderRadius = 10;
+            this.txtDisplayName.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtDisplayName.DefaultText = "";
+            this.txtDisplayName.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtDisplayName.Location = new System.Drawing.Point(70, 190);
+            this.txtDisplayName.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.txtDisplayName.Name = "txtDisplayName";
+            this.txtDisplayName.PlaceholderText = "Tên hiển thị";
+            this.txtDisplayName.SelectedText = "";
+            this.txtDisplayName.Size = new System.Drawing.Size(280, 45);
+            this.txtDisplayName.TabIndex = 5;
+            this.txtDisplayName.TextChanged += new System.EventHandler(this.txtTenHienThi_TextChanged);
             // 
             // logoBox
             // 
@@ -163,13 +168,13 @@
             this.logoBox.TabIndex = 7;
             this.logoBox.TabStop = false;
             // 
-            // DangKy
+            // SignUpForm
             // 
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(243)))), ((int)(((byte)(247)))));
             this.ClientSize = new System.Drawing.Size(420, 550);
             this.Controls.Add(this.pnlMain);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "DangKy";
+            this.Name = "SignUpForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Đăng ký";
             this.pnlMain.ResumeLayout(false);

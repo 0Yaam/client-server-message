@@ -1,4 +1,5 @@
-﻿using Client.Services;
+﻿using Client.Models;
+using Client.Services;
 using Newtonsoft.Json;
 using Shared.OL;
 using System;
@@ -7,7 +8,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json.Linq;
 
 namespace Client.Forms
 {
@@ -16,20 +16,28 @@ namespace Client.Forms
         private readonly Account _me;
         private readonly TcpService _tcp;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-        private string _currentPeer = null;
-        private readonly System.Windows.Forms.Timer _listTimer = new System.Windows.Forms.Timer { Interval = 2000 };
 
+        private string _currentPeer = null;
+
+        // Timer refresh LIST (giảm còn 4s cho nhẹ)
+        private readonly System.Windows.Forms.Timer _listTimer = new System.Windows.Forms.Timer { Interval = 4000 };
+
+        // Cờ đang vẽ list để tránh re-entrancy / click khi đang render
+        private bool _renderingUsers = false;
 
         public ChatForm(Account me, TcpService tcp)
         {
             InitializeComponent();
+
             _me = me ?? throw new ArgumentNullException(nameof(me));
             _tcp = tcp ?? throw new ArgumentNullException(nameof(tcp));
 
+            // Panel tin nhắn
             flpMessages.WrapContents = false;
             flpMessages.AutoScroll = true;
             flpMessages.FlowDirection = FlowDirection.TopDown;
 
+            // Enter để gửi
             txtMessage.KeyDown += (s, e) =>
             {
                 if (e.KeyCode == Keys.Enter && !e.Shift)
@@ -39,13 +47,25 @@ namespace Client.Forms
                 }
             };
 
-            this.Load += async (s, e) => { try { await _tcp.SendAsync(new { type = "LIST" }); } catch { } };
+            // Gửi LIST một lần khi form Load (WinForms là "Load")
+            this.Load += async (s, e) =>
+            {
+                try { await _tcp.SendAsync(new { type = "LIST" }); } catch { }
+            };
 
-            _listTimer.Tick += async (s, e) => { try { await _tcp.SendAsync(new { type = "LIST" }); } catch { } };
+            // Gửi LIST định kỳ; ListenLoop là nơi duy nhất đọc stream
+            _listTimer.Tick += async (s, e) =>
+            {
+                if (_renderingUsers) return; // đang render list thì bỏ 1 nhịp
+                try { await _tcp.SendAsync(new { type = "LIST" }); } catch { }
+            };
             _listTimer.Start();
 
+            // Lắng nghe tất cả phản hồi từ server tại một chỗ duy nhất
             _ = Task.Run(ListenLoop);
         }
+
+        // KHÔNG dùng ctor rỗng cho runtime (để nguyên cho Designer)
         public ChatForm() : this(new Account("demo", "", "", UserRole.User), null) { }
 
         private async Task ListenLoop()
@@ -64,25 +84,62 @@ namespace Client.Forms
 
                     if (type == "LIST_OK")
                     {
-                        var arr = ((Newtonsoft.Json.Linq.JArray)msg.users).ToObject<string[]>();
-                        BeginInvoke(new Action(() =>
+                        try
                         {
-                            RenderUserList(arr);
-                            if (arr.Length > 0 && string.IsNullOrEmpty(_currentPeer))
-                                SelectPeer(arr[0]);
-                        }));
+                            var jarr = (Newtonsoft.Json.Linq.JArray)msg.users;
+
+                            var list = new System.Collections.Generic.List<Client.Models.UserListItem>();
+
+                            if (jarr.Count == 0 || jarr[0].Type == Newtonsoft.Json.Linq.JTokenType.String)
+                            {
+                                // Server trả string[]
+                                var arr = jarr.ToObject<string[]>();
+                                foreach (var uname in arr)
+                                {
+                                    list.Add(new Client.Models.UserListItem
+                                    {
+                                        Username = uname,
+                                        DisplayName = uname,
+                                        LastMessage = "Nhấn để chat",
+                                        Time = null
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                // Server trả object { username, displayName, lastMessage, time }
+                                foreach (var it in jarr)
+                                {
+                                    var uname = (string)it["username"];
+                                    var dname = (string)(it["displayName"] ?? uname);
+                                    var last = (string)it["lastMessage"];
+                                    DateTime? tm = null;
+                                    if (it["time"] != null && it["time"].Type != Newtonsoft.Json.Linq.JTokenType.Null)
+                                        tm = it["time"].ToObject<DateTime>();
+
+                                    list.Add(new Client.Models.UserListItem
+                                    {
+                                        Username = uname,
+                                        DisplayName = string.IsNullOrEmpty(dname) ? uname : dname,
+                                        LastMessage = last,
+                                        Time = tm
+                                    });
+                                }
+                            }
+
+                            BeginInvoke(new Action(() =>
+                            {
+                                RenderUserList(list);
+                                if (list.Count > 0 && string.IsNullOrEmpty(_currentPeer))
+                                    SelectPeer(list[0].Username);
+                            }));
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine("LIST_OK parse error: " + ex.Message);
+                        }
                     }
-                    else if (type == "MSG_RECV")
-                    {
-                        string from = (string)msg.from;
-                        string text = (string)msg.message;
-                        BeginInvoke(new Action(() => AppendIncoming(from, text)));
-                    }
-                    else if (type == "MSG_SENT")
-                    {
-                        string text = (string)msg.message;
-                        BeginInvoke(new Action(() => AppendOutgoing(text)));
-                    }
+
                 }
             }
             catch (Exception ex)
@@ -118,19 +175,38 @@ namespace Client.Forms
             }
         }
 
+        // Chọn người nhận từ panel trái
         private void SelectPeer(string username)
         {
+            // Nếu click lại người đang chọn thì không clear khung chat
+            if (!string.IsNullOrEmpty(_currentPeer) &&
+                string.Equals(_currentPeer, username, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
             _currentPeer = username;
-            if (lblHeader != null) lblHeader.Text = "Chat với: " + username;
-            flpMessages.Controls.Clear();  
+
+            if (lblHeader != null)
+                lblHeader.Text = "Chat với: " + username;
+
+            // Demo: khi đổi người thì clear khung tin nhắn
+            flpMessages.SuspendLayout();
+            flpMessages.Controls.Clear();
+            flpMessages.ResumeLayout();
         }
 
-        private void RenderUserList(string[] users)
+        // VẼ LẠI DANH SÁCH USER (string[] usernames)
+        private void RenderUserList(List<UserListItem> users)
         {
-            // tránh layout thrash
-            flpUsers.SuspendLayout();
+            if (_renderingUsers) return;
+            _renderingUsers = true;
+
             try
             {
+                string selected = _currentPeer;
+
+                flpUsers.SuspendLayout();
                 flpUsers.Controls.Clear();
 
                 foreach (var u in users)
@@ -140,34 +216,63 @@ namespace Client.Forms
                         Width = flpUsers.ClientSize.Width - 6,
                         Margin = new Padding(3, 0, 3, 2)
                     };
-                    item.Bind(username: u, displayName: u, lastMessage: "Nhấn để chat", time: DateTime.Now);
+
+                    // 👇 Dùng đúng thuộc tính của u
+                    item.Bind(
+                        username: u.Username,
+                        displayName: string.IsNullOrEmpty(u.DisplayName) ? u.Username : u.DisplayName,
+                        lastMessage: string.IsNullOrEmpty(u.LastMessage) ? "Nhấn để chat" : u.LastMessage,
+                        time: u.Time.HasValue ? u.Time.Value : DateTime.Now
+                    );
 
                     item.ItemClicked += (s, e) =>
                     {
+                        if (_renderingUsers) return;
+
                         foreach (Control c in flpUsers.Controls)
-                            if (c is Controls.ChatListItemControl it) it.SetSelected(false);
+                        {
+                            var it = c as Controls.ChatListItemControl;
+                            if (it != null) it.SetSelected(false);
+                        }
 
                         item.SetSelected(true);
-                        SelectPeer(item.Username); 
+                        BeginInvoke(new Action(() => SelectPeer(item.Username)));
                     };
 
+                    if (!string.IsNullOrEmpty(selected) &&
+                        string.Equals(u.Username, selected, StringComparison.OrdinalIgnoreCase))
+                    {
+                        item.SetSelected(true);
+                    }
+
                     flpUsers.Controls.Add(item);
+                }
+
+                flpUsers.ResumeLayout();
+
+                if (string.IsNullOrEmpty(_currentPeer) && flpUsers.Controls.Count > 0)
+                {
+                    var first = flpUsers.Controls[0] as Controls.ChatListItemControl;
+                    if (first != null)
+                    {
+                        first.SetSelected(true);
+                        _currentPeer = first.Username;
+                        if (lblHeader != null) lblHeader.Text = "Chat với: " + _currentPeer;
+                    }
                 }
             }
             finally
             {
-                flpUsers.ResumeLayout();
+                _renderingUsers = false;
             }
         }
-
-
 
         private void UpdateListItemLastMsg(string username, string text)
         {
             foreach (Control c in flpUsers.Controls)
             {
                 var item = c as Controls.ChatListItemControl;
-                if (item != null && item.Username == username)
+                if (item != null && string.Equals(item.Username, username, StringComparison.OrdinalIgnoreCase))
                 {
                     item.LastMessage = text;
                     item.Time = DateTime.Now;
@@ -181,7 +286,7 @@ namespace Client.Forms
             var bubble = new Controls.MessageBubbleControl
             {
                 IsOutgoing = false,
-                MessageText = $"[{from}] {text}",
+                MessageText = "[" + from + "] " + text,
                 Timestamp = DateTime.Now
             };
             flpMessages.Controls.Add(bubble);
@@ -206,7 +311,6 @@ namespace Client.Forms
             if (!string.IsNullOrEmpty(_currentPeer))
                 UpdateListItemLastMsg(_currentPeer, text);
         }
-
 
         protected override async void OnFormClosing(FormClosingEventArgs e)
         {

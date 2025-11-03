@@ -7,3 +7,12 @@ C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Shared\obj\Deb
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Shared\obj\Debug\Shared.csproj.Up2Date
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Shared\obj\Debug\Shared.dll
 C:\Users\TruongDan\Documents\Works\Desktop\client-server-messages\Shared\obj\Debug\Shared.pdb
+C:\Users\TruongDan\Documents\Works\client-server-message\Shared\bin\Debug\Shared.dll
+C:\Users\TruongDan\Documents\Works\client-server-message\Shared\bin\Debug\Shared.pdb
+C:\Users\TruongDan\Documents\Works\client-server-message\Shared\bin\Debug\Newtonsoft.Json.dll
+C:\Users\TruongDan\Documents\Works\client-server-message\Shared\bin\Debug\Newtonsoft.Json.xml
+C:\Users\TruongDan\Documents\Works\client-server-message\Shared\obj\Debug\Shared.csproj.AssemblyReference.cache
+C:\Users\TruongDan\Documents\Works\client-server-message\Shared\obj\Debug\Shared.csproj.CoreCompileInputs.cache
+C:\Users\TruongDan\Documents\Works\client-server-message\Shared\obj\Debug\Shared.csproj.Up2Date
+C:\Users\TruongDan\Documents\Works\client-server-message\Shared\obj\Debug\Shared.dll
+C:\Users\TruongDan\Documents\Works\client-server-message\Shared\obj\Debug\Shared.pdb

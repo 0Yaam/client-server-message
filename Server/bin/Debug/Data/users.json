@@ -11,10 +11,16 @@
     "Salt": "",
     "Role": 0
   },
-    {
+  {
     "Username": "thinh",
     "PasswordHash": "123",
     "Salt": "",
+    "Role": 0
+  },
+  {
+    "Username": "bo",
+    "PasswordHash": "c1cabc2f4256ded163b8be6c94561481683deee67994449ab0d9d0017a284d6a",
+    "Salt": "1fa5bdae4766ae2de2cdbf35e5d0a30f",
     "Role": 0
   }
 ]

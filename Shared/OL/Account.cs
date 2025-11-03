@@ -10,19 +10,20 @@ namespace Shared.OL
 
     public class Account
     {
-        public string Username { get; set; }       // tên đăng nhập
-        public string PasswordHash { get; set; }   // sha256 salt + pass
-        public string Salt { get; set; }           // chuỗi salt lưu dạng hex
-        public UserRole Role { get; set; }         // phân quyền
-
+        public string Username { get; set; }
+        public string PasswordHash { get; set; }
+        public string Salt { get; set; }
+        public UserRole Role { get; set; }
+        public string DisplayName { get; set; }   // ← thêm dòng này
         public Account() { }
 
-        public Account(string username, string passwordHash, string salt, UserRole role)
+        public Account(string username, string passwordHash, string salt, UserRole role, string displayName = null)
         {
             Username = username;
             PasswordHash = passwordHash;
             Salt = salt;
             Role = role;
+            DisplayName = displayName ?? username;
         }
     }
 }
