@@ -147,6 +147,7 @@
             this.txtMessage.SelectedText = "";
             this.txtMessage.Size = new System.Drawing.Size(571, 36);
             this.txtMessage.TabIndex = 0;
+            this.txtMessage.TextChanged += new System.EventHandler(this.txtMessage_TextChanged);
             // 
             // pnlInput
             // 

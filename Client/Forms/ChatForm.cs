@@ -19,6 +19,15 @@ namespace Client.Forms
         private string _currentPeer = null;
         private readonly System.Windows.Forms.Timer _listTimer = new System.Windows.Forms.Timer { Interval = 2000 };
 
+        // Conversation storage so UI can be rebuilt without losing history
+        private class ConversationMessage
+        {
+            public bool IsOutgoing { get; set; }
+            public string Sender { get; set; }    // null for outgoing, sender username for incoming
+            public string Text { get; set; }
+            public DateTime Timestamp { get; set; }
+        }
+        private readonly Dictionary<string, List<ConversationMessage>> _conversations = new Dictionary<string, List<ConversationMessage>>();
 
         public ChatForm(Account me, TcpService tcp)
         {
@@ -98,7 +107,7 @@ namespace Client.Forms
 
             if (string.IsNullOrEmpty(_currentPeer))
             {
-                MessageBox.Show("Chọn người nhận ở panel trái trước đã.");
+                MessageBox.Show("Nothing happend");
                 return;
             }
 
@@ -111,6 +120,7 @@ namespace Client.Forms
                     message = text
                 });
                 txtMessage.Clear();
+                txtMessage.Focus();
             }
             catch
             {
@@ -120,9 +130,32 @@ namespace Client.Forms
 
         private void SelectPeer(string username)
         {
+            // If same user selected again, do nothing (preserve view)
+            if (string.Equals(_currentPeer, username, StringComparison.Ordinal))
+                return;
+
             _currentPeer = username;
             if (lblHeader != null) lblHeader.Text = "Chat với: " + username;
-            flpMessages.Controls.Clear();  
+
+            // Rebuild message view from stored conversation (if any)
+            flpMessages.Controls.Clear();
+            if (!string.IsNullOrEmpty(username) && _conversations.TryGetValue(username, out var list))
+            {
+                foreach (var m in list)
+                {
+                    var bubble = new Controls.MessageBubbleControl
+                    {
+                        IsOutgoing = m.IsOutgoing,
+                        MessageText = m.IsOutgoing ? m.Text : (string.IsNullOrEmpty(m.Sender) ? m.Text : $"[{m.Sender}] {m.Text}"),
+                        Timestamp = m.Timestamp
+                    };
+                    flpMessages.Controls.Add(bubble);
+                    bubble.UpdateLayoutBubble();
+                }
+
+                if (flpMessages.Controls.Count > 0)
+                    flpMessages.ScrollControlIntoView(flpMessages.Controls[flpMessages.Controls.Count - 1]);
+            }
         }
 
         private void RenderUserList(string[] users)
@@ -135,12 +168,23 @@ namespace Client.Forms
 
                 foreach (var u in users)
                 {
+                    // compute preview from stored conversation if present
+                    string preview = "Nhấn để chat";
+                    DateTime time = DateTime.Now;
+                    if (_conversations.TryGetValue(u, out var conv) && conv.Count > 0)
+                    {
+                        var last = conv[conv.Count - 1];
+                        // preview text: prefix when outgoing
+                        preview = last.IsOutgoing ? $"Bạn: {last.Text}" : last.Text;
+                        time = last.Timestamp;
+                    }
+
                     var item = new Controls.ChatListItemControl
                     {
                         Width = flpUsers.ClientSize.Width - 6,
                         Margin = new Padding(3, 0, 3, 2)
                     };
-                    item.Bind(username: u, displayName: u, lastMessage: "Nhấn để chat", time: DateTime.Now);
+                    item.Bind(username: u, displayName: u, lastMessage: preview, time: time);
 
                     item.ItemClicked += (s, e) =>
                     {
@@ -148,7 +192,7 @@ namespace Client.Forms
                             if (c is Controls.ChatListItemControl it) it.SetSelected(false);
 
                         item.SetSelected(true);
-                        SelectPeer(item.Username); 
+                        SelectPeer(item.Username);
                     };
 
                     flpUsers.Controls.Add(item);
@@ -159,8 +203,6 @@ namespace Client.Forms
                 flpUsers.ResumeLayout();
             }
         }
-
-
 
         private void UpdateListItemLastMsg(string username, string text)
         {
@@ -176,35 +218,71 @@ namespace Client.Forms
             }
         }
 
+        private void AddMessageToConversation(string username, bool isOutgoing, string text, DateTime ts, string sender = null)
+        {
+            if (string.IsNullOrEmpty(username)) return;
+            if (!_conversations.TryGetValue(username, out var list))
+            {
+                list = new List<ConversationMessage>();
+                _conversations[username] = list;
+            }
+            list.Add(new ConversationMessage
+            {
+                IsOutgoing = isOutgoing,
+                Sender = sender,
+                Text = text,
+                Timestamp = ts
+            });
+
+            // update the list preview
+            UpdateListItemLastMsg(username, isOutgoing ? $"Bạn: {text}" : text);
+        }
+
         private void AppendIncoming(string from, string text)
         {
-            var bubble = new Controls.MessageBubbleControl
-            {
-                IsOutgoing = false,
-                MessageText = $"[{from}] {text}",
-                Timestamp = DateTime.Now
-            };
-            flpMessages.Controls.Add(bubble);
-            bubble.UpdateLayoutBubble();
-            flpMessages.ScrollControlIntoView(bubble);
+            var now = DateTime.Now;
+            // Store conversation
+            AddMessageToConversation(from, false, text, now, sender: from);
 
-            UpdateListItemLastMsg(from, text);
+            // If currently viewing this peer, show bubble immediately
+            if (string.Equals(_currentPeer, from, StringComparison.Ordinal))
+            {
+                var bubble = new Controls.MessageBubbleControl
+                {
+                    IsOutgoing = false,
+                    MessageText = $"[{from}] {text}",
+                    Timestamp = now
+                };
+                flpMessages.Controls.Add(bubble);
+                bubble.UpdateLayoutBubble();
+                flpMessages.ScrollControlIntoView(bubble);
+            }
+
+            // Ensure the user list preview updated (AddMessageToConversation already updated it)
         }
 
         private void AppendOutgoing(string text)
         {
-            var bubble = new Controls.MessageBubbleControl
-            {
-                IsOutgoing = true,
-                MessageText = text,
-                Timestamp = DateTime.Now
-            };
-            flpMessages.Controls.Add(bubble);
-            bubble.UpdateLayoutBubble();
-            flpMessages.ScrollControlIntoView(bubble);
-
+            var now = DateTime.Now;
+            // Add to conversation storage for current peer
             if (!string.IsNullOrEmpty(_currentPeer))
-                UpdateListItemLastMsg(_currentPeer, text);
+            {
+                AddMessageToConversation(_currentPeer, true, text, now, sender: null);
+            }
+
+            // Show bubble if viewing the peer
+            if (!string.IsNullOrEmpty(_currentPeer))
+            {
+                var bubble = new Controls.MessageBubbleControl
+                {
+                    IsOutgoing = true,
+                    MessageText = text,
+                    Timestamp = now
+                };
+                flpMessages.Controls.Add(bubble);
+                bubble.UpdateLayoutBubble();
+                flpMessages.ScrollControlIntoView(bubble);
+            }
         }
 
 
@@ -219,6 +297,11 @@ namespace Client.Forms
         private void btnLogout_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void txtMessage_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

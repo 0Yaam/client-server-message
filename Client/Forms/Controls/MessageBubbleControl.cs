@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D; 
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace Client.Forms.Controls
@@ -55,6 +55,11 @@ namespace Client.Forms.Controls
             Margin = new Padding(5);
             BackColor = Color.LightGray;
 
+            // Typography tweaks
+            lblMessage.Font = new Font(lblMessage.Font.FontFamily, 10f);
+            lblTime.Font = new Font(lblTime.Font.FontFamily, 8f);
+            lblTime.ForeColor = Color.DimGray;
+
             SetStyle(ControlStyles.AllPaintingInWmPaint |
                      ControlStyles.UserPaint |
                      ControlStyles.OptimizedDoubleBuffer |
@@ -66,6 +71,13 @@ namespace Client.Forms.Controls
         protected override void OnCreateControl()
         {
             base.OnCreateControl();
+            ResizeParentHook();
+            UpdateLayoutBubble();
+        }
+
+        protected override void OnParentChanged(EventArgs e)
+        {
+            base.OnParentChanged(e);
             ResizeParentHook();
             UpdateLayoutBubble();
         }
@@ -114,38 +126,64 @@ namespace Client.Forms.Controls
 
         public void UpdateLayoutBubble()
         {
+            // compute max width based on parent, fallback to sensible default
+            int maxWidth = 400;
             if (Parent != null)
             {
-                int maxWidth = (int)(Parent.ClientSize.Width * 0.70);
-                this.MaximumSize = new Size(maxWidth, 0);
-                this.MinimumSize = new Size(100, 0);
+                maxWidth = Math.Max(120, (int)(Parent.ClientSize.Width * 0.70));
             }
 
+            // set control constraints so AutoSize will wrap & grow vertically
+            this.MaximumSize = new Size(maxWidth, 0);
+            this.MinimumSize = new Size(100, 0);
+
+            // Reserve space inside bubble for padding and time label.
+            int reserved = Padding.Left + Padding.Right + 16;
+            int labelMaxWidth = Math.Max(80, this.MaximumSize.Width - reserved);
+            lblMessage.MaximumSize = new Size(labelMaxWidth, 0);
+            lblMessage.AutoSize = true;
+
+            // Layout style: message above, time below. Align time to inner edge.
             if (IsOutgoing)
             {
-                BackColor = Color.FromArgb(179, 229, 252); // xanh nhạt
-                Padding = new Padding(10);
+                BackColor = Color.FromArgb(179, 229, 252);
                 lblMessage.TextAlign = ContentAlignment.MiddleRight;
+                lblTime.TextAlign = ContentAlignment.MiddleRight;
 
                 this.Dock = DockStyle.None;
                 this.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-
                 this.Margin = new Padding(50, 5, 10, 5);
+
+                // align time to right inside the table cell
+                lblTime.Anchor = AnchorStyles.Right;
+                lblMessage.Anchor = AnchorStyles.Right | AnchorStyles.Left;
             }
             else
             {
-                BackColor = Color.FromArgb(224, 224, 224); // xám nhạt
-                Padding = new Padding(10);
+                BackColor = Color.FromArgb(240, 240, 240);
                 lblMessage.TextAlign = ContentAlignment.MiddleLeft;
+                lblTime.TextAlign = ContentAlignment.MiddleLeft;
 
                 this.Dock = DockStyle.None;
                 this.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-
                 this.Margin = new Padding(10, 5, 50, 5);
+
+                lblTime.Anchor = AnchorStyles.Left;
+                lblMessage.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             }
 
-            SetRoundedCorners();
-        }
+            // subtle padding adjustments for better visual spacing
+            lblMessage.Margin = new Padding(8, 8, 8, 4);
+            lblTime.Margin = new Padding(8, 4, 8, 8);
 
+            // force layout recalculation
+            tblLayout.SuspendLayout();
+            tblLayout.PerformLayout();
+            this.PerformLayout();
+            tblLayout.ResumeLayout();
+
+            SetRoundedCorners();
+            Invalidate();
+        }
     }
 }

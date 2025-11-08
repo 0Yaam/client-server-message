@@ -15,6 +15,7 @@ namespace Client
         public SignUpForm()
         {
             InitializeComponent();
+            this.AcceptButton = btnRegister;
         }
 
         private void btnBack_Click(object sender, EventArgs e)

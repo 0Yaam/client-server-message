@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Client.Forms.Controls
@@ -42,7 +44,7 @@ namespace Client.Forms.Controls
         // Appearance
         [Browsable(true)]
         [Category("Appearance")]
-        public Color HoverColor { get; set; } = Color.FromArgb(240, 240, 240);
+        public Color HoverColor { get; set; } = Color.FromArgb(245, 245, 245);
 
         [Browsable(true)]
         [Category("Appearance")]
@@ -50,7 +52,7 @@ namespace Client.Forms.Controls
 
         public bool Selected { get; private set; }
 
-        // Event duy nhất
+        // Event
         public event EventHandler ItemClicked;
 
         public ChatListItemControl()
@@ -58,21 +60,110 @@ namespace Client.Forms.Controls
             InitializeComponent();
             DoubleBuffered = true;
 
-            if (Height < 56) Height = 60;
+            // sensible minimum height
+            if (Height < 64) Height = 72;
             BackColor = Color.White;
 
-            // Forward click từ các control con lên control cha, KHÔNG gọi OnClick đệ quy
-            void ForwardClick(object s, EventArgs e) => ItemClicked?.Invoke(this, EventArgs.Empty);
-            this.Click += ForwardClick;
-            foreach (Control c in Controls) c.Click += ForwardClick;
-
-            // Hover nhẹ nhàng
-            this.MouseEnter += (_, __) => { if (!Selected) BackColor = HoverColor; };
-            this.MouseLeave += (_, __) => { if (!Selected) BackColor = Color.White; };
-            foreach (Control c in Controls)
+            // Typography & colors
+            if (lblName != null) lblName.Font = new Font(lblName.Font.FontFamily, 10F, FontStyle.Bold);
+            if (lblTime != null)
             {
-                c.MouseEnter += (_, __) => { if (!Selected) BackColor = HoverColor; };
-                c.MouseLeave += (_, __) => { if (!Selected) BackColor = Color.White; };
+                lblTime.Font = new Font(lblTime.Font.FontFamily, 8.5F, FontStyle.Regular);
+                lblTime.ForeColor = Color.DimGray;
+            }
+            if (lblLastMessage != null)
+            {
+                lblLastMessage.Font = new Font(lblLastMessage.Font.FontFamily, 9F, FontStyle.Regular);
+                lblLastMessage.ForeColor = Color.Gray;
+                lblLastMessage.AutoEllipsis = true;
+            }
+
+            // keep control height auto but constrain width to parent container
+            this.AutoSize = true;
+            this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+
+            // Forward clicks and hover from all child controls to this control
+            AttachHandlersRecursive(this);
+
+            // keep avatar circular on resize
+            MakeAvatarCircle();
+        }
+
+        protected override void OnParentChanged(EventArgs e)
+        {
+            base.OnParentChanged(e);
+
+            // re-hook parent's Resize so we can match width of the user list panel
+            if (Parent != null)
+            {
+                Parent.Resize -= Parent_Resize;
+                Parent.Resize += Parent_Resize;
+            }
+
+            AdjustWidthToParent();
+        }
+
+        private void Parent_Resize(object sender, EventArgs e)
+        {
+            AdjustWidthToParent();
+        }
+
+        private void AdjustWidthToParent()
+        {
+            try
+            {
+                if (Parent == null) return;
+
+                // If parent is FlowLayoutPanel with top-down flow, make this control fill available width
+                var flp = Parent as FlowLayoutPanel;
+                int parentInnerWidth = Parent.ClientSize.Width - Parent.Padding.Left - Parent.Padding.Right;
+
+                // subtract this control's margin so it fits neatly
+                int target = Math.Max(80, parentInnerWidth - this.Margin.Left - this.Margin.Right);
+
+                // set maximum width so AutoSize will wrap text/height correctly while width is limited
+                this.MaximumSize = new Size(target, 0);
+
+                // also set explicit width to reduce initial misalignment in FlowLayoutPanel
+                this.Width = target;
+            }
+            catch
+            {
+                // ignore layout exceptions
+            }
+        }
+
+        private void AttachHandlersRecursive(Control root)
+        {
+            // Forward click from child controls to ItemClicked event
+            void ForwardClick(object s, EventArgs e) => ItemClicked?.Invoke(this, EventArgs.Empty);
+
+            // Hover behavior
+            void OnEnter(object s, EventArgs e) { if (!Selected) BackColor = HoverColor; }
+            void OnLeave(object s, EventArgs e) { if (!Selected) BackColor = Color.White; }
+
+            // Attach handlers for the root control itself
+            this.Click -= ForwardClick;
+            this.Click += ForwardClick;
+            this.MouseEnter -= OnEnter;
+            this.MouseEnter += OnEnter;
+            this.MouseLeave -= OnLeave;
+            this.MouseLeave += OnLeave;
+
+            // Attach recursively for children
+            foreach (Control c in root.Controls)
+            {
+                c.Click -= ForwardClick;
+                c.Click += ForwardClick;
+
+                c.MouseEnter -= OnEnter;
+                c.MouseEnter += OnEnter;
+
+                c.MouseLeave -= OnLeave;
+                c.MouseLeave += OnLeave;
+
+                // recurse
+                if (c.HasChildren) AttachHandlersRecursive(c);
             }
         }
 
@@ -94,6 +185,18 @@ namespace Client.Forms.Controls
         {
             base.OnResize(e);
             MakeAvatarCircle();
+
+            // Recalculate wrapping width of last message so it doesn't overflow
+            try
+            {
+                if (pbAvatar == null || lblLastMessage == null) return;
+
+                // leave some padding for avatar and cell margins
+                int paddingHorizontal = this.Padding.Left + this.Padding.Right;
+                int contentWidth = Math.Max(80, this.ClientSize.Width - pbAvatar.Width - paddingHorizontal - 24);
+                lblLastMessage.MaximumSize = new Size(contentWidth, 0);
+            }
+            catch { }
         }
 
         private static string FormatTime(DateTime t)
@@ -110,12 +213,12 @@ namespace Client.Forms.Controls
             try
             {
                 if (pbAvatar == null) return;
-                int w = pbAvatar.Width, h = pbAvatar.Height;
-                if (w <= 0 || h <= 0) return;
-
-                using (var gp = new System.Drawing.Drawing2D.GraphicsPath())
+                int size = Math.Min(pbAvatar.Width, pbAvatar.Height);
+                if (size <= 0) return;
+                pbAvatar.Width = pbAvatar.Height = size;
+                using (var gp = new GraphicsPath())
                 {
-                    gp.AddEllipse(0, 0, w - 1, h - 1);
+                    gp.AddEllipse(0, 0, size - 1, size - 1);
                     pbAvatar.Region = new Region(gp);
                 }
             }

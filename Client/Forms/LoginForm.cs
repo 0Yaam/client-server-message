@@ -18,6 +18,9 @@ namespace Client
         public FormLogin()
         {
             InitializeComponent();
+            this.AcceptButton = btnLogin;
+            txtUsername.Focus();
+
         }
 
         private async void btnLogin_Click(object sender, EventArgs e)
