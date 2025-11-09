@@ -66,6 +66,7 @@
     <Compile Include="ServerCore\AuthManager.cs" />
     <Compile Include="ServerCore\ChatServer.cs" />
     <Compile Include="ServerCore\ClientSession.cs" />
+    <Compile Include="ServerCore\GroupRegistry.cs" />
     <Compile Include="ServerCore\OnlineRegistry.cs" />
     <EmbeddedResource Include="Forms\ServerForm.resx">
       <DependentUpon>ServerForm.cs</DependentUpon>

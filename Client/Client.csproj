@@ -79,6 +79,12 @@
     <Compile Include="Forms\Controls\MessageBubbleControl.Designer.cs">
       <DependentUpon>MessageBubbleControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\CreateGroup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CreateGroup.Designer.cs">
+      <DependentUpon>CreateGroup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SignUpForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -103,6 +109,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Controls\MessageBubbleControl.resx">
       <DependentUpon>MessageBubbleControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CreateGroup.resx">
+      <DependentUpon>CreateGroup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SignUpForm.resx">
       <DependentUpon>SignUpForm.cs</DependentUpon>

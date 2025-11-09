@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Server.ServerCore;
 using Shared.OL;
 using System;
@@ -87,36 +88,111 @@ namespace Server.ServerCore
                     case "PING":
                         await SendAsync(new { type = "PONG", time = DateTime.UtcNow }, ct);
                         break;
+
+                    case "GROUP_CREATE":
+                        {
+                            string groupName = (string)cmd.name;
+                            var members = ((JArray)cmd.members).ToObject<string[]>();
+
+                            // create server-side group id
+                            string groupId = Guid.NewGuid().ToString();
+
+                            // persist group info
+                            GroupRegistry.Add(groupId, groupName, members);
+
+                            // notify all members (broadcast GROUP_CREATED)
+                            var groupCreatedMsg = new
+                            {
+                                type = "GROUP_CREATED",
+                                groupId = groupId,
+                                name = groupName,
+                                members = members
+                            };
+
+                            foreach (var memberUsername in members)
+                            {
+                                var target = OnlineRegistry.Get(memberUsername);
+                                if (target != null)
+                                {
+                                    try
+                                    {
+                                        await target.SendAsync(groupCreatedMsg, ct);
+                                    }
+                                    catch { /* ignore send errors */ }
+                                }
+                            }
+
+                            // Optionally confirm to creator with groupId
+                            await SendAsync(new { type = "GROUP_CREATE_OK", groupId = groupId, name = groupName, members = members }, ct);
+                            break;
+                        }
+
                     case "MSG_TO":
-                        string to = (string)cmd.to;
-                        string msg = (string)cmd.message;
-                        var target = OnlineRegistry.Get(to);
-
-                        if (target != null)
                         {
-                            // gửi cho người nhận
-                            await target.SendAsync(new
-                            {
-                                type = "MSG_RECV",
-                                from = this.Username,
-                                message = msg,
-                                time = DateTime.UtcNow
-                            }, ct);
+                            string to = (string)cmd.to;
+                            string msg = (string)cmd.message;
+                            string from = this.Username;
 
-                            // echo forr sender
-                            await SendAsync(new
+                            // If `to` is a group id, relay to members
+                            if (GroupRegistry.TryGet(to, out var group))
                             {
-                                type = "MSG_SENT",
-                                to = to,
-                                message = msg,
-                                time = DateTime.UtcNow
-                            }, ct);
+                                foreach (var member in group.Members)
+                                {
+                                    if (member == from) continue; // don't send back to sender
+                                    var target = OnlineRegistry.Get(member);
+                                    if (target != null)
+                                    {
+                                        try
+                                        {
+                                            await target.SendAsync(new
+                                            {
+                                                type = "MSG_RECV",
+                                                from = from,
+                                                groupId = to,
+                                                message = msg,
+                                                time = DateTime.UtcNow
+                                            }, ct);
+                                        }
+                                        catch { /* ignore per-target errors */ }
+                                    }
+                                }
+
+                                // Echo to sender as MSG_SENT
+                                await SendAsync(new { type = "MSG_SENT", to = to, message = msg, time = DateTime.UtcNow }, ct);
+                            }
+                            else
+                            {
+                                var target = OnlineRegistry.Get(to);
+
+                                if (target != null)
+                                {
+                                    // send to recipient
+                                    await target.SendAsync(new
+                                    {
+                                        type = "MSG_RECV",
+                                        from = this.Username,
+                                        message = msg,
+                                        time = DateTime.UtcNow
+                                    }, ct);
+
+                                    // echo for sender
+                                    await SendAsync(new
+                                    {
+                                        type = "MSG_SENT",
+                                        to = to,
+                                        message = msg,
+                                        time = DateTime.UtcNow
+                                    }, ct);
+                                }
+                                else
+                                {
+                                    await SendAsync(new { type = "ERROR", text = "User offline" }, ct);
+                                }
+                            }
+
+                            break;
                         }
-                        else
-                        {
-                            await SendAsync(new { type = "ERROR", text = "User offline" }, ct);
-                        }
-                        break;
+
                     case "LIST":
                         {
                             Console.WriteLine($"LIST from {Username}");
@@ -148,7 +224,7 @@ namespace Server.ServerCore
             while (!ct.IsCancellationRequested)
             {
                 int read = await _ns.ReadAsync(buffer, 0, 1, ct);
-                if (read == 0) return null; 
+                if (read == 0) return null;
                 if (buffer[0] == (byte)'\n') break;
                 ms.WriteByte(buffer[0]);
             }

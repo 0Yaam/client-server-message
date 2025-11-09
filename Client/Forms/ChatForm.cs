@@ -23,11 +23,13 @@ namespace Client.Forms
         private class ConversationMessage
         {
             public bool IsOutgoing { get; set; }
-            public string Sender { get; set; }    // null for outgoing, sender username for incoming
+            public string Sender { get; set; }
             public string Text { get; set; }
             public DateTime Timestamp { get; set; }
         }
         private readonly Dictionary<string, List<ConversationMessage>> _conversations = new Dictionary<string, List<ConversationMessage>>();
+        private readonly Dictionary<string, string[]> _groupMembers = new Dictionary<string, string[]>();
+        private string[] _latestUsers = Array.Empty<string>();
 
         public ChatForm(Account me, TcpService tcp)
         {
@@ -73,7 +75,8 @@ namespace Client.Forms
 
                     if (type == "LIST_OK")
                     {
-                        var arr = ((Newtonsoft.Json.Linq.JArray)msg.users).ToObject<string[]>();
+                        var arr = ((JArray)msg.users).ToObject<string[]>();
+                        _latestUsers = arr ?? Array.Empty<string>();
                         BeginInvoke(new Action(() =>
                         {
                             RenderUserList(arr);
@@ -85,12 +88,53 @@ namespace Client.Forms
                     {
                         string from = (string)msg.from;
                         string text = (string)msg.message;
-                        BeginInvoke(new Action(() => AppendIncoming(from, text)));
+                        
+                        // Kiểm tra có phải tin nhắn nhóm không
+                        string groupId = msg.groupId; // có thể null nếu là 1:1
+                        
+                        BeginInvoke(new Action(() => 
+                        {
+                            if (!string.IsNullOrEmpty(groupId))
+                            {
+                                // Tin nhắn nhóm
+                                AppendIncomingGroup(groupId, from, text);
+                            }
+                            else
+                            {
+                                // Tin nhắn 1:1
+                                AppendIncoming(from, text);
+                            }
+                        }));
                     }
                     else if (type == "MSG_SENT")
                     {
                         string text = (string)msg.message;
-                        BeginInvoke(new Action(() => AppendOutgoing(text)));
+                        string to = (string)msg.to;
+                        
+                        BeginInvoke(new Action(() => 
+                        {
+                            // Kiểm tra xem có phải gửi tới nhóm không
+                            if (_groupMembers.ContainsKey(to))
+                            {
+                                // Gửi tới nhóm
+                                AppendOutgoingGroup(to, text);
+                            }
+                            else
+                            {
+                                // Gửi 1:1
+                                AppendOutgoing(text);
+                            }
+                        }));
+                    }
+                    else if (type == "GROUP_CREATED")
+                    {
+                        string groupId = (string)msg.groupId;
+                        string name = (string)msg.name;
+                        var members = ((JArray)msg.members).ToObject<string[]>();
+                        BeginInvoke(new Action(() =>
+                        {
+                            AddGroupToUserList(groupId, name, members);
+                        }));
                     }
                 }
             }
@@ -128,16 +172,31 @@ namespace Client.Forms
             }
         }
 
+        // === SelectPeer: FIX để tránh clear khi click lại vào conversation hiện tại ===
         private void SelectPeer(string username)
         {
-            // If same user selected again, do nothing (preserve view)
+            // NẾU đã đang xem conversation này rồi, KHÔNG làm gì (tránh clear)
             if (string.Equals(_currentPeer, username, StringComparison.Ordinal))
                 return;
 
             _currentPeer = username;
-            if (lblHeader != null) lblHeader.Text = "Chat với: " + username;
+            bool isGroup = _groupMembers.ContainsKey(username);
+            
+            if (lblHeader != null)
+            {
+                if (isGroup)
+                {
+                    var item = flpUsers.Controls.OfType<Controls.ChatListItemControl>()
+                        .FirstOrDefault(i => i.Username == username);
+                    lblHeader.Text = item != null ? $"Nhóm: {item.DisplayName}" : $"Nhóm: {username}";
+                }
+                else
+                {
+                    lblHeader.Text = "Chat với: " + username;
+                }
+            }
 
-            // Rebuild message view from stored conversation (if any)
+            // Rebuild message view với format phù hợp
             flpMessages.Controls.Clear();
             if (!string.IsNullOrEmpty(username) && _conversations.TryGetValue(username, out var list))
             {
@@ -146,9 +205,28 @@ namespace Client.Forms
                     var bubble = new Controls.MessageBubbleControl
                     {
                         IsOutgoing = m.IsOutgoing,
-                        MessageText = m.IsOutgoing ? m.Text : (string.IsNullOrEmpty(m.Sender) ? m.Text : $"[{m.Sender}] {m.Text}"),
                         Timestamp = m.Timestamp
                     };
+
+                    // Format message dựa trên loại chat
+                    if (isGroup)
+                    {
+                        // Tin nhắn nhóm
+                        if (m.IsOutgoing)
+                        {
+                            bubble.MessageText = m.Text; // Tin nhắn của mình
+                        }
+                        else
+                        {
+                            bubble.MessageText = $"[{m.Sender}] {m.Text}"; // Tin nhắn từ người khác
+                        }
+                    }
+                    else
+                    {
+                        // Tin nhắn 1:1
+                        bubble.MessageText = m.Text;
+                    }
+
                     flpMessages.Controls.Add(bubble);
                     bubble.UpdateLayoutBubble();
                 }
@@ -160,21 +238,30 @@ namespace Client.Forms
 
         private void RenderUserList(string[] users)
         {
-            // tránh layout thrash
             flpUsers.SuspendLayout();
             try
             {
+                // Keep existing groups, only update users
+                var existingGroups = flpUsers.Controls.OfType<Controls.ChatListItemControl>()
+                    .Where(i => _groupMembers.ContainsKey(i.Username))
+                    .ToList();
+
                 flpUsers.Controls.Clear();
 
+                // Re-add groups first
+                foreach (var grp in existingGroups)
+                {
+                    flpUsers.Controls.Add(grp);
+                }
+
+                // Add users
                 foreach (var u in users)
                 {
-                    // compute preview from stored conversation if present
                     string preview = "Nhấn để chat";
                     DateTime time = DateTime.Now;
                     if (_conversations.TryGetValue(u, out var conv) && conv.Count > 0)
                     {
                         var last = conv[conv.Count - 1];
-                        // preview text: prefix when outgoing
                         preview = last.IsOutgoing ? $"Bạn: {last.Text}" : last.Text;
                         time = last.Timestamp;
                     }
@@ -202,6 +289,49 @@ namespace Client.Forms
             {
                 flpUsers.ResumeLayout();
             }
+        }
+
+        // === Helper: thêm group vào user list (không duplicate) ===
+        private void AddGroupToUserList(string groupId, string groupName, string[] members)
+        {
+            if (string.IsNullOrEmpty(groupId)) return;
+
+            // Kiểm tra đã tồn tại chưa (tránh duplicate)
+            foreach (Control c in flpUsers.Controls)
+            {
+                if (c is Controls.ChatListItemControl existing && existing.Username == groupId)
+                {
+                    // đã có rồi, chỉ cập nhật nếu cần
+                    existing.DisplayName = groupName;
+                    return;
+                }
+            }
+
+            // Lưu members để client biết ai trong group
+            _groupMembers[groupId] = members ?? new string[0];
+
+            var item = new Controls.ChatListItemControl
+            {
+                Width = flpUsers.ClientSize.Width - 6,
+                Margin = new Padding(3, 0, 3, 2)
+            };
+            item.Bind(username: groupId, displayName: groupName, lastMessage: "Nhóm chat mới", time: DateTime.Now);
+
+            item.ItemClicked += (senderItem, args) =>
+            {
+                // Deselect all items
+                foreach (Control c in flpUsers.Controls)
+                    if (c is Controls.ChatListItemControl it) it.SetSelected(false);
+
+                item.SetSelected(true);
+                SelectPeer(item.Username);
+            };
+
+            flpUsers.Controls.Add(item);
+
+            // Tạo conversation storage rỗng cho group
+            if (!_conversations.ContainsKey(groupId))
+                _conversations[groupId] = new List<ConversationMessage>();
         }
 
         private void UpdateListItemLastMsg(string username, string text)
@@ -234,45 +364,57 @@ namespace Client.Forms
                 Timestamp = ts
             });
 
-            // update the list preview
-            UpdateListItemLastMsg(username, isOutgoing ? $"Bạn: {text}" : text);
+            // Update preview trong ChatListItemControl
+            string preview;
+            bool isGroup = _groupMembers.ContainsKey(username);
+            
+            if (isGroup)
+            {
+                // Nhóm: hiển thị [Sender] hoặc "Bạn:"
+                if (isOutgoing)
+                {
+                    preview = $"Bạn: {text}";
+                }
+                else
+                {
+                    preview = $"[{sender}] {text}";
+                }
+            }
+            else
+            {
+                // 1:1: hiển thị "Bạn:" hoặc text trực tiếp
+                preview = isOutgoing ? $"Bạn: {text}" : text;
+            }
+
+            UpdateListItemLastMsg(username, preview);
         }
 
         private void AppendIncoming(string from, string text)
         {
             var now = DateTime.Now;
-            // Store conversation
             AddMessageToConversation(from, false, text, now, sender: from);
 
-            // If currently viewing this peer, show bubble immediately
             if (string.Equals(_currentPeer, from, StringComparison.Ordinal))
             {
                 var bubble = new Controls.MessageBubbleControl
                 {
                     IsOutgoing = false,
-                    MessageText = $"[{from}] {text}",
+                    MessageText = text,  // 1:1 không cần [Sender] vì đã biết ai gửi
                     Timestamp = now
                 };
                 flpMessages.Controls.Add(bubble);
                 bubble.UpdateLayoutBubble();
                 flpMessages.ScrollControlIntoView(bubble);
             }
-
-            // Ensure the user list preview updated (AddMessageToConversation already updated it)
         }
 
         private void AppendOutgoing(string text)
         {
             var now = DateTime.Now;
-            // Add to conversation storage for current peer
-            if (!string.IsNullOrEmpty(_currentPeer))
+            if (!string.IsNullOrEmpty(_currentPeer) && !_groupMembers.ContainsKey(_currentPeer))
             {
                 AddMessageToConversation(_currentPeer, true, text, now, sender: null);
-            }
 
-            // Show bubble if viewing the peer
-            if (!string.IsNullOrEmpty(_currentPeer))
-            {
                 var bubble = new Controls.MessageBubbleControl
                 {
                     IsOutgoing = true,
@@ -285,6 +427,91 @@ namespace Client.Forms
             }
         }
 
+        // Tin nhắn nhóm đến - hiển thị với format [Sender] message
+        private void AppendIncomingGroup(string groupId, string from, string text)
+        {
+            var now = DateTime.Now;
+            AddMessageToConversation(groupId, false, text, now, sender: from);
+
+            // Nếu đang xem nhóm này, hiển thị bubble
+            if (string.Equals(_currentPeer, groupId, StringComparison.Ordinal))
+            {
+                var bubble = new Controls.MessageBubbleControl
+                {
+                    IsOutgoing = false,
+                    MessageText = $"[{from}] {text}",  // Format nhóm: [Sender] message
+                    Timestamp = now
+                };
+                flpMessages.Controls.Add(bubble);
+                bubble.UpdateLayoutBubble();
+                flpMessages.ScrollControlIntoView(bubble);
+            }
+        }
+
+        // Tin nhắn nhóm gửi đi - hiển thị như tin nhắn thường nhưng lưu vào conversation của nhóm
+        private void AppendOutgoingGroup(string groupId, string text)
+        {
+            var now = DateTime.Now;
+            AddMessageToConversation(groupId, true, text, now, sender: null);
+
+            // Nếu đang xem nhóm này, hiển thị bubble
+            if (string.Equals(_currentPeer, groupId, StringComparison.Ordinal))
+            {
+                var bubble = new Controls.MessageBubbleControl
+                {
+                    IsOutgoing = true,
+                    MessageText = text,  // Tin nhắn của mình không cần [Sender]
+                    Timestamp = now
+                };
+                flpMessages.Controls.Add(bubble);
+                bubble.UpdateLayoutBubble();
+                flpMessages.ScrollControlIntoView(bubble);
+            }
+        }
+
+        // === cmsTaoNhom_Click: GỬI tới server, KHÔNG thêm local placeholder ===
+        private void cmsTaoNhom_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var candidates = _latestUsers.Where(x => !string.Equals(x, _me?.Username, StringComparison.Ordinal)).ToArray();
+                using (var dlg = new CreateGroup(candidates))
+                {
+                    dlg.GroupCreated += async (s, ev) =>
+                    {
+                        try
+                        {
+                            // Include creator as member
+                            var members = new List<string>(ev.Members);
+                            if (!members.Contains(_me.Username)) members.Add(_me.Username);
+
+                            // GỬI tới server - server sẽ broadcast GROUP_CREATED
+                            await _tcp.SendAsync(new
+                            {
+                                type = "GROUP_CREATE",
+                                name = ev.GroupName,
+                                members = members.ToArray()
+                            });
+
+                            // KHÔNG thêm item local ở đây - chờ server gửi GROUP_CREATED
+                        }
+                        catch (Exception ex)
+                        {
+                            BeginInvoke(new Action(() =>
+                            {
+                                MessageBox.Show("Không thể tạo nhóm: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }));
+                        }
+                    };
+
+                    dlg.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Không thể mở form tạo nhóm: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         protected override async void OnFormClosing(FormClosingEventArgs e)
         {

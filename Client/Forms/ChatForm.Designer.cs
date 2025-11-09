@@ -29,15 +29,14 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.ItemDangXuat = new System.Windows.Forms.ToolStripMenuItem();
-            this.ItemThemBan = new System.Windows.Forms.ToolStripMenuItem();
-            this.ItemTaoNhom = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmsTaoNhom = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu = new Guna.UI2.WinForms.Guna2ContextMenuStrip();
-            this.ItemXoaBan = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmsXoaBan = new System.Windows.Forms.ToolStripMenuItem();
             this.btnLogout = new Guna.UI2.WinForms.Guna2Button();
             this.btnSend = new Guna.UI2.WinForms.Guna2Button();
             this.txtMessage = new Guna.UI2.WinForms.Guna2TextBox();
             this.pnlInput = new Guna.UI2.WinForms.Guna2Panel();
+            this.btnAttach = new Guna.UI2.WinForms.Guna2Button();
             this.pnlChat = new Guna.UI2.WinForms.Guna2Panel();
             this.flpMessages = new System.Windows.Forms.FlowLayoutPanel();
             this.pnlHeader = new Guna.UI2.WinForms.Guna2Panel();
@@ -56,32 +55,19 @@
             this.pnlLeft.SuspendLayout();
             this.SuspendLayout();
             // 
-            // ItemDangXuat
+            // cmsTaoNhom
             // 
-            this.ItemDangXuat.Name = "ItemDangXuat";
-            this.ItemDangXuat.Size = new System.Drawing.Size(128, 22);
-            this.ItemDangXuat.Text = "Đăng xuất";
-            // 
-            // ItemThemBan
-            // 
-            this.ItemThemBan.Name = "ItemThemBan";
-            this.ItemThemBan.Size = new System.Drawing.Size(128, 22);
-            this.ItemThemBan.Text = "Thêm bạn";
-            // 
-            // ItemTaoNhom
-            // 
-            this.ItemTaoNhom.Name = "ItemTaoNhom";
-            this.ItemTaoNhom.Size = new System.Drawing.Size(128, 22);
-            this.ItemTaoNhom.Text = "Tạo nhóm";
+            this.cmsTaoNhom.Name = "cmsTaoNhom";
+            this.cmsTaoNhom.Size = new System.Drawing.Size(180, 22);
+            this.cmsTaoNhom.Text = "Tạo nhóm";
+            this.cmsTaoNhom.Click += new System.EventHandler(this.cmsTaoNhom_Click);
             // 
             // Menu
             // 
             this.Menu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ItemTaoNhom,
-            this.ItemThemBan,
-            this.ItemXoaBan,
-            this.ItemDangXuat});
+            this.cmsTaoNhom,
+            this.cmsXoaBan});
             this.Menu.Name = "Menu";
             this.Menu.RenderStyle.ArrowColor = System.Drawing.Color.FromArgb(((int)(((byte)(151)))), ((int)(((byte)(143)))), ((int)(((byte)(255)))));
             this.Menu.RenderStyle.BorderColor = System.Drawing.Color.Gainsboro;
@@ -92,14 +78,14 @@
             this.Menu.RenderStyle.SelectionForeColor = System.Drawing.Color.White;
             this.Menu.RenderStyle.SeparatorColor = System.Drawing.Color.Gainsboro;
             this.Menu.RenderStyle.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-            this.Menu.Size = new System.Drawing.Size(129, 92);
+            this.Menu.Size = new System.Drawing.Size(181, 70);
             this.Menu.Text = "☰";
             // 
-            // ItemXoaBan
+            // cmsXoaBan
             // 
-            this.ItemXoaBan.Name = "ItemXoaBan";
-            this.ItemXoaBan.Size = new System.Drawing.Size(128, 22);
-            this.ItemXoaBan.Text = "Xóa Bạn";
+            this.cmsXoaBan.Name = "cmsXoaBan";
+            this.cmsXoaBan.Size = new System.Drawing.Size(180, 22);
+            this.cmsXoaBan.Text = "Xóa Bạn";
             // 
             // btnLogout
             // 
@@ -151,6 +137,7 @@
             // 
             // pnlInput
             // 
+            this.pnlInput.Controls.Add(this.btnAttach);
             this.pnlInput.Controls.Add(this.btnSend);
             this.pnlInput.Controls.Add(this.txtMessage);
             this.pnlInput.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -161,6 +148,19 @@
             this.pnlInput.Padding = new System.Windows.Forms.Padding(8);
             this.pnlInput.Size = new System.Drawing.Size(587, 52);
             this.pnlInput.TabIndex = 1;
+            // 
+            // btnAttach
+            // 
+            this.btnAttach.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAttach.BorderRadius = 8;
+            this.btnAttach.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(135)))), ((int)(((byte)(255)))));
+            this.btnAttach.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnAttach.ForeColor = System.Drawing.Color.White;
+            this.btnAttach.Location = new System.Drawing.Point(467, 10);
+            this.btnAttach.Name = "btnAttach";
+            this.btnAttach.Size = new System.Drawing.Size(33, 30);
+            this.btnAttach.TabIndex = 4;
+            this.btnAttach.Text = ".";
             // 
             // pnlChat
             // 
@@ -251,6 +251,7 @@
             // 
             this.flpUsers.AutoScroll = true;
             this.flpUsers.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.flpUsers.ContextMenuStrip = this.Menu;
             this.flpUsers.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flpUsers.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flpUsers.Location = new System.Drawing.Point(0, 32);
@@ -308,12 +309,9 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.ToolStripMenuItem ItemDangXuat;
-        private System.Windows.Forms.ToolStripMenuItem ItemThemBan;
-        private System.Windows.Forms.ToolStripMenuItem ItemTaoNhom;
+        private System.Windows.Forms.ToolStripMenuItem cmsTaoNhom;
         private Guna.UI2.WinForms.Guna2ContextMenuStrip Menu;
-        private System.Windows.Forms.ToolStripMenuItem ItemXoaBan;
+        private System.Windows.Forms.ToolStripMenuItem cmsXoaBan;
         private Guna.UI2.WinForms.Guna2Button btnLogout;
         private Guna.UI2.WinForms.Guna2Button btnSend;
         private Guna.UI2.WinForms.Guna2TextBox txtMessage;
@@ -328,5 +326,6 @@
         private Guna.UI2.WinForms.Guna2Panel guna2Panel1;
         private Guna.UI2.WinForms.Guna2Panel pnlLeft;
         private Guna.UI2.WinForms.Guna2AnimateWindow guna2AnimateWindow1;
+        private Guna.UI2.WinForms.Guna2Button btnAttach;
     }
 }
