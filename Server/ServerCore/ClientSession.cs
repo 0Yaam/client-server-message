@@ -37,29 +37,50 @@ namespace Server.ServerCore
                 }
 
                 dynamic obj = JsonConvert.DeserializeObject(firstLine);
-                if ((string)obj.type != "AUTH")
+                string messageType = (string)obj.type;
+
+                if (messageType == "AUTH")
                 {
-                    await SendAsync(new { type = "AUTH_FAIL", reason = "first packet must be AUTH" }, ct);
-                    await CloseAsync();
-                    return;
+                    string user = (string)obj.username;
+                    string pass = (string)obj.password;
+
+                    if (AuthManager.Validate(user, pass, out var acc))
+                    {
+                        Username = acc.Username;
+                        Role = acc.Role;
+
+                        OnlineRegistry.Add(this);
+                        await SendAsync(new { type = "AUTH_OK", username = Username, role = Role.ToString() }, ct);
+
+                        await CommandLoopAsync(ct);
+                    }
+                    else
+                    {
+                        await SendAsync(new { type = "AUTH_FAIL", reason = "invalid" }, ct);
+                        await CloseAsync();
+                    }
                 }
-
-                string user = (string)obj.username;
-                string pass = (string)obj.password;
-
-                if (AuthManager.Validate(user, pass, out var acc))
+                else if (messageType == "REGISTER")
                 {
-                    Username = acc.Username;
-                    Role = acc.Role;
+                    string username = (string)obj.username;
+                    string displayName = (string)obj.displayName;
+                    string password = (string)obj.password;
 
-                    OnlineRegistry.Add(this);
-                    await SendAsync(new { type = "AUTH_OK", username = Username, role = Role.ToString() }, ct);
-
-                    await CommandLoopAsync(ct);
+                    if (AuthManager.Register(username, displayName, password, out string errorMessage))
+                    {
+                        await SendAsync(new { type = "REGISTER_OK", message = "Đăng ký thành công" }, ct);
+                    }
+                    else
+                    {
+                        await SendAsync(new { type = "REGISTER_FAIL", reason = errorMessage }, ct);
+                    }
+                    
+                    // Đóng kết nối sau khi xử lý đăng ký
+                    await CloseAsync();
                 }
                 else
                 {
-                    await SendAsync(new { type = "AUTH_FAIL", reason = "invalid" }, ct);
+                    await SendAsync(new { type = "ERROR", reason = "first packet must be AUTH or REGISTER" }, ct);
                     await CloseAsync();
                 }
             }
@@ -202,6 +223,66 @@ namespace Server.ServerCore
                             break;
                         }
 
+                    case "PASS_CHANGE":
+                        {
+                            // require authenticated session
+                            string oldPass = (string)cmd.oldPassword;
+                            string newPass = (string)cmd.newPassword;
+
+                            if (AuthManager.ChangePassword(this.Username, oldPass, newPass, out string err))
+                            {
+                                await SendAsync(new { type = "PASS_CHANGE_OK", message = "Password changed" }, ct);
+                            }
+                            else
+                            {
+                                await SendAsync(new { type = "PASS_CHANGE_FAIL", reason = err }, ct);
+                            }
+
+                            break;
+                        }
+
+                    case "AVATAR_UPLOAD":
+                        {
+                            string b64 = (string)cmd.image;
+                            string ext = (string)cmd.ext;
+                            try
+                            {
+                                var data = Convert.FromBase64String(b64);
+                                if (AuthManager.UpdateAvatar(this.Username, data, ext, out string savedPath, out string err))
+                                {
+                                    // Broadcast avatar update to all online users (send image as base64)
+                                    var msg = new
+                                    {
+                                        type = "AVATAR_UPDATED",
+                                        username = this.Username,
+                                        image = b64,
+                                        ext = ext
+                                    };
+
+                                    var allUsers = OnlineRegistry.ListUsernames();
+                                    foreach (var u in allUsers)
+                                    {
+                                        var target = OnlineRegistry.Get(u);
+                                        if (target != null)
+                                        {
+                                            try { await target.SendAsync(msg, ct); } catch { }
+                                        }
+                                    }
+
+                                    await SendAsync(new { type = "AVATAR_UPLOAD_OK", path = savedPath }, ct);
+                                }
+                                else
+                                {
+                                    await SendAsync(new { type = "AVATAR_UPLOAD_FAIL", reason = err }, ct);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                await SendAsync(new { type = "AVATAR_UPLOAD_FAIL", reason = ex.Message }, ct);
+                            }
+
+                            break;
+                        }
                     default:
                         await SendAsync(new { type = "ERROR", text = "unknown command" }, ct);
                         break;

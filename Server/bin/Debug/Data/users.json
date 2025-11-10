@@ -3,18 +3,32 @@
     "Username": "admin",
     "PasswordHash": "123",
     "Salt": "",
-    "Role": 1
+    "Role": 1,
+    "DisplayName": null,
+    "Avatar": null
   },
   {
     "Username": "user",
     "PasswordHash": "123",
     "Salt": "",
-    "Role": 0
+    "Role": 0,
+    "DisplayName": null,
+    "Avatar": null
   },
-    {
+  {
     "Username": "thinh",
-    "PasswordHash": "123",
-    "Salt": "",
-    "Role": 0
+    "PasswordHash": "Z4Fb0a+hiG7RSUAtiidACKL6LMWtUaaT+sUMSwcRk9w=",
+    "Salt": "nmFfsV8mmf0sHrjuE64jg7wajyGxlw5/LYCndf7cfII=",
+    "Role": 0,
+    "DisplayName": null,
+    "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\thinh.png"
+  },
+  {
+    "Username": "boloro",
+    "PasswordHash": "pD0bKmkwEYz3oSS6Yx/VNlFB0ltiySkg6v1sn2rdF5M=",
+    "Salt": "rgFDcksKdHjqGM8c0GWlo8veB+cZXB0n/eYwGdLLCw0=",
+    "Role": 0,
+    "DisplayName": "Boloro",
+    "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\boloro.png"
   }
 ]

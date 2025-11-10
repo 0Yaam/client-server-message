@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.cmsTaoNhom = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu = new Guna.UI2.WinForms.Guna2ContextMenuStrip();
             this.cmsXoaBan = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,7 +45,7 @@
             this.flpUsers = new System.Windows.Forms.FlowLayoutPanel();
             this.guna2Panel1 = new Guna.UI2.WinForms.Guna2Panel();
             this.pnlLeft = new Guna.UI2.WinForms.Guna2Panel();
-            this.guna2AnimateWindow1 = new Guna.UI2.WinForms.Guna2AnimateWindow(this.components);
+            this.guna2AnimateWindow1 = new Guna.UI2.WinForms.Guna2AnimateWindow();
             this.Menu.SuspendLayout();
             this.pnlInput.SuspendLayout();
             this.pnlChat.SuspendLayout();
@@ -58,7 +57,7 @@
             // cmsTaoNhom
             // 
             this.cmsTaoNhom.Name = "cmsTaoNhom";
-            this.cmsTaoNhom.Size = new System.Drawing.Size(180, 22);
+            this.cmsTaoNhom.Size = new System.Drawing.Size(128, 22);
             this.cmsTaoNhom.Text = "Tạo nhóm";
             this.cmsTaoNhom.Click += new System.EventHandler(this.cmsTaoNhom_Click);
             // 
@@ -78,13 +77,13 @@
             this.Menu.RenderStyle.SelectionForeColor = System.Drawing.Color.White;
             this.Menu.RenderStyle.SeparatorColor = System.Drawing.Color.Gainsboro;
             this.Menu.RenderStyle.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-            this.Menu.Size = new System.Drawing.Size(181, 70);
+            this.Menu.Size = new System.Drawing.Size(129, 48);
             this.Menu.Text = "☰";
             // 
             // cmsXoaBan
             // 
             this.cmsXoaBan.Name = "cmsXoaBan";
-            this.cmsXoaBan.Size = new System.Drawing.Size(180, 22);
+            this.cmsXoaBan.Size = new System.Drawing.Size(128, 22);
             this.cmsXoaBan.Text = "Xóa Bạn";
             // 
             // btnLogout
@@ -246,19 +245,19 @@
             this.btnMenu.Size = new System.Drawing.Size(34, 32);
             this.btnMenu.TabIndex = 2;
             this.btnMenu.Text = "☰";
+            this.btnMenu.Click += new System.EventHandler(this.btnMenu_Click);
             // 
             // flpUsers
             // 
             this.flpUsers.AutoScroll = true;
             this.flpUsers.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.flpUsers.ContextMenuStrip = this.Menu;
-            this.flpUsers.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flpUsers.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flpUsers.Location = new System.Drawing.Point(0, 32);
             this.flpUsers.Margin = new System.Windows.Forms.Padding(8);
             this.flpUsers.Name = "flpUsers";
             this.flpUsers.Padding = new System.Windows.Forms.Padding(11, 12, 11, 12);
-            this.flpUsers.Size = new System.Drawing.Size(213, 418);
+            this.flpUsers.Size = new System.Drawing.Size(211, 418);
             this.flpUsers.TabIndex = 4;
             this.flpUsers.WrapContents = false;
             // 

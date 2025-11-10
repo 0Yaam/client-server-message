@@ -224,5 +224,21 @@ namespace Client.Forms.Controls
             }
             catch { /* ignore */ }
         }
+
+        public void SetAvatar(Image img)
+        {
+            try
+            {
+                if (pbAvatar == null) return;
+                // Dispose previous image safely
+                var old = pbAvatar.Image;
+                pbAvatar.Image = img;
+                if (old != null && !object.ReferenceEquals(old, img))
+                {
+                    try { old.Dispose(); } catch { }
+                }
+            }
+            catch { }
+        }
     }
 }

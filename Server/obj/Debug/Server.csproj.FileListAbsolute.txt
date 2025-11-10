@@ -32,3 +32,4 @@ C:\Users\TruongDan\Documents\Works\client-server-message\Server\obj\Debug\Server
 C:\Users\TruongDan\Documents\Works\client-server-message\Server\obj\Debug\Server.csproj.Up2Date
 C:\Users\TruongDan\Documents\Works\client-server-message\Server\obj\Debug\Server.exe
 C:\Users\TruongDan\Documents\Works\client-server-message\Server\obj\Debug\Server.pdb
+C:\Users\TruongDan\Documents\Works\client-server-message\Server\obj\Debug\Server.Forms.UpdateForm.resources

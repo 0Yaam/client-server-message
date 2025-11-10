@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
+using System.IO;
+using System.Drawing;
 
 namespace Client.Forms
 {
@@ -84,15 +86,25 @@ namespace Client.Forms
                                 SelectPeer(arr[0]);
                         }));
                     }
+                    else if (type == "PASS_CHANGE_OK")
+                    {
+                        string message = (string)msg.message ?? "Đổi mật khẩu thành công";
+                        BeginInvoke(new Action(() => MessageBox.Show(message, "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information)));
+                    }
+                    else if (type == "PASS_CHANGE_FAIL")
+                    {
+                        string reason = (string)msg.reason ?? "Đổi mật khẩu thất bại";
+                        BeginInvoke(new Action(() => MessageBox.Show(reason, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error)));
+                    }
                     else if (type == "MSG_RECV")
                     {
                         string from = (string)msg.from;
                         string text = (string)msg.message;
-                        
+
                         // Kiểm tra có phải tin nhắn nhóm không
                         string groupId = msg.groupId; // có thể null nếu là 1:1
-                        
-                        BeginInvoke(new Action(() => 
+
+                        BeginInvoke(new Action(() =>
                         {
                             if (!string.IsNullOrEmpty(groupId))
                             {
@@ -110,8 +122,8 @@ namespace Client.Forms
                     {
                         string text = (string)msg.message;
                         string to = (string)msg.to;
-                        
-                        BeginInvoke(new Action(() => 
+
+                        BeginInvoke(new Action(() =>
                         {
                             // Kiểm tra xem có phải gửi tới nhóm không
                             if (_groupMembers.ContainsKey(to))
@@ -136,12 +148,83 @@ namespace Client.Forms
                             AddGroupToUserList(groupId, name, members);
                         }));
                     }
+                    else if (type == "AVATAR_UPDATED")
+                    {
+                        // Receive avatar update broadcast from server
+                        string username = (string)msg.username;
+                        string b64 = (string)msg.image;
+                        string ext = (string)msg.ext; // may include dot
+
+                        try
+                        {
+                            var data = Convert.FromBase64String(b64);
+                            var saved = SaveAvatarLocal(username, data, ext);
+
+                            // update local account if matches
+                            if (string.Equals(_me?.Username, username, StringComparison.OrdinalIgnoreCase))
+                            {
+                                _me.Avatar = saved;
+                            }
+
+                            // Update UI
+                            BeginInvoke(new Action(() =>
+                            {
+                                foreach (Control c in flpUsers.Controls)
+                                {
+                                    if (c is Controls.ChatListItemControl it && it.Username == username)
+                                    {
+                                        try
+                                        {
+                                            using (var ms = new MemoryStream(data))
+                                            {
+                                                var img = Image.FromStream(ms);
+                                                it.SetAvatar(new Bitmap(img));
+                                            }
+                                        }
+                                        catch { }
+                                    }
+                                }
+                            }));
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine("AVATAR_UPDATED error: " + ex.Message);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("ListenLoop error: " + ex.Message);
             }
+        }
+
+        private string SaveAvatarLocal(string username, byte[] data, string ext)
+        {
+            try
+            {
+                var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Avatars");
+                Directory.CreateDirectory(dir);
+                if (string.IsNullOrEmpty(ext)) ext = ".png";
+                if (!ext.StartsWith(".")) ext = "." + ext;
+                var file = Path.Combine(dir, username + ext);
+                File.WriteAllBytes(file, data);
+                return file;
+            }
+            catch { return string.Empty; }
+        }
+
+        private string FindLocalAvatar(string username)
+        {
+            try
+            {
+                var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Avatars");
+                if (!Directory.Exists(dir)) return null;
+                var files = Directory.GetFiles(dir, username + ".*");
+                if (files.Length == 0) return null;
+                return files[0];
+            }
+            catch { return null; }
         }
 
         private async void btnSend_Click(object sender, EventArgs e)
@@ -181,7 +264,7 @@ namespace Client.Forms
 
             _currentPeer = username;
             bool isGroup = _groupMembers.ContainsKey(username);
-            
+
             if (lblHeader != null)
             {
                 if (isGroup)
@@ -272,6 +355,21 @@ namespace Client.Forms
                         Margin = new Padding(3, 0, 3, 2)
                     };
                     item.Bind(username: u, displayName: u, lastMessage: preview, time: time);
+
+                    // Try to load local avatar
+                    var avatarPath = FindLocalAvatar(u);
+                    if (!string.IsNullOrEmpty(avatarPath) && File.Exists(avatarPath))
+                    {
+                        try
+                        {
+                            using (var fs = File.OpenRead(avatarPath))
+                            {
+                                var img = Image.FromStream(fs);
+                                item.SetAvatar(new Bitmap(img));
+                            }
+                        }
+                        catch { }
+                    }
 
                     item.ItemClicked += (s, e) =>
                     {
@@ -367,7 +465,7 @@ namespace Client.Forms
             // Update preview trong ChatListItemControl
             string preview;
             bool isGroup = _groupMembers.ContainsKey(username);
-            
+
             if (isGroup)
             {
                 // Nhóm: hiển thị [Sender] hoặc "Bạn:"
@@ -529,6 +627,48 @@ namespace Client.Forms
         private void txtMessage_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnMenu_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var profile = new Profile(_me, _tcp)
+                {
+                    Owner = this
+                };
+
+                // When profile closed, try update avatar in chat list items
+                profile.FormClosed += (s, ev) =>
+                {
+                    try
+                    {
+                        // If user changed avatar, update any ChatListItemControl that matches username
+                        if (!string.IsNullOrEmpty(_me.Avatar))
+                        {
+                            foreach (Control c in flpUsers.Controls)
+                            {
+                                if (c is Controls.ChatListItemControl it && it.Username == _me.Username)
+                                {
+                                    try
+                                    {
+                                        var img = System.Drawing.Image.FromFile(_me.Avatar);
+                                        it.SetAvatar(img);
+                                    }
+                                    catch { }
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                };
+
+                profile.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Không thể mở Profile: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
