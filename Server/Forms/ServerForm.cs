@@ -12,6 +12,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 
+// new usings for client integration
+using Client.Services;
+using Client.Forms;
+
 namespace Server
 {
     public partial class ServerForm : Form
@@ -19,7 +23,7 @@ namespace Server
         private ChatServer _server;
         private CancellationTokenSource _cts;
         private System.Windows.Forms.Timer _refreshTimer;
-        
+
         public ServerForm()
         {
             InitializeComponent();
@@ -29,6 +33,16 @@ namespace Server
             // Hook double-click
             lvListUser.DoubleClick -= LvListUser_DoubleClick;
             lvListUser.DoubleClick += LvListUser_DoubleClick;
+
+            // Hook menu and buttons
+            msPrivateChat.Click -= MsPrivateChat_Click;
+            msPrivateChat.Click += MsPrivateChat_Click;
+
+            btnServerSend.Click -= BtnServerSend_Click;
+            btnServerSend.Click += BtnServerSend_Click;
+
+            chkSelectAll.CheckedChanged -= ChkSelectAll_CheckedChanged;
+            chkSelectAll.CheckedChanged += ChkSelectAll_CheckedChanged;
         }
 
         private void InitializeListView()
@@ -226,6 +240,115 @@ namespace Server
             txtPort.PlaceholderText = "9000";
             txtServerSearch.PlaceholderText = "Search...";
             txtServerMessage.PlaceholderText = "Message send to all...";
+        }
+
+        private async void MsPrivateChat_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Ensure server is running
+                if (_server == null)
+                {
+                    MessageBox.Show("Server chưa chạy. Bắt đầu server trước khi mở private chat.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Create a TcpService as admin client connecting to localhost
+                var tcp = new TcpService();
+                await tcp.ConnectAsync("127.0.0.1", 9000);
+
+                // Use admin credentials by default
+                string adminUser = "admin";
+                string adminPass = "123";
+
+                await tcp.SendAsync(new { type = "AUTH", username = adminUser, password = adminPass });
+                var line = await tcp.ReadLineAsync(CancellationToken.None);
+                if (line == null)
+                {
+                    MessageBox.Show("Không nhận được phản hồi từ server khi AUTH", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    await tcp.CloseAsync();
+                    return;
+                }
+
+                dynamic resp = Newtonsoft.Json.JsonConvert.DeserializeObject(line);
+                if ((string)resp.type == "AUTH_OK")
+                {
+                    // Construct Account using info from server
+                    string roleStr = (string)resp.role;
+                    var role = roleStr == "Admin" ? UserRole.Admin : UserRole.User;
+                    var acc = new Account(adminUser, adminPass, "", role)
+                    {
+                        DisplayName = "Zola"
+                    };
+
+                    // Open client ChatForm inside server process
+                    var chat = new Client.Forms.ChatForm(acc, tcp);
+                    chat.Text = "Admin Chat - Zola";
+                    chat.Show();
+                }
+                else
+                {
+                    MessageBox.Show("AUTH thất bại cho admin", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    await tcp.CloseAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Không thể mở private chat: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ChkSelectAll_CheckedChanged(object sender, EventArgs e)
+        {
+            bool check = chkSelectAll.Checked;
+            for (int i = 0; i < lvListUser.Items.Count; i++)
+            {
+                lvListUser.Items[i].Checked = check;
+            }
+        }
+
+        private async void BtnServerSend_Click(object sender, EventArgs e)
+        {
+            var text = txtServerMessage.Text?.Trim();
+            if (string.IsNullOrEmpty(text)) return;
+
+            var targets = new List<string>();
+            foreach (ListViewItem item in lvListUser.Items)
+            {
+                if (item.Checked)
+                {
+                    var uname = item.SubItems[0].Text;
+                    targets.Add(uname);
+                }
+            }
+
+            if (targets.Count == 0)
+            {
+                MessageBox.Show("Vui lòng chọn người nhận (checkbox)", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Send message from 'Zola' to each online recipient
+            foreach (var uname in targets)
+            {
+                var session = OnlineRegistry.Get(uname);
+                if (session != null)
+                {
+                    try
+                    {
+                        await session.SendObjectAsync(new
+                        {
+                            type = "MSG_RECV",
+                            from = "Zola",
+                            message = text,
+                            time = DateTime.UtcNow
+                        });
+                    }
+                    catch { }
+                }
+            }
+
+            MessageBox.Show("Đã gửi tới " + targets.Count + " người.", "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
