@@ -21,14 +21,14 @@ namespace Client.Forms
         {
             InitializeComponent();
             _me = me ?? throw new ArgumentNullException(nameof(me));
-            _tcp = tcp; // may be null in some flows
+            _tcp = tcp;
 
-            // Map controls
+
             lblDisplayName.Text = _me.DisplayName ?? _me.Username;
             lblUserName.Text = _me.Username;
             lblRole.Text = _me.Role.ToString();
 
-            // Load avatar if exists (use stream to avoid locking file)
+
             try
             {
                 if (!string.IsNullOrEmpty(_me.Avatar) && File.Exists(_me.Avatar))
@@ -48,10 +48,10 @@ namespace Client.Forms
 
         private void BtnLogout_Click(object sender, EventArgs e)
         {
-            // Close profile and return to login
+
             try
             {
-                // Attempt to close TCP connection if present
+
                 try { _tcp?.CloseAsync().Wait(500); } catch { }
             }
             catch { }
@@ -59,7 +59,7 @@ namespace Client.Forms
             var login = new FormLogin();
             login.Show();
 
-            // Close the main chat form if it's open (owner)
+
             if (this.Owner != null)
             {
                 try { this.Owner.Close(); } catch { }
@@ -77,24 +77,24 @@ namespace Client.Forms
                 {
                     try
                     {
-                        // Copy to app data folder for persistence (optional)
+
                         var destDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Avatars");
                         Directory.CreateDirectory(destDir);
                         var dest = Path.Combine(destDir, Path.GetFileName(dlg.FileName));
                         File.Copy(dlg.FileName, dest, true);
 
-                        // Update local account avatar path
+
                         _me.Avatar = dest;
 
-                        // Update UI using stream to avoid locking
+
                         using (var fs = File.OpenRead(dest))
                         {
                             var img = Image.FromStream(fs);
-                            // clone image to keep after stream closed
+
                             guna2PictureBox1.Image = new Bitmap(img);
                         }
 
-                        // Send avatar to server so it can save and broadcast
+
                         try
                         {
                             if (_tcp != null)
@@ -104,7 +104,7 @@ namespace Client.Forms
                                 string ext = Path.GetExtension(dest);
                                 await _tcp.SendAsync(new { type = "AVATAR_UPLOAD", image = b64, ext = ext });
 
-                                // We expect server to broadcast AVATAR_UPDATED to all clients; ChatForm listens to that.
+
                             }
                         }
                         catch { }
@@ -118,7 +118,7 @@ namespace Client.Forms
             }
         }
 
-        // Change password immediately locally and persist to client Data/users.json; optionally notify server without waiting response
+
         private async void btnChangePass_Click(object sender, EventArgs e)
         {
             var oldPass = txtOldPassword.Text;
@@ -138,7 +138,7 @@ namespace Client.Forms
 
             try
             {
-                // Verify old password against local account data if possible
+
                 bool oldMatches = false;
                 if (string.IsNullOrEmpty(_me.Salt))
                 {
@@ -152,18 +152,18 @@ namespace Client.Forms
 
                 if (!oldMatches)
                 {
-                    // If local verification fails, still allow change but warn user
+
                     var res = MessageBox.Show("Mật khẩu cũ không trùng với dữ liệu cục bộ. Bạn có muốn tiếp tục và ghi đè?","Cảnh báo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                     if (res != DialogResult.Yes) return;
                 }
 
-                // Generate new salt/hash and update local account
+
                 var newSalt = GenerateSalt();
                 var newHash = HashPassword(newPass, newSalt);
                 _me.Salt = newSalt;
                 _me.PasswordHash = newHash;
 
-                // Persist to client Data/users.json if exists
+
                 try
                 {
                     var dataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
@@ -182,7 +182,7 @@ namespace Client.Forms
                         }
                         else
                         {
-                            // add local record
+
                             arr.Add(_me);
                         }
 
@@ -190,19 +190,19 @@ namespace Client.Forms
                     }
                     else
                     {
-                        // create new file with this account
+
                         var arr = new Account[] { _me };
                         File.WriteAllText(file, JsonConvert.SerializeObject(arr, Formatting.Indented));
                     }
                 }
-                catch { /* ignore persistence errors */ }
+                catch {  }
 
-                // Try notify server but do not wait for response
+
                 try
                 {
                     if (_tcp != null)
                     {
-                        // fire-and-forget
+
                         _ = _tcp.SendAsync(new { type = "PASS_CHANGE", oldPassword = oldPass, newPassword = newPass });
                     }
                 }

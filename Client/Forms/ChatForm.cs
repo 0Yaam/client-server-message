@@ -21,7 +21,7 @@ namespace Client.Forms
         private string _currentPeer = null;
         private readonly System.Windows.Forms.Timer _listTimer = new System.Windows.Forms.Timer { Interval = 2000 };
 
-        // Conversation storage so UI can be rebuilt without losing history
+
         private class ConversationMessage
         {
             public bool IsOutgoing { get; set; }
@@ -66,7 +66,7 @@ namespace Client.Forms
             try
             {
                 if (string.IsNullOrEmpty(username)) return;
-                // If it's a group id, skip
+
                 if (_groupMembers.ContainsKey(username)) return;
 
                 bool exists = flpUsers.Controls.OfType<Controls.ChatListItemControl>().Any(i => i.Username == username);
@@ -134,22 +134,22 @@ namespace Client.Forms
                         string from = (string)msg.from;
                         string text = (string)msg.message;
 
-                        // Ensure sender exists in user list (so admin/system senders like Zola appear)
+
                         BeginInvoke(new Action(() => EnsureUserInList(from)));
 
-                        // Kiểm tra có phải tin nhắn nhóm không
-                        string groupId = msg.groupId; // có thể null nếu là 1:1
+
+                        string groupId = msg.groupId;
 
                         BeginInvoke(new Action(() =>
                         {
                             if (!string.IsNullOrEmpty(groupId))
                             {
-                                // Tin nhắn nhóm
+
                                 AppendIncomingGroup(groupId, from, text);
                             }
                             else
                             {
-                                // Tin nhắn 1:1
+
                                 AppendIncoming(from, text);
                             }
                         }));
@@ -161,15 +161,15 @@ namespace Client.Forms
 
                         BeginInvoke(new Action(() =>
                         {
-                            // Kiểm tra xem có phải gửi tới nhóm không
+
                             if (_groupMembers.ContainsKey(to))
                             {
-                                // Gửi tới nhóm
+
                                 AppendOutgoingGroup(to, text);
                             }
                             else
                             {
-                                // Gửi 1:1
+
                                 AppendOutgoing(text);
                             }
                         }));
@@ -186,23 +186,23 @@ namespace Client.Forms
                     }
                     else if (type == "AVATAR_UPDATED")
                     {
-                        // Receive avatar update broadcast from server
+
                         string username = (string)msg.username;
                         string b64 = (string)msg.image;
-                        string ext = (string)msg.ext; // may include dot
+                        string ext = (string)msg.ext;
 
                         try
                         {
                             var data = Convert.FromBase64String(b64);
                             var saved = SaveAvatarLocal(username, data, ext);
 
-                            // update local account if matches
+
                             if (string.Equals(_me?.Username, username, StringComparison.OrdinalIgnoreCase))
                             {
                                 _me.Avatar = saved;
                             }
 
-                            // Update UI
+
                             BeginInvoke(new Action(() =>
                             {
                                 foreach (Control c in flpUsers.Controls)
@@ -233,7 +233,7 @@ namespace Client.Forms
                         string b64 = (string)msg.image;
                         string ext = (string)msg.ext;
 
-                        // Ensure sender exists in user list
+
                         BeginInvoke(new Action(() => EnsureUserInList(from)));
 
                         try
@@ -335,10 +335,10 @@ namespace Client.Forms
             }
         }
 
-        // === SelectPeer: FIX để tránh clear khi click lại vào conversation hiện tại ===
+
         private void SelectPeer(string username)
         {
-            // NẾU đã đang xem conversation này rồi, KHÔNG làm gì (tránh clear)
+
             if (string.Equals(_currentPeer, username, StringComparison.Ordinal))
                 return;
 
@@ -359,7 +359,7 @@ namespace Client.Forms
                 }
             }
 
-            // Rebuild message view với format phù hợp
+
             flpMessages.Controls.Clear();
             if (!string.IsNullOrEmpty(username) && _conversations.TryGetValue(username, out var list))
             {
@@ -371,22 +371,22 @@ namespace Client.Forms
                         Timestamp = m.Timestamp
                     };
 
-                    // Format message dựa trên loại chat
+
                     if (isGroup)
                     {
-                        // Tin nhắn nhóm
+
                         if (m.IsOutgoing)
                         {
-                            bubble.MessageText = m.Text; // Tin nhắn của mình
+                            bubble.MessageText = m.Text;
                         }
                         else
                         {
-                            bubble.MessageText = $"[{m.Sender}] {m.Text}"; // Tin nhắn từ người khác
+                            bubble.MessageText = $"[{m.Sender}] {m.Text}";
                         }
                     }
                     else
                     {
-                        // Tin nhắn 1:1
+
                         bubble.MessageText = m.Text;
                     }
 
@@ -404,20 +404,20 @@ namespace Client.Forms
             flpUsers.SuspendLayout();
             try
             {
-                // Keep existing groups, only update users
+
                 var existingGroups = flpUsers.Controls.OfType<Controls.ChatListItemControl>()
                     .Where(i => _groupMembers.ContainsKey(i.Username))
                     .ToList();
 
                 flpUsers.Controls.Clear();
 
-                // Re-add groups first
+
                 foreach (var grp in existingGroups)
                 {
                     flpUsers.Controls.Add(grp);
                 }
 
-                // Add users
+
                 foreach (var u in users)
                 {
                     string preview = "Nhấn để chat";
@@ -436,7 +436,7 @@ namespace Client.Forms
                     };
                     item.Bind(username: u, displayName: u, lastMessage: preview, time: time);
 
-                    // Try to load local avatar
+
                     var avatarPath = FindLocalAvatar(u);
                     if (!string.IsNullOrEmpty(avatarPath) && File.Exists(avatarPath))
                     {
@@ -469,23 +469,23 @@ namespace Client.Forms
             }
         }
 
-        // === Helper: thêm group vào user list (không duplicate) ===
+
         private void AddGroupToUserList(string groupId, string groupName, string[] members)
         {
             if (string.IsNullOrEmpty(groupId)) return;
 
-            // Kiểm tra đã tồn tại chưa (tránh duplicate)
+
             foreach (Control c in flpUsers.Controls)
             {
                 if (c is Controls.ChatListItemControl existing && existing.Username == groupId)
                 {
-                    // đã có rồi, chỉ cập nhật nếu cần
+
                     existing.DisplayName = groupName;
                     return;
                 }
             }
 
-            // Lưu members để client biết ai trong group
+
             _groupMembers[groupId] = members ?? new string[0];
 
             var item = new Controls.ChatListItemControl
@@ -497,7 +497,7 @@ namespace Client.Forms
 
             item.ItemClicked += (senderItem, args) =>
             {
-                // Deselect all items
+
                 foreach (Control c in flpUsers.Controls)
                     if (c is Controls.ChatListItemControl it) it.SetSelected(false);
 
@@ -507,7 +507,7 @@ namespace Client.Forms
 
             flpUsers.Controls.Add(item);
 
-            // Tạo conversation storage rỗng cho group
+
             if (!_conversations.ContainsKey(groupId))
                 _conversations[groupId] = new List<ConversationMessage>();
         }
@@ -542,13 +542,13 @@ namespace Client.Forms
                 Timestamp = ts
             });
 
-            // Update preview trong ChatListItemControl
+
             string preview;
             bool isGroup = _groupMembers.ContainsKey(username);
 
             if (isGroup)
             {
-                // Nhóm: hiển thị [Sender] hoặc "Bạn:"
+
                 if (isOutgoing)
                 {
                     preview = $"Bạn: {text}";
@@ -560,7 +560,7 @@ namespace Client.Forms
             }
             else
             {
-                // 1:1: hiển thị "Bạn:" hoặc text trực tiếp
+
                 preview = isOutgoing ? $"Bạn: {text}" : text;
             }
 
@@ -577,7 +577,7 @@ namespace Client.Forms
                 var bubble = new Controls.MessageBubbleControl
                 {
                     IsOutgoing = false,
-                    MessageText = text,  // 1:1 không cần [Sender] vì đã biết ai gửi
+                    MessageText = text,
                     Timestamp = now
                 };
                 flpMessages.Controls.Add(bubble);
@@ -605,19 +605,19 @@ namespace Client.Forms
             }
         }
 
-        // Tin nhắn nhóm đến - hiển thị với format [Sender] message
+
         private void AppendIncomingGroup(string groupId, string from, string text)
         {
             var now = DateTime.Now;
             AddMessageToConversation(groupId, false, text, now, sender: from);
 
-            // Nếu đang xem nhóm này, hiển thị bubble
+
             if (string.Equals(_currentPeer, groupId, StringComparison.Ordinal))
             {
                 var bubble = new Controls.MessageBubbleControl
                 {
                     IsOutgoing = false,
-                    MessageText = $"[{from}] {text}",  // Format nhóm: [Sender] message
+                    MessageText = $"[{from}] {text}",
                     Timestamp = now
                 };
                 flpMessages.Controls.Add(bubble);
@@ -626,19 +626,19 @@ namespace Client.Forms
             }
         }
 
-        // Tin nhắn nhóm gửi đi - hiển thị như tin nhắn thường nhưng lưu vào conversation của nhóm
+
         private void AppendOutgoingGroup(string groupId, string text)
         {
             var now = DateTime.Now;
             AddMessageToConversation(groupId, true, text, now, sender: null);
 
-            // Nếu đang xem nhóm này, hiển thị bubble
+
             if (string.Equals(_currentPeer, groupId, StringComparison.Ordinal))
             {
                 var bubble = new Controls.MessageBubbleControl
                 {
                     IsOutgoing = true,
-                    MessageText = text,  // Tin nhắn của mình không cần [Sender]
+                    MessageText = text,
                     Timestamp = now
                 };
                 flpMessages.Controls.Add(bubble);
@@ -647,7 +647,7 @@ namespace Client.Forms
             }
         }
 
-        // === cmsTaoNhom_Click: GỬI tới server, KHÔNG thêm local placeholder ===
+
         private void cmsTaoNhom_Click(object sender, EventArgs e)
         {
             try
@@ -659,11 +659,11 @@ namespace Client.Forms
                     {
                         try
                         {
-                            // Include creator as member
+
                             var members = new List<string>(ev.Members);
                             if (!members.Contains(_me.Username)) members.Add(_me.Username);
 
-                            // GỬI tới server - server sẽ broadcast GROUP_CREATED
+
                             await _tcp.SendAsync(new
                             {
                                 type = "GROUP_CREATE",
@@ -671,7 +671,7 @@ namespace Client.Forms
                                 members = members.ToArray()
                             });
 
-                            // KHÔNG thêm item local ở đây - chờ server gửi GROUP_CREATED
+
                         }
                         catch (Exception ex)
                         {
@@ -718,12 +718,12 @@ namespace Client.Forms
                     Owner = this
                 };
 
-                // When profile closed, try update avatar in chat list items
+
                 profile.FormClosed += (s, ev) =>
                 {
                     try
                     {
-                        // If user changed avatar, update any ChatListItemControl that matches username
+
                         if (!string.IsNullOrEmpty(_me.Avatar))
                         {
                             foreach (Control c in flpUsers.Controls)
@@ -771,7 +771,7 @@ namespace Client.Forms
                     string b64 = Convert.ToBase64String(data);
                     string ext = Path.GetExtension(path);
 
-                    // Send a image message to server. Server will relay to recipient as MSG_RECV_IMAGE
+
                     await _tcp.SendAsync(new
                     {
                         type = "MSG_TO_IMAGE",
@@ -780,7 +780,7 @@ namespace Client.Forms
                         ext = ext
                     });
 
-                    // Locally append outgoing image bubble
+
                     var now = DateTime.Now;
                     AddMessageToConversation(_currentPeer, true, "[Image]", now, sender: null);
 

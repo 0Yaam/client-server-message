@@ -2,15 +2,15 @@
 {
     partial class ChatForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
+
+
+
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+
+
+
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -22,10 +22,10 @@
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
+
+
+
+
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
@@ -53,16 +53,16 @@
             this.guna2Panel1.SuspendLayout();
             this.pnlLeft.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // cmsTaoNhom
-            // 
+
+
+
             this.cmsTaoNhom.Name = "cmsTaoNhom";
             this.cmsTaoNhom.Size = new System.Drawing.Size(128, 22);
             this.cmsTaoNhom.Text = "Tạo nhóm";
             this.cmsTaoNhom.Click += new System.EventHandler(this.cmsTaoNhom_Click);
-            // 
-            // Menu
-            // 
+
+
+
             this.Menu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cmsTaoNhom,
@@ -79,15 +79,15 @@
             this.Menu.RenderStyle.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
             this.Menu.Size = new System.Drawing.Size(129, 48);
             this.Menu.Text = "☰";
-            // 
-            // cmsXoaBan
-            // 
+
+
+
             this.cmsXoaBan.Name = "cmsXoaBan";
             this.cmsXoaBan.Size = new System.Drawing.Size(128, 22);
             this.cmsXoaBan.Text = "Xóa Bạn";
-            // 
-            // btnSend
-            // 
+
+
+
             this.btnSend.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.btnSend.BorderRadius = 10;
             this.btnSend.Dock = System.Windows.Forms.DockStyle.Right;
@@ -100,9 +100,9 @@
             this.btnSend.TabIndex = 1;
             this.btnSend.Text = "Gửi";
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
-            // 
-            // txtMessage
-            // 
+
+
+
             this.txtMessage.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.txtMessage.BorderRadius = 10;
             this.txtMessage.Cursor = System.Windows.Forms.Cursors.IBeam;
@@ -119,9 +119,9 @@
             this.txtMessage.Size = new System.Drawing.Size(571, 36);
             this.txtMessage.TabIndex = 0;
             this.txtMessage.TextChanged += new System.EventHandler(this.txtMessage_TextChanged);
-            // 
-            // pnlInput
-            // 
+
+
+
             this.pnlInput.Controls.Add(this.btnAttach);
             this.pnlInput.Controls.Add(this.btnSend);
             this.pnlInput.Controls.Add(this.txtMessage);
@@ -133,9 +133,9 @@
             this.pnlInput.Padding = new System.Windows.Forms.Padding(8);
             this.pnlInput.Size = new System.Drawing.Size(587, 52);
             this.pnlInput.TabIndex = 1;
-            // 
-            // btnAttach
-            // 
+
+
+
             this.btnAttach.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAttach.BorderRadius = 8;
             this.btnAttach.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(135)))), ((int)(((byte)(255)))));
@@ -147,9 +147,9 @@
             this.btnAttach.TabIndex = 4;
             this.btnAttach.Text = ".";
             this.btnAttach.Click += new System.EventHandler(this.btnAttach_Click);
-            // 
-            // pnlChat
-            // 
+
+
+
             this.pnlChat.Controls.Add(this.flpMessages);
             this.pnlChat.Controls.Add(this.pnlInput);
             this.pnlChat.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -159,9 +159,9 @@
             this.pnlChat.Name = "pnlChat";
             this.pnlChat.Size = new System.Drawing.Size(587, 418);
             this.pnlChat.TabIndex = 6;
-            // 
-            // flpMessages
-            // 
+
+
+
             this.flpMessages.AutoScroll = true;
             this.flpMessages.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.flpMessages.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -173,9 +173,9 @@
             this.flpMessages.Size = new System.Drawing.Size(587, 366);
             this.flpMessages.TabIndex = 0;
             this.flpMessages.WrapContents = false;
-            // 
-            // pnlHeader
-            // 
+
+
+
             this.pnlHeader.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.pnlHeader.Controls.Add(this.lblHeader);
             this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
@@ -185,9 +185,9 @@
             this.pnlHeader.Name = "pnlHeader";
             this.pnlHeader.Size = new System.Drawing.Size(587, 32);
             this.pnlHeader.TabIndex = 5;
-            // 
-            // lblHeader
-            // 
+
+
+
             this.lblHeader.AutoSize = true;
             this.lblHeader.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.lblHeader.Font = new System.Drawing.Font("Segoe UI Semibold", 12F);
@@ -197,9 +197,9 @@
             this.lblHeader.Size = new System.Drawing.Size(208, 21);
             this.lblHeader.TabIndex = 0;
             this.lblHeader.Text = "Chưa chọn cuộc trò chuyện";
-            // 
-            // txtSearch
-            // 
+
+
+
             this.txtSearch.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.txtSearch.BorderRadius = 10;
             this.txtSearch.Cursor = System.Windows.Forms.Cursors.IBeam;
@@ -214,9 +214,9 @@
             this.txtSearch.SelectedText = "";
             this.txtSearch.Size = new System.Drawing.Size(179, 32);
             this.txtSearch.TabIndex = 0;
-            // 
-            // btnMenu
-            // 
+
+
+
             this.btnMenu.BorderRadius = 6;
             this.btnMenu.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnMenu.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
@@ -232,9 +232,9 @@
             this.btnMenu.TabIndex = 2;
             this.btnMenu.Text = "☰";
             this.btnMenu.Click += new System.EventHandler(this.btnMenu_Click);
-            // 
-            // flpUsers
-            // 
+
+
+
             this.flpUsers.AutoScroll = true;
             this.flpUsers.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.flpUsers.ContextMenuStrip = this.Menu;
@@ -246,9 +246,9 @@
             this.flpUsers.Size = new System.Drawing.Size(211, 418);
             this.flpUsers.TabIndex = 4;
             this.flpUsers.WrapContents = false;
-            // 
-            // guna2Panel1
-            // 
+
+
+
             this.guna2Panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.guna2Panel1.Controls.Add(this.txtSearch);
             this.guna2Panel1.Controls.Add(this.btnMenu);
@@ -258,9 +258,9 @@
             this.guna2Panel1.Name = "guna2Panel1";
             this.guna2Panel1.Size = new System.Drawing.Size(213, 32);
             this.guna2Panel1.TabIndex = 3;
-            // 
-            // pnlLeft
-            // 
+
+
+
             this.pnlLeft.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.pnlLeft.Controls.Add(this.flpUsers);
             this.pnlLeft.Controls.Add(this.guna2Panel1);
@@ -271,9 +271,9 @@
             this.pnlLeft.Name = "pnlLeft";
             this.pnlLeft.Size = new System.Drawing.Size(213, 450);
             this.pnlLeft.TabIndex = 4;
-            // 
-            // ChatForm
-            // 
+
+
+
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);

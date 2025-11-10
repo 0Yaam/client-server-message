@@ -2,9 +2,9 @@
 {
     partial class MessageBubbleControl
     {
-        /// <summary> 
-        /// Required designer variable.
-        /// </summary>
+
+
+
         private System.ComponentModel.IContainer components = null;
 
         #region Designer fields
@@ -14,10 +14,10 @@
         private System.Windows.Forms.PictureBox pbImage;
         #endregion
 
-        /// <summary> 
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+
+
+
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -29,10 +29,10 @@
 
         #region Component Designer generated code
 
-        /// <summary> 
-        /// Required method for Designer support - do not modify 
-        /// the contents of this method with the code editor.
-        /// </summary>
+
+
+
+
         private void InitializeComponent()
         {
             this.tblLayout = new System.Windows.Forms.TableLayoutPanel();
@@ -42,9 +42,9 @@
             this.tblLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbImage)).BeginInit();
             this.SuspendLayout();
-            // 
-            // tblLayout
-            // 
+
+
+
             this.tblLayout.AutoSize = true;
             this.tblLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tblLayout.ColumnCount = 1;
@@ -62,18 +62,18 @@
             this.tblLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tblLayout.Size = new System.Drawing.Size(290, 110);
             this.tblLayout.TabIndex = 0;
-            // 
-            // lblMessage
-            // 
+
+
+
             this.lblMessage.AutoSize = true;
             this.lblMessage.Margin = new System.Windows.Forms.Padding(8, 8, 8, 4);
             this.lblMessage.Name = "lblMessage";
             this.lblMessage.Size = new System.Drawing.Size(35, 13);
             this.lblMessage.TabIndex = 0;
             this.lblMessage.Text = "label1";
-            // 
-            // pbImage
-            // 
+
+
+
             this.pbImage.Location = new System.Drawing.Point(3, 24);
             this.pbImage.Name = "pbImage";
             this.pbImage.Size = new System.Drawing.Size(100, 50);
@@ -81,18 +81,18 @@
             this.pbImage.TabIndex = 2;
             this.pbImage.TabStop = false;
             this.pbImage.Visible = false;
-            // 
-            // lblTime
-            // 
+
+
+
             this.lblTime.AutoSize = true;
             this.lblTime.Margin = new System.Windows.Forms.Padding(8, 4, 8, 8);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(35, 13);
             this.lblTime.TabIndex = 1;
             this.lblTime.Text = "00:00";
-            // 
-            // MessageBubbleControl
-            // 
+
+
+
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;

@@ -2,15 +2,15 @@
 {
     partial class CreateGroup
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
+
+
+
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+
+
+
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -22,10 +22,10 @@
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
+
+
+
+
         private void InitializeComponent()
         {
             this.guna2ComboBox1 = new Guna.UI2.WinForms.Guna2ComboBox();
@@ -34,9 +34,9 @@
             this.txtNameGroup = new Guna.UI2.WinForms.Guna2TextBox();
             this.btnCreate = new Guna.UI2.WinForms.Guna2Button();
             this.SuspendLayout();
-            // 
-            // guna2ComboBox1
-            // 
+
+
+
             this.guna2ComboBox1.BackColor = System.Drawing.Color.Transparent;
             this.guna2ComboBox1.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.guna2ComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -49,9 +49,9 @@
             this.guna2ComboBox1.Name = "guna2ComboBox1";
             this.guna2ComboBox1.Size = new System.Drawing.Size(140, 36);
             this.guna2ComboBox1.TabIndex = 0;
-            // 
-            // txtSearch
-            // 
+
+
+
             this.txtSearch.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtSearch.DefaultText = "";
             this.txtSearch.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
@@ -67,9 +67,9 @@
             this.txtSearch.SelectedText = "";
             this.txtSearch.Size = new System.Drawing.Size(200, 26);
             this.txtSearch.TabIndex = 1;
-            // 
-            // lvList
-            // 
+
+
+
             this.lvList.CheckBoxes = true;
             this.lvList.HideSelection = false;
             this.lvList.Location = new System.Drawing.Point(12, 65);
@@ -77,9 +77,9 @@
             this.lvList.Size = new System.Drawing.Size(627, 294);
             this.lvList.TabIndex = 2;
             this.lvList.UseCompatibleStateImageBehavior = false;
-            // 
-            // txtNameGroup
-            // 
+
+
+
             this.txtNameGroup.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtNameGroup.DefaultText = "";
             this.txtNameGroup.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
@@ -95,9 +95,9 @@
             this.txtNameGroup.SelectedText = "";
             this.txtNameGroup.Size = new System.Drawing.Size(200, 26);
             this.txtNameGroup.TabIndex = 3;
-            // 
-            // btnCreate
-            // 
+
+
+
             this.btnCreate.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnCreate.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnCreate.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -109,9 +109,9 @@
             this.btnCreate.Size = new System.Drawing.Size(156, 29);
             this.btnCreate.TabIndex = 4;
             this.btnCreate.Text = "guna2Button1";
-            // 
-            // CreateGroup
-            // 
+
+
+
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);

@@ -2,9 +2,9 @@
 {
     partial class ChatListItemControl
     {
-        /// <summary> 
-        /// Required designer variable.
-        /// </summary>
+
+
+
         private System.ComponentModel.IContainer components = null;
 
         #region Designer fields
@@ -17,10 +17,10 @@
         private System.Windows.Forms.Label lblLastMessage;
         #endregion
 
-        /// <summary> 
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+
+
+
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -32,10 +32,10 @@
 
         #region Component Designer generated code
 
-        /// <summary> 
-        /// Required method for Designer support - do not modify 
-        /// the contents of this method with the code editor.
-        /// </summary>
+
+
+
+
         private void InitializeComponent()
         {
             this.tblMain = new System.Windows.Forms.TableLayoutPanel();
@@ -50,9 +50,9 @@
             this.tblContent.SuspendLayout();
             this.tblHeader.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // tblMain
-            // 
+
+
+
             this.tblMain.AutoSize = true;
             this.tblMain.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tblMain.ColumnCount = 2;
@@ -68,9 +68,9 @@
             this.tblMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.tblMain.Size = new System.Drawing.Size(300, 70);
             this.tblMain.TabIndex = 0;
-            // 
-            // pbAvatar
-            // 
+
+
+
             this.pbAvatar.ImageRotate = 0F;
             this.pbAvatar.Location = new System.Drawing.Point(4, 4);
             this.pbAvatar.Margin = new System.Windows.Forms.Padding(4);
@@ -80,9 +80,9 @@
             this.pbAvatar.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pbAvatar.TabIndex = 0;
             this.pbAvatar.TabStop = false;
-            // 
-            // tblContent
-            // 
+
+
+
             this.tblContent.AutoSize = true;
             this.tblContent.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tblContent.ColumnCount = 1;
@@ -98,9 +98,9 @@
             this.tblContent.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tblContent.Size = new System.Drawing.Size(236, 70);
             this.tblContent.TabIndex = 1;
-            // 
-            // tblHeader
-            // 
+
+
+
             this.tblHeader.AutoSize = true;
             this.tblHeader.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tblHeader.ColumnCount = 2;
@@ -116,9 +116,9 @@
             this.tblHeader.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tblHeader.Size = new System.Drawing.Size(236, 24);
             this.tblHeader.TabIndex = 0;
-            // 
-            // lblName
-            // 
+
+
+
             this.lblName.AutoSize = true;
             this.lblName.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblName.Location = new System.Drawing.Point(8, 0);
@@ -128,9 +128,9 @@
             this.lblName.TabIndex = 0;
             this.lblName.Text = "Name";
             this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblTime
-            // 
+
+
+
             this.lblTime.AutoSize = true;
             this.lblTime.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblTime.Location = new System.Drawing.Point(188, 0);
@@ -140,9 +140,9 @@
             this.lblTime.TabIndex = 1;
             this.lblTime.Text = "00:00";
             this.lblTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // lblLastMessage
-            // 
+
+
+
             this.lblLastMessage.AutoSize = true;
             this.lblLastMessage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblLastMessage.Location = new System.Drawing.Point(8, 24);
@@ -152,9 +152,9 @@
             this.lblLastMessage.TabIndex = 2;
             this.lblLastMessage.Text = "Last message preview goes here";
             this.lblLastMessage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // ChatListItemControl
-            // 
+
+
+
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tblMain);
             this.Name = "ChatListItemControl";

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 
-// new usings for client integration
+
 using Client.Services;
 using Client.Forms;
 
@@ -30,11 +30,11 @@ namespace Server
             InitializeListView();
             InitializeRefreshTimer();
 
-            // Hook double-click
+
             lvListUser.DoubleClick -= LvListUser_DoubleClick;
             lvListUser.DoubleClick += LvListUser_DoubleClick;
 
-            // Hook menu and buttons
+
             msPrivateChat.Click -= MsPrivateChat_Click;
             msPrivateChat.Click += MsPrivateChat_Click;
 
@@ -47,12 +47,12 @@ namespace Server
 
         private void InitializeListView()
         {
-            // Cấu hình ListView để hiển thị thông tin users
+
             lvListUser.View = View.Details;
             lvListUser.FullRowSelect = true;
             lvListUser.GridLines = true;
 
-            // Thêm các cột
+
             lvListUser.Columns.Add("Tên đăng nhập", 120);
             lvListUser.Columns.Add("Tên hiển thị", 150);
             lvListUser.Columns.Add("Vai trò", 80);
@@ -73,7 +73,7 @@ namespace Server
                 var res = dlg.ShowDialog(this);
                 if (res == DialogResult.OK)
                 {
-                    // Refresh list to show updated password
+
                     RefreshUsersList();
                 }
             }
@@ -82,7 +82,7 @@ namespace Server
         private void InitializeRefreshTimer()
         {
             _refreshTimer = new System.Windows.Forms.Timer();
-            _refreshTimer.Interval = 2000; // Refresh every 2 seconds
+            _refreshTimer.Interval = 2000;
             _refreshTimer.Tick += RefreshTimer_Tick;
         }
 
@@ -120,15 +120,15 @@ namespace Server
                     var item = new ListViewItem(user.Username);
                     item.SubItems.Add(user.DisplayName ?? user.Username);
                     item.SubItems.Add(user.Role.ToString());
-                    
-                    // Check if user is online
+
+
                     bool isOnline = onlineUsers.Contains(user.Username);
                     item.SubItems.Add(isOnline ? "Online" : "Offline");
-                    
-                    // Show password hash (can't show plaintext)
+
+
                     item.SubItems.Add(user.PasswordHash ?? string.Empty);
 
-                    // Color coding for online/offline
+
                     if (isOnline)
                     {
                         item.BackColor = Color.LightGreen;
@@ -171,12 +171,12 @@ namespace Server
                 _server.Start();
 
                 _cts = new CancellationTokenSource();
-                _ = _server.AcceptLoopAsync(_cts.Token); // không chặn UI
+                _ = _server.AcceptLoopAsync(_cts.Token);
 
-                // Start refresh timer
+
                 _refreshTimer.Start();
 
-                // Initial refresh
+
                 RefreshUsersList();
                 RefreshOnlineList();
 
@@ -200,8 +200,8 @@ namespace Server
             _server?.Stop();
             MessageBox.Show("Server stopped");
             btnStart.Enabled = true;
-            
-            // Clear lists
+
+
             lvListUser.Items.Clear();
             listBoxOnline.Items.Clear();
         }
@@ -212,11 +212,11 @@ namespace Server
             {
                 var users = AuthManager.GetAllUsers();
                 var onlineCount = OnlineRegistry.ListUsernames().Length;
-                
+
                 string info = $"Tổng số tài khoản đã đăng ký: {users.Length}\n";
                 info += $"Số người đang online: {onlineCount}\n";
                 info += $"Server đang chạy: {(_server != null ? "Có" : "Không")}";
-                
+
                 MessageBox.Show(info, "Thông tin Server", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -246,18 +246,18 @@ namespace Server
         {
             try
             {
-                // Ensure server is running
+
                 if (_server == null)
                 {
                     MessageBox.Show("Server chưa chạy. Bắt đầu server trước khi mở private chat.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                // Create a TcpService as admin client connecting to localhost
+
                 var tcp = new TcpService();
                 await tcp.ConnectAsync("127.0.0.1", 9000);
 
-                // Use admin credentials by default
+
                 string adminUser = "admin";
                 string adminPass = "123";
 
@@ -273,7 +273,7 @@ namespace Server
                 dynamic resp = Newtonsoft.Json.JsonConvert.DeserializeObject(line);
                 if ((string)resp.type == "AUTH_OK")
                 {
-                    // Construct Account using info from server
+
                     string roleStr = (string)resp.role;
                     var role = roleStr == "Admin" ? UserRole.Admin : UserRole.User;
                     var acc = new Account(adminUser, adminPass, "", role)
@@ -281,7 +281,7 @@ namespace Server
                         DisplayName = "Zola"
                     };
 
-                    // Open client ChatForm inside server process
+
                     var chat = new Client.Forms.ChatForm(acc, tcp);
                     chat.Text = "Admin Chat - Zola";
                     chat.Show();
@@ -328,7 +328,7 @@ namespace Server
                 return;
             }
 
-            // Send message from 'Zola' to each online recipient
+
             foreach (var uname in targets)
             {
                 var session = OnlineRegistry.Get(uname);

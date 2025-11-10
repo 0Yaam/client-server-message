@@ -35,9 +35,9 @@
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoBox)).BeginInit();
             this.SuspendLayout();
-            // 
-            // pnlMain
-            // 
+
+
+
             this.pnlMain.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.pnlMain.BorderRadius = 20;
             this.pnlMain.Controls.Add(this.guna2HtmlLabel1);
@@ -54,9 +54,9 @@
             this.pnlMain.Name = "pnlMain";
             this.pnlMain.Size = new System.Drawing.Size(400, 500);
             this.pnlMain.TabIndex = 0;
-            // 
-            // guna2HtmlLabel1
-            // 
+
+
+
             this.guna2HtmlLabel1.BackColor = System.Drawing.Color.Transparent;
             this.guna2HtmlLabel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.guna2HtmlLabel1.Location = new System.Drawing.Point(128, 136);
@@ -64,9 +64,9 @@
             this.guna2HtmlLabel1.Size = new System.Drawing.Size(108, 27);
             this.guna2HtmlLabel1.TabIndex = 8;
             this.guna2HtmlLabel1.Text = "Đăng nhập";
-            // 
-            // linkLabel1
-            // 
+
+
+
             this.linkLabel1.AutoSize = true;
             this.linkLabel1.Location = new System.Drawing.Point(218, 455);
             this.linkLabel1.Name = "linkLabel1";
@@ -75,18 +75,18 @@
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "Đăng ký";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
-            // 
-            // label1
-            // 
+
+
+
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(92, 455);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(100, 13);
             this.label1.TabIndex = 6;
             this.label1.Text = "Chưa có tài khoản?";
-            // 
-            // btnExit
-            // 
+
+
+
             this.btnExit.BorderRadius = 10;
             this.btnExit.FillColor = System.Drawing.Color.LightGray;
             this.btnExit.Font = new System.Drawing.Font("Segoe UI", 10F);
@@ -97,9 +97,9 @@
             this.btnExit.TabIndex = 0;
             this.btnExit.Text = "Thoát";
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
-            // 
-            // btnLogin
-            // 
+
+
+
             this.btnLogin.BorderRadius = 10;
             this.btnLogin.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(135)))), ((int)(((byte)(255)))));
             this.btnLogin.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
@@ -110,9 +110,9 @@
             this.btnLogin.TabIndex = 3;
             this.btnLogin.Text = "Đăng nhập";
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
-            // 
-            // txtPassword
-            // 
+
+
+
             this.txtPassword.BorderRadius = 10;
             this.txtPassword.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtPassword.DefaultText = "";
@@ -125,9 +125,9 @@
             this.txtPassword.SelectedText = "";
             this.txtPassword.Size = new System.Drawing.Size(280, 45);
             this.txtPassword.TabIndex = 2;
-            // 
-            // txtUsername
-            // 
+
+
+
             this.txtUsername.BorderRadius = 10;
             this.txtUsername.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtUsername.DefaultText = "";
@@ -139,9 +139,9 @@
             this.txtUsername.SelectedText = "";
             this.txtUsername.Size = new System.Drawing.Size(280, 45);
             this.txtUsername.TabIndex = 1;
-            // 
-            // logoBox
-            // 
+
+
+
             this.logoBox.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.logoBox.BorderRadius = 45;
             this.logoBox.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(135)))), ((int)(((byte)(255)))));
@@ -152,9 +152,9 @@
             this.logoBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.logoBox.TabIndex = 5;
             this.logoBox.TabStop = false;
-            // 
-            // FormLogin
-            // 
+
+
+
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(243)))), ((int)(((byte)(247)))));
             this.ClientSize = new System.Drawing.Size(400, 500);
             this.Controls.Add(this.pnlMain);

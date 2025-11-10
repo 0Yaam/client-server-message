@@ -42,7 +42,7 @@ namespace Client.Forms.Controls
                     pbImage.Image = _imageContent;
                     pbImage.Visible = _imageContent != null;
                 }
-                // hide text when image present
+
                 if (lblMessage != null)
                     lblMessage.Visible = _imageContent == null;
 
@@ -75,7 +75,7 @@ namespace Client.Forms.Controls
             Margin = new Padding(5);
             BackColor = Color.LightGray;
 
-            // Typography tweaks
+
             if (lblMessage != null) lblMessage.Font = new Font(lblMessage.Font.FontFamily, 10f);
             if (lblTime != null) { lblTime.Font = new Font(lblTime.Font.FontFamily, 8f); lblTime.ForeColor = Color.DimGray; }
 
@@ -86,7 +86,7 @@ namespace Client.Forms.Controls
 
             ResizeParentHook();
 
-            // ensure pbImage initially hidden if designer doesn't set
+
             if (pbImage != null) pbImage.Visible = false;
         }
 
@@ -148,28 +148,28 @@ namespace Client.Forms.Controls
 
         public void UpdateLayoutBubble()
         {
-            // compute max width based on parent, fallback to sensible default
+
             int maxWidth = 400;
             if (Parent != null)
             {
                 maxWidth = Math.Max(120, (int)(Parent.ClientSize.Width * 0.70));
             }
 
-            // set control constraints so AutoSize will wrap & grow vertically
+
             this.MaximumSize = new Size(maxWidth, 0);
             this.MinimumSize = new Size(100, 0);
 
-            // Reserve space inside bubble for padding and time label.
+
             int reserved = Padding.Left + Padding.Right + 16;
             int labelMaxWidth = Math.Max(80, this.MaximumSize.Width - reserved);
 
             if (ImageContent != null && pbImage != null)
             {
-                // show image and size it appropriately
+
                 lblMessage.Visible = false;
                 pbImage.Visible = true;
 
-                // constrain image width to 60% of maxWidth
+
                 int imgMaxW = (int)(this.MaximumSize.Width * 0.6);
                 var img = ImageContent;
                 int w = img.Width;
@@ -185,7 +185,7 @@ namespace Client.Forms.Controls
             }
             else
             {
-                // set text label constraints
+
                 if (lblMessage != null)
                 {
                     lblMessage.Visible = true;
@@ -197,7 +197,7 @@ namespace Client.Forms.Controls
                 if (pbImage != null) pbImage.Visible = false;
             }
 
-            // Layout style: message above, time below. Align time to inner edge.
+
             if (IsOutgoing)
             {
                 BackColor = Color.FromArgb(179, 229, 252);
@@ -208,7 +208,7 @@ namespace Client.Forms.Controls
                 this.Anchor = AnchorStyles.Top | AnchorStyles.Right;
                 this.Margin = new Padding(50, 5, 10, 5);
 
-                // align time to right inside the table cell
+
                 if (lblTime != null) lblTime.Anchor = AnchorStyles.Right;
                 if (lblMessage != null) lblMessage.Anchor = AnchorStyles.Right | AnchorStyles.Left;
             }
@@ -226,10 +226,10 @@ namespace Client.Forms.Controls
                 if (lblMessage != null) lblMessage.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             }
 
-            // subtle padding adjustments for better visual spacing
+
             if (lblTime != null) lblTime.Margin = new Padding(8, 4, 8, 8);
 
-            // force layout recalculation
+
             tblLayout.SuspendLayout();
             tblLayout.PerformLayout();
             this.PerformLayout();

@@ -39,13 +39,13 @@ namespace Client
                 dynamic resp = JsonConvert.DeserializeObject(line);
                 if ((string)resp.type == "AUTH_OK")
                 {
-                    var roleStr = (string)resp.role;  
+                    var roleStr = (string)resp.role;
                     var role = roleStr == "Admin" ? UserRole.Admin : UserRole.User;
 
                     var acc = new Account(username, password, "", role);
 
                     Hide();
-                    var chat = new Client.Forms.ChatForm(acc, _tcp);    
+                    var chat = new Client.Forms.ChatForm(acc, _tcp);
                     chat.Show();
                 }
                 else

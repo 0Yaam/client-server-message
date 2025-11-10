@@ -39,7 +39,7 @@ namespace Client
             string password = txtPassword.Text.Trim();
             string confirmPassword = txtConfirm.Text.Trim();
 
-            // Validate input
+
             if (string.IsNullOrEmpty(displayName))
             {
                 MessageBox.Show("Vui lòng nhập tên hiển thị!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -109,8 +109,8 @@ namespace Client
                 if (responseType == "REGISTER_OK")
                 {
                     MessageBox.Show("Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    
-                    // Quay về màn hình đăng nhập
+
+
                     FormLogin login = new FormLogin();
                     login.Show();
                     this.Hide();
@@ -133,7 +133,7 @@ namespace Client
             {
                 btnRegister.Enabled = true;
                 btnRegister.Text = "Đăng ký";
-                
+
                 try
                 {
                     await _tcp.CloseAsync();

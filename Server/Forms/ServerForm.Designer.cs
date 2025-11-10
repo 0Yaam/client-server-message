@@ -2,15 +2,15 @@
 {
     partial class ServerForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
+
+
+
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+
+
+
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -22,10 +22,10 @@
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
+
+
+
+
         private void InitializeComponent()
         {
             this.btnStart = new Guna.UI2.WinForms.Guna2Button();
@@ -47,9 +47,9 @@
             this.chkSelectAll = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // btnStart
-            // 
+
+
+
             this.btnStart.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnStart.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnStart.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -62,17 +62,17 @@
             this.btnStart.TabIndex = 0;
             this.btnStart.Text = "Start";
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
-            // 
-            // listBoxOnline
-            // 
+
+
+
             this.listBoxOnline.FormattingEnabled = true;
             this.listBoxOnline.Location = new System.Drawing.Point(590, 125);
             this.listBoxOnline.Name = "listBoxOnline";
             this.listBoxOnline.Size = new System.Drawing.Size(149, 264);
             this.listBoxOnline.TabIndex = 1;
-            // 
-            // btnStop
-            // 
+
+
+
             this.btnStop.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnStop.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnStop.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -85,9 +85,9 @@
             this.btnStop.TabIndex = 2;
             this.btnStop.Text = "Stop";
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
-            // 
-            // txtServerSearch
-            // 
+
+
+
             this.txtServerSearch.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtServerSearch.DefaultText = "";
             this.txtServerSearch.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
@@ -103,9 +103,9 @@
             this.txtServerSearch.SelectedText = "";
             this.txtServerSearch.Size = new System.Drawing.Size(200, 30);
             this.txtServerSearch.TabIndex = 3;
-            // 
-            // lvListUser
-            // 
+
+
+
             this.lvListUser.CheckBoxes = true;
             this.lvListUser.HideSelection = false;
             this.lvListUser.Location = new System.Drawing.Point(68, 125);
@@ -113,9 +113,9 @@
             this.lvListUser.Size = new System.Drawing.Size(502, 265);
             this.lvListUser.TabIndex = 5;
             this.lvListUser.UseCompatibleStateImageBehavior = false;
-            // 
-            // txtServerMessage
-            // 
+
+
+
             this.txtServerMessage.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtServerMessage.DefaultText = "";
             this.txtServerMessage.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
@@ -131,9 +131,9 @@
             this.txtServerMessage.SelectedText = "";
             this.txtServerMessage.Size = new System.Drawing.Size(200, 36);
             this.txtServerMessage.TabIndex = 6;
-            // 
-            // btnServerSend
-            // 
+
+
+
             this.btnServerSend.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnServerSend.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnServerSend.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -145,9 +145,9 @@
             this.btnServerSend.Size = new System.Drawing.Size(133, 34);
             this.btnServerSend.TabIndex = 7;
             this.btnServerSend.Text = "Send";
-            // 
-            // txtIP
-            // 
+
+
+
             this.txtIP.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtIP.DefaultText = "";
             this.txtIP.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
@@ -163,9 +163,9 @@
             this.txtIP.SelectedText = "";
             this.txtIP.Size = new System.Drawing.Size(200, 36);
             this.txtIP.TabIndex = 11;
-            // 
-            // txtPort
-            // 
+
+
+
             this.txtPort.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtPort.DefaultText = "";
             this.txtPort.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
@@ -181,9 +181,9 @@
             this.txtPort.SelectedText = "";
             this.txtPort.Size = new System.Drawing.Size(122, 36);
             this.txtPort.TabIndex = 12;
-            // 
-            // menuStrip1
-            // 
+
+
+
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.msThongTin,
             this.msPrivateChat});
@@ -192,22 +192,22 @@
             this.menuStrip1.Size = new System.Drawing.Size(919, 24);
             this.menuStrip1.TabIndex = 13;
             this.menuStrip1.Text = "menuStrip1";
-            // 
-            // msThongTin
-            // 
+
+
+
             this.msThongTin.Name = "msThongTin";
             this.msThongTin.Size = new System.Drawing.Size(70, 20);
             this.msThongTin.Text = "Thông tin";
             this.msThongTin.Click += new System.EventHandler(this.msThongTin_Click);
-            // 
-            // msPrivateChat
-            // 
+
+
+
             this.msPrivateChat.Name = "msPrivateChat";
             this.msPrivateChat.Size = new System.Drawing.Size(81, 20);
             this.msPrivateChat.Text = "Private chat";
-            // 
-            // btnLogout
-            // 
+
+
+
             this.btnLogout.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnLogout.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnLogout.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -219,9 +219,9 @@
             this.btnLogout.Size = new System.Drawing.Size(133, 34);
             this.btnLogout.TabIndex = 14;
             this.btnLogout.Text = "Logout";
-            // 
-            // radioButton1
-            // 
+
+
+
             this.radioButton1.AutoSize = true;
             this.radioButton1.Location = new System.Drawing.Point(290, 89);
             this.radioButton1.Name = "radioButton1";
@@ -230,9 +230,9 @@
             this.radioButton1.TabStop = true;
             this.radioButton1.Text = "DisplayName";
             this.radioButton1.UseVisualStyleBackColor = true;
-            // 
-            // radioButton3
-            // 
+
+
+
             this.radioButton3.AutoSize = true;
             this.radioButton3.Location = new System.Drawing.Point(383, 89);
             this.radioButton3.Name = "radioButton3";
@@ -241,17 +241,17 @@
             this.radioButton3.TabStop = true;
             this.radioButton3.Text = "UserName";
             this.radioButton3.UseVisualStyleBackColor = true;
-            // 
-            // cbbRole
-            // 
+
+
+
             this.cbbRole.FormattingEnabled = true;
             this.cbbRole.Location = new System.Drawing.Point(473, 89);
             this.cbbRole.Name = "cbbRole";
             this.cbbRole.Size = new System.Drawing.Size(97, 21);
             this.cbbRole.TabIndex = 18;
-            // 
-            // chkSelectAll
-            // 
+
+
+
             this.chkSelectAll.AutoSize = true;
             this.chkSelectAll.Location = new System.Drawing.Point(274, 413);
             this.chkSelectAll.Name = "chkSelectAll";
@@ -259,9 +259,9 @@
             this.chkSelectAll.TabIndex = 19;
             this.chkSelectAll.Text = "Select all";
             this.chkSelectAll.UseVisualStyleBackColor = true;
-            // 
-            // ServerForm
-            // 
+
+
+
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(919, 450);
