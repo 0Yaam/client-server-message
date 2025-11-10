@@ -61,6 +61,39 @@ namespace Client.Forms
         }
         public ChatForm() : this(new Account("demo", "", "", UserRole.User), null) { }
 
+        private void EnsureUserInList(string username)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(username)) return;
+                // If it's a group id, skip
+                if (_groupMembers.ContainsKey(username)) return;
+
+                bool exists = flpUsers.Controls.OfType<Controls.ChatListItemControl>().Any(i => i.Username == username);
+                if (!exists)
+                {
+                    var item = new Controls.ChatListItemControl
+                    {
+                        Width = flpUsers.ClientSize.Width - 6,
+                        Margin = new Padding(3, 0, 3, 2)
+                    };
+                    item.Bind(username: username, displayName: username, lastMessage: "Nhấn để chat", time: DateTime.Now);
+
+                    item.ItemClicked += (s, e) =>
+                    {
+                        foreach (Control c in flpUsers.Controls)
+                            if (c is Controls.ChatListItemControl it) it.SetSelected(false);
+
+                        item.SetSelected(true);
+                        SelectPeer(item.Username);
+                    };
+
+                    flpUsers.Controls.Add(item);
+                }
+            }
+            catch { }
+        }
+
         private async Task ListenLoop()
         {
             try
@@ -100,6 +133,9 @@ namespace Client.Forms
                     {
                         string from = (string)msg.from;
                         string text = (string)msg.message;
+
+                        // Ensure sender exists in user list (so admin/system senders like Zola appear)
+                        BeginInvoke(new Action(() => EnsureUserInList(from)));
 
                         // Kiểm tra có phải tin nhắn nhóm không
                         string groupId = msg.groupId; // có thể null nếu là 1:1
@@ -189,6 +225,50 @@ namespace Client.Forms
                         catch (Exception ex)
                         {
                             System.Diagnostics.Debug.WriteLine("AVATAR_UPDATED error: " + ex.Message);
+                        }
+                    }
+                    else if (type == "MSG_RECV_IMAGE")
+                    {
+                        string from = (string)msg.from;
+                        string b64 = (string)msg.image;
+                        string ext = (string)msg.ext;
+
+                        // Ensure sender exists in user list
+                        BeginInvoke(new Action(() => EnsureUserInList(from)));
+
+                        try
+                        {
+                            var data = Convert.FromBase64String(b64);
+                            var now = DateTime.Now;
+                            AddMessageToConversation(from, false, "[Image]", now, sender: from);
+
+                            BeginInvoke(new Action(() =>
+                            {
+                                if (string.Equals(_currentPeer, from, StringComparison.Ordinal))
+                                {
+                                    try
+                                    {
+                                        using (var ms = new MemoryStream(data))
+                                        {
+                                            var img = Image.FromStream(ms);
+                                            var bubble = new Controls.MessageBubbleControl
+                                            {
+                                                IsOutgoing = false,
+                                                ImageContent = new Bitmap(img),
+                                                Timestamp = now
+                                            };
+                                            flpMessages.Controls.Add(bubble);
+                                            bubble.UpdateLayoutBubble();
+                                            flpMessages.ScrollControlIntoView(bubble);
+                                        }
+                                    }
+                                    catch { }
+                                }
+                            }));
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine("MSG_RECV_IMAGE error: " + ex.Message);
                         }
                     }
                 }
@@ -668,6 +748,56 @@ namespace Client.Forms
             catch (Exception ex)
             {
                 MessageBox.Show("Không thể mở Profile: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void btnAttach_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(_currentPeer))
+            {
+                MessageBox.Show("Chọn một người để gửi ảnh.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            using (var dlg = new OpenFileDialog())
+            {
+                dlg.Filter = "Image Files|*.png;*.jpg;*.jpeg;*.bmp;*.gif";
+                if (dlg.ShowDialog(this) != DialogResult.OK) return;
+
+                var path = dlg.FileName;
+                try
+                {
+                    byte[] data = File.ReadAllBytes(path);
+                    string b64 = Convert.ToBase64String(data);
+                    string ext = Path.GetExtension(path);
+
+                    // Send a image message to server. Server will relay to recipient as MSG_RECV_IMAGE
+                    await _tcp.SendAsync(new
+                    {
+                        type = "MSG_TO_IMAGE",
+                        to = _currentPeer,
+                        image = b64,
+                        ext = ext
+                    });
+
+                    // Locally append outgoing image bubble
+                    var now = DateTime.Now;
+                    AddMessageToConversation(_currentPeer, true, "[Image]", now, sender: null);
+
+                    var bubble = new Controls.MessageBubbleControl
+                    {
+                        IsOutgoing = true,
+                        ImageContent = Image.FromFile(path),
+                        Timestamp = now
+                    };
+                    flpMessages.Controls.Add(bubble);
+                    bubble.UpdateLayoutBubble();
+                    flpMessages.ScrollControlIntoView(bubble);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Không thể gửi ảnh: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
     }

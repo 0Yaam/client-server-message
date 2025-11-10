@@ -3,12 +3,24 @@
     "Username": "admin",
     "PasswordHash": "123",
     "Salt": "",
-    "Role": 1
+    "Role": 1,
+    "DisplayName": null,
+    "Avatar": null
   },
   {
     "Username": "user",
     "PasswordHash": "123",
     "Salt": "",
-    "Role": 0
+    "Role": 0,
+    "DisplayName": null,
+    "Avatar": null
+  },
+  {
+    "Username": "thinh",
+    "PasswordHash": "QPHdd1Opfl4POpnvr4gGoLnKCDgaEgCClqtEFLD2oOA=",
+    "Salt": "S6DlppGwI5Dt4ruM+idwvi34y1g/O4e96bVPvNQEC8k=",
+    "Role": 0,
+    "DisplayName": "thinh",
+    "Avatar": "default.png"
   }
 ]

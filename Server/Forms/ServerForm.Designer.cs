@@ -35,15 +35,16 @@
             this.lvListUser = new System.Windows.Forms.ListView();
             this.txtServerMessage = new Guna.UI2.WinForms.Guna2TextBox();
             this.btnServerSend = new Guna.UI2.WinForms.Guna2Button();
-            this.guna2CustomRadioButton1 = new Guna.UI2.WinForms.Guna2CustomRadioButton();
-            this.guna2CustomRadioButton2 = new Guna.UI2.WinForms.Guna2CustomRadioButton();
-            this.guna2CustomRadioButton3 = new Guna.UI2.WinForms.Guna2CustomRadioButton();
             this.txtIP = new Guna.UI2.WinForms.Guna2TextBox();
             this.txtPort = new Guna.UI2.WinForms.Guna2TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.msThongTin = new System.Windows.Forms.ToolStripMenuItem();
             this.msPrivateChat = new System.Windows.Forms.ToolStripMenuItem();
             this.btnLogout = new Guna.UI2.WinForms.Guna2Button();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.cbbRole = new System.Windows.Forms.ComboBox();
+            this.chkSelectAll = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,9 +56,9 @@
             this.btnStart.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btnStart.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnStart.ForeColor = System.Drawing.Color.White;
-            this.btnStart.Location = new System.Drawing.Point(464, 28);
+            this.btnStart.Location = new System.Drawing.Point(502, 27);
             this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(133, 34);
+            this.btnStart.Size = new System.Drawing.Size(100, 34);
             this.btnStart.TabIndex = 0;
             this.btnStart.Text = "Start";
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
@@ -65,9 +66,9 @@
             // listBoxOnline
             // 
             this.listBoxOnline.FormattingEnabled = true;
-            this.listBoxOnline.Location = new System.Drawing.Point(504, 126);
+            this.listBoxOnline.Location = new System.Drawing.Point(590, 125);
             this.listBoxOnline.Name = "listBoxOnline";
-            this.listBoxOnline.Size = new System.Drawing.Size(262, 264);
+            this.listBoxOnline.Size = new System.Drawing.Size(149, 264);
             this.listBoxOnline.TabIndex = 1;
             // 
             // btnStop
@@ -78,9 +79,9 @@
             this.btnStop.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btnStop.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnStop.ForeColor = System.Drawing.Color.White;
-            this.btnStop.Location = new System.Drawing.Point(636, 28);
+            this.btnStop.Location = new System.Drawing.Point(636, 27);
             this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(152, 34);
+            this.btnStop.Size = new System.Drawing.Size(100, 34);
             this.btnStop.TabIndex = 2;
             this.btnStop.Text = "Stop";
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
@@ -96,19 +97,20 @@
             this.txtServerSearch.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtServerSearch.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtServerSearch.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtServerSearch.Location = new System.Drawing.Point(68, 83);
+            this.txtServerSearch.Location = new System.Drawing.Point(84, 82);
             this.txtServerSearch.Name = "txtServerSearch";
             this.txtServerSearch.PlaceholderText = "";
             this.txtServerSearch.SelectedText = "";
-            this.txtServerSearch.Size = new System.Drawing.Size(200, 36);
+            this.txtServerSearch.Size = new System.Drawing.Size(200, 30);
             this.txtServerSearch.TabIndex = 3;
             // 
             // lvListUser
             // 
+            this.lvListUser.CheckBoxes = true;
             this.lvListUser.HideSelection = false;
             this.lvListUser.Location = new System.Drawing.Point(68, 125);
             this.lvListUser.Name = "lvListUser";
-            this.lvListUser.Size = new System.Drawing.Size(406, 265);
+            this.lvListUser.Size = new System.Drawing.Size(502, 265);
             this.lvListUser.TabIndex = 5;
             this.lvListUser.UseCompatibleStateImageBehavior = false;
             // 
@@ -138,59 +140,11 @@
             this.btnServerSend.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btnServerSend.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnServerSend.ForeColor = System.Drawing.Color.White;
-            this.btnServerSend.Location = new System.Drawing.Point(341, 404);
+            this.btnServerSend.Location = new System.Drawing.Point(383, 402);
             this.btnServerSend.Name = "btnServerSend";
             this.btnServerSend.Size = new System.Drawing.Size(133, 34);
             this.btnServerSend.TabIndex = 7;
             this.btnServerSend.Text = "Send";
-            // 
-            // guna2CustomRadioButton1
-            // 
-            this.guna2CustomRadioButton1.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.guna2CustomRadioButton1.CheckedState.BorderThickness = 0;
-            this.guna2CustomRadioButton1.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.guna2CustomRadioButton1.CheckedState.InnerColor = System.Drawing.Color.White;
-            this.guna2CustomRadioButton1.Location = new System.Drawing.Point(274, 93);
-            this.guna2CustomRadioButton1.Name = "guna2CustomRadioButton1";
-            this.guna2CustomRadioButton1.Size = new System.Drawing.Size(20, 20);
-            this.guna2CustomRadioButton1.TabIndex = 8;
-            this.guna2CustomRadioButton1.Text = "guna2CustomRadioButton1";
-            this.guna2CustomRadioButton1.UncheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
-            this.guna2CustomRadioButton1.UncheckedState.BorderThickness = 2;
-            this.guna2CustomRadioButton1.UncheckedState.FillColor = System.Drawing.Color.Transparent;
-            this.guna2CustomRadioButton1.UncheckedState.InnerColor = System.Drawing.Color.Transparent;
-            // 
-            // guna2CustomRadioButton2
-            // 
-            this.guna2CustomRadioButton2.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.guna2CustomRadioButton2.CheckedState.BorderThickness = 0;
-            this.guna2CustomRadioButton2.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.guna2CustomRadioButton2.CheckedState.InnerColor = System.Drawing.Color.White;
-            this.guna2CustomRadioButton2.Location = new System.Drawing.Point(418, 93);
-            this.guna2CustomRadioButton2.Name = "guna2CustomRadioButton2";
-            this.guna2CustomRadioButton2.Size = new System.Drawing.Size(20, 20);
-            this.guna2CustomRadioButton2.TabIndex = 9;
-            this.guna2CustomRadioButton2.Text = "guna2CustomRadioButton2";
-            this.guna2CustomRadioButton2.UncheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
-            this.guna2CustomRadioButton2.UncheckedState.BorderThickness = 2;
-            this.guna2CustomRadioButton2.UncheckedState.FillColor = System.Drawing.Color.Transparent;
-            this.guna2CustomRadioButton2.UncheckedState.InnerColor = System.Drawing.Color.Transparent;
-            // 
-            // guna2CustomRadioButton3
-            // 
-            this.guna2CustomRadioButton3.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.guna2CustomRadioButton3.CheckedState.BorderThickness = 0;
-            this.guna2CustomRadioButton3.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.guna2CustomRadioButton3.CheckedState.InnerColor = System.Drawing.Color.White;
-            this.guna2CustomRadioButton3.Location = new System.Drawing.Point(341, 93);
-            this.guna2CustomRadioButton3.Name = "guna2CustomRadioButton3";
-            this.guna2CustomRadioButton3.Size = new System.Drawing.Size(20, 20);
-            this.guna2CustomRadioButton3.TabIndex = 10;
-            this.guna2CustomRadioButton3.Text = "guna2CustomRadioButton3";
-            this.guna2CustomRadioButton3.UncheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
-            this.guna2CustomRadioButton3.UncheckedState.BorderThickness = 2;
-            this.guna2CustomRadioButton3.UncheckedState.FillColor = System.Drawing.Color.Transparent;
-            this.guna2CustomRadioButton3.UncheckedState.InnerColor = System.Drawing.Color.Transparent;
             // 
             // txtIP
             // 
@@ -235,7 +189,7 @@
             this.msPrivateChat});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(800, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(919, 24);
             this.menuStrip1.TabIndex = 13;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -266,17 +220,58 @@
             this.btnLogout.TabIndex = 14;
             this.btnLogout.Text = "Logout";
             // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Location = new System.Drawing.Point(290, 89);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(87, 17);
+            this.radioButton1.TabIndex = 15;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "DisplayName";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            // 
+            // radioButton3
+            // 
+            this.radioButton3.AutoSize = true;
+            this.radioButton3.Location = new System.Drawing.Point(383, 89);
+            this.radioButton3.Name = "radioButton3";
+            this.radioButton3.Size = new System.Drawing.Size(75, 17);
+            this.radioButton3.TabIndex = 17;
+            this.radioButton3.TabStop = true;
+            this.radioButton3.Text = "UserName";
+            this.radioButton3.UseVisualStyleBackColor = true;
+            // 
+            // cbbRole
+            // 
+            this.cbbRole.FormattingEnabled = true;
+            this.cbbRole.Location = new System.Drawing.Point(473, 89);
+            this.cbbRole.Name = "cbbRole";
+            this.cbbRole.Size = new System.Drawing.Size(97, 21);
+            this.cbbRole.TabIndex = 18;
+            // 
+            // chkSelectAll
+            // 
+            this.chkSelectAll.AutoSize = true;
+            this.chkSelectAll.Location = new System.Drawing.Point(274, 413);
+            this.chkSelectAll.Name = "chkSelectAll";
+            this.chkSelectAll.Size = new System.Drawing.Size(69, 17);
+            this.chkSelectAll.TabIndex = 19;
+            this.chkSelectAll.Text = "Select all";
+            this.chkSelectAll.UseVisualStyleBackColor = true;
+            // 
             // ServerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(919, 450);
+            this.Controls.Add(this.chkSelectAll);
+            this.Controls.Add(this.cbbRole);
+            this.Controls.Add(this.radioButton3);
+            this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.btnLogout);
             this.Controls.Add(this.txtPort);
             this.Controls.Add(this.txtIP);
-            this.Controls.Add(this.guna2CustomRadioButton3);
-            this.Controls.Add(this.guna2CustomRadioButton2);
-            this.Controls.Add(this.guna2CustomRadioButton1);
             this.Controls.Add(this.btnServerSend);
             this.Controls.Add(this.txtServerMessage);
             this.Controls.Add(this.lvListUser);
@@ -288,6 +283,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "ServerForm";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.ServerForm_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -304,15 +300,16 @@
         private System.Windows.Forms.ListView lvListUser;
         private Guna.UI2.WinForms.Guna2TextBox txtServerMessage;
         private Guna.UI2.WinForms.Guna2Button btnServerSend;
-        private Guna.UI2.WinForms.Guna2CustomRadioButton guna2CustomRadioButton1;
-        private Guna.UI2.WinForms.Guna2CustomRadioButton guna2CustomRadioButton2;
-        private Guna.UI2.WinForms.Guna2CustomRadioButton guna2CustomRadioButton3;
         private Guna.UI2.WinForms.Guna2TextBox txtIP;
         private Guna.UI2.WinForms.Guna2TextBox txtPort;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem msThongTin;
         private System.Windows.Forms.ToolStripMenuItem msPrivateChat;
         private Guna.UI2.WinForms.Guna2Button btnLogout;
+        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.RadioButton radioButton3;
+        private System.Windows.Forms.ComboBox cbbRole;
+        private System.Windows.Forms.CheckBox chkSelectAll;
     }
 }
 

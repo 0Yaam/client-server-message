@@ -25,7 +25,27 @@ namespace Client.Forms.Controls
             set
             {
                 _messageText = value ?? "";
-                lblMessage.Text = _messageText;
+                if (lblMessage != null) lblMessage.Text = _messageText;
+                UpdateLayoutBubble();
+            }
+        }
+
+        private Image _imageContent = null;
+        public Image ImageContent
+        {
+            get => _imageContent;
+            set
+            {
+                _imageContent = value;
+                if (pbImage != null)
+                {
+                    pbImage.Image = _imageContent;
+                    pbImage.Visible = _imageContent != null;
+                }
+                // hide text when image present
+                if (lblMessage != null)
+                    lblMessage.Visible = _imageContent == null;
+
                 UpdateLayoutBubble();
             }
         }
@@ -56,9 +76,8 @@ namespace Client.Forms.Controls
             BackColor = Color.LightGray;
 
             // Typography tweaks
-            lblMessage.Font = new Font(lblMessage.Font.FontFamily, 10f);
-            lblTime.Font = new Font(lblTime.Font.FontFamily, 8f);
-            lblTime.ForeColor = Color.DimGray;
+            if (lblMessage != null) lblMessage.Font = new Font(lblMessage.Font.FontFamily, 10f);
+            if (lblTime != null) { lblTime.Font = new Font(lblTime.Font.FontFamily, 8f); lblTime.ForeColor = Color.DimGray; }
 
             SetStyle(ControlStyles.AllPaintingInWmPaint |
                      ControlStyles.UserPaint |
@@ -66,6 +85,9 @@ namespace Client.Forms.Controls
                      ControlStyles.ResizeRedraw, true);
 
             ResizeParentHook();
+
+            // ensure pbImage initially hidden if designer doesn't set
+            if (pbImage != null) pbImage.Visible = false;
         }
 
         protected override void OnCreateControl()
@@ -140,41 +162,72 @@ namespace Client.Forms.Controls
             // Reserve space inside bubble for padding and time label.
             int reserved = Padding.Left + Padding.Right + 16;
             int labelMaxWidth = Math.Max(80, this.MaximumSize.Width - reserved);
-            lblMessage.MaximumSize = new Size(labelMaxWidth, 0);
-            lblMessage.AutoSize = true;
+
+            if (ImageContent != null && pbImage != null)
+            {
+                // show image and size it appropriately
+                lblMessage.Visible = false;
+                pbImage.Visible = true;
+
+                // constrain image width to 60% of maxWidth
+                int imgMaxW = (int)(this.MaximumSize.Width * 0.6);
+                var img = ImageContent;
+                int w = img.Width;
+                int h = img.Height;
+                if (w > imgMaxW)
+                {
+                    var ratio = (double)imgMaxW / w;
+                    w = imgMaxW;
+                    h = (int)(h * ratio);
+                }
+                pbImage.Size = new Size(w, h);
+                pbImage.Margin = new Padding(8);
+            }
+            else
+            {
+                // set text label constraints
+                if (lblMessage != null)
+                {
+                    lblMessage.Visible = true;
+                    lblMessage.MaximumSize = new Size(labelMaxWidth, 0);
+                    lblMessage.AutoSize = true;
+                    lblMessage.Margin = new Padding(8, 8, 8, 4);
+                }
+
+                if (pbImage != null) pbImage.Visible = false;
+            }
 
             // Layout style: message above, time below. Align time to inner edge.
             if (IsOutgoing)
             {
                 BackColor = Color.FromArgb(179, 229, 252);
-                lblMessage.TextAlign = ContentAlignment.MiddleRight;
-                lblTime.TextAlign = ContentAlignment.MiddleRight;
+                if (lblMessage != null) lblMessage.TextAlign = ContentAlignment.MiddleRight;
+                if (lblTime != null) lblTime.TextAlign = ContentAlignment.MiddleRight;
 
                 this.Dock = DockStyle.None;
                 this.Anchor = AnchorStyles.Top | AnchorStyles.Right;
                 this.Margin = new Padding(50, 5, 10, 5);
 
                 // align time to right inside the table cell
-                lblTime.Anchor = AnchorStyles.Right;
-                lblMessage.Anchor = AnchorStyles.Right | AnchorStyles.Left;
+                if (lblTime != null) lblTime.Anchor = AnchorStyles.Right;
+                if (lblMessage != null) lblMessage.Anchor = AnchorStyles.Right | AnchorStyles.Left;
             }
             else
             {
                 BackColor = Color.FromArgb(240, 240, 240);
-                lblMessage.TextAlign = ContentAlignment.MiddleLeft;
-                lblTime.TextAlign = ContentAlignment.MiddleLeft;
+                if (lblMessage != null) lblMessage.TextAlign = ContentAlignment.MiddleLeft;
+                if (lblTime != null) lblTime.TextAlign = ContentAlignment.MiddleLeft;
 
                 this.Dock = DockStyle.None;
                 this.Anchor = AnchorStyles.Top | AnchorStyles.Left;
                 this.Margin = new Padding(10, 5, 50, 5);
 
-                lblTime.Anchor = AnchorStyles.Left;
-                lblMessage.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+                if (lblTime != null) lblTime.Anchor = AnchorStyles.Left;
+                if (lblMessage != null) lblMessage.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             }
 
             // subtle padding adjustments for better visual spacing
-            lblMessage.Margin = new Padding(8, 8, 8, 4);
-            lblTime.Margin = new Padding(8, 4, 8, 8);
+            if (lblTime != null) lblTime.Margin = new Padding(8, 4, 8, 8);
 
             // force layout recalculation
             tblLayout.SuspendLayout();

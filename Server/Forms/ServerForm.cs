@@ -25,6 +25,10 @@ namespace Server
             InitializeComponent();
             InitializeListView();
             InitializeRefreshTimer();
+
+            // Hook double-click
+            lvListUser.DoubleClick -= LvListUser_DoubleClick;
+            lvListUser.DoubleClick += LvListUser_DoubleClick;
         }
 
         private void InitializeListView()
@@ -39,6 +43,26 @@ namespace Server
             lvListUser.Columns.Add("Tên hiển thị", 150);
             lvListUser.Columns.Add("Vai trò", 80);
             lvListUser.Columns.Add("Trạng thái", 80);
+            lvListUser.Columns.Add("Mật khẩu", 200);
+        }
+
+        private void LvListUser_DoubleClick(object sender, EventArgs e)
+        {
+            if (lvListUser.SelectedItems.Count == 0) return;
+            var it = lvListUser.SelectedItems[0];
+            var username = it.SubItems[0].Text;
+            var displayName = it.SubItems[1].Text;
+            var passwordHash = it.SubItems.Count > 4 ? it.SubItems[4].Text : string.Empty;
+
+            using (var dlg = new Server.AdminProfile(username, displayName, passwordHash))
+            {
+                var res = dlg.ShowDialog(this);
+                if (res == DialogResult.OK)
+                {
+                    // Refresh list to show updated password
+                    RefreshUsersList();
+                }
+            }
         }
 
         private void InitializeRefreshTimer()
@@ -87,6 +111,9 @@ namespace Server
                     bool isOnline = onlineUsers.Contains(user.Username);
                     item.SubItems.Add(isOnline ? "Online" : "Offline");
                     
+                    // Show password hash (can't show plaintext)
+                    item.SubItems.Add(user.PasswordHash ?? string.Empty);
+
                     // Color coding for online/offline
                     if (isOnline)
                     {
@@ -174,7 +201,7 @@ namespace Server
                 
                 string info = $"Tổng số tài khoản đã đăng ký: {users.Length}\n";
                 info += $"Số người đang online: {onlineCount}\n";
-                info += $"Server đang chạy: {(_server != null ? "Có" : "Không")}\"";
+                info += $"Server đang chạy: {(_server != null ? "Có" : "Không")}";
                 
                 MessageBox.Show(info, "Thông tin Server", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -191,6 +218,14 @@ namespace Server
             _cts?.Cancel();
             _server?.Stop();
             base.OnFormClosing(e);
+        }
+
+        private void ServerForm_Load(object sender, EventArgs e)
+        {
+            txtIP.PlaceholderText = "127.0.0.1";
+            txtPort.PlaceholderText = "9000";
+            txtServerSearch.PlaceholderText = "Search...";
+            txtServerMessage.PlaceholderText = "Message send to all...";
         }
     }
 }

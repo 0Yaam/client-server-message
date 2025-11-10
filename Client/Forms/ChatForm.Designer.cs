@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.cmsTaoNhom = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu = new Guna.UI2.WinForms.Guna2ContextMenuStrip();
             this.cmsXoaBan = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnLogout = new Guna.UI2.WinForms.Guna2Button();
             this.btnSend = new Guna.UI2.WinForms.Guna2Button();
             this.txtMessage = new Guna.UI2.WinForms.Guna2TextBox();
             this.pnlInput = new Guna.UI2.WinForms.Guna2Panel();
@@ -45,7 +45,7 @@
             this.flpUsers = new System.Windows.Forms.FlowLayoutPanel();
             this.guna2Panel1 = new Guna.UI2.WinForms.Guna2Panel();
             this.pnlLeft = new Guna.UI2.WinForms.Guna2Panel();
-            this.guna2AnimateWindow1 = new Guna.UI2.WinForms.Guna2AnimateWindow();
+            this.guna2AnimateWindow1 = new Guna.UI2.WinForms.Guna2AnimateWindow(this.components);
             this.Menu.SuspendLayout();
             this.pnlInput.SuspendLayout();
             this.pnlChat.SuspendLayout();
@@ -85,20 +85,6 @@
             this.cmsXoaBan.Name = "cmsXoaBan";
             this.cmsXoaBan.Size = new System.Drawing.Size(128, 22);
             this.cmsXoaBan.Text = "Xóa Bạn";
-            // 
-            // btnLogout
-            // 
-            this.btnLogout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnLogout.BorderRadius = 8;
-            this.btnLogout.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(135)))), ((int)(((byte)(255)))));
-            this.btnLogout.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnLogout.ForeColor = System.Drawing.Color.White;
-            this.btnLogout.Location = new System.Drawing.Point(467, -1);
-            this.btnLogout.Name = "btnLogout";
-            this.btnLogout.Size = new System.Drawing.Size(120, 30);
-            this.btnLogout.TabIndex = 3;
-            this.btnLogout.Text = "Đăng xuất";
-            this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
             // 
             // btnSend
             // 
@@ -155,11 +141,12 @@
             this.btnAttach.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(135)))), ((int)(((byte)(255)))));
             this.btnAttach.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnAttach.ForeColor = System.Drawing.Color.White;
-            this.btnAttach.Location = new System.Drawing.Point(467, 10);
+            this.btnAttach.Location = new System.Drawing.Point(467, 11);
             this.btnAttach.Name = "btnAttach";
             this.btnAttach.Size = new System.Drawing.Size(33, 30);
             this.btnAttach.TabIndex = 4;
             this.btnAttach.Text = ".";
+            this.btnAttach.Click += new System.EventHandler(this.btnAttach_Click);
             // 
             // pnlChat
             // 
@@ -191,7 +178,6 @@
             // 
             this.pnlHeader.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.pnlHeader.Controls.Add(this.lblHeader);
-            this.pnlHeader.Controls.Add(this.btnLogout);
             this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlHeader.FillColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.pnlHeader.Location = new System.Drawing.Point(213, 0);
@@ -295,7 +281,7 @@
             this.Controls.Add(this.pnlHeader);
             this.Controls.Add(this.pnlLeft);
             this.Name = "ChatForm";
-            this.Text = "ChatForm";
+            this.Text = "Zola so 1 VietNam";
             this.Menu.ResumeLayout(false);
             this.pnlInput.ResumeLayout(false);
             this.pnlChat.ResumeLayout(false);
@@ -311,7 +297,6 @@
         private System.Windows.Forms.ToolStripMenuItem cmsTaoNhom;
         private Guna.UI2.WinForms.Guna2ContextMenuStrip Menu;
         private System.Windows.Forms.ToolStripMenuItem cmsXoaBan;
-        private Guna.UI2.WinForms.Guna2Button btnLogout;
         private Guna.UI2.WinForms.Guna2Button btnSend;
         private Guna.UI2.WinForms.Guna2TextBox txtMessage;
         private Guna.UI2.WinForms.Guna2Panel pnlInput;

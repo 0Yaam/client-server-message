@@ -157,6 +157,42 @@ namespace Server.ServerCore
             }
         }
 
+        // Admin forced set password without old password
+        public static bool SetPassword(string username, string newPassword, out string errorMessage)
+        {
+            lock (_lock)
+            {
+                errorMessage = string.Empty;
+                var acc = _users.FirstOrDefault(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+                if (acc == null)
+                {
+                    errorMessage = "Tài khoản không tồn tại";
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 6)
+                {
+                    errorMessage = "Mật khẩu mới phải có ít nhất 6 ký tự";
+                    return false;
+                }
+
+                try
+                {
+                    var salt = GenerateSalt();
+                    var hash = HashPassword(newPassword, salt);
+                    acc.Salt = salt;
+                    acc.PasswordHash = hash;
+                    SaveUsers();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    errorMessage = "Lỗi khi đặt mật khẩu: " + ex.Message;
+                    return false;
+                }
+            }
+        }
+
         public static bool UpdateAvatar(string username, byte[] imageData, string ext, out string savedPath, out string errorMessage)
         {
             lock (_lock)

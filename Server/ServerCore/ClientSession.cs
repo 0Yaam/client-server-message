@@ -214,6 +214,75 @@ namespace Server.ServerCore
                             break;
                         }
 
+                    case "MSG_TO_IMAGE":
+                        {
+                            string to = (string)cmd.to;
+                            string b64 = (string)cmd.image;
+                            string ext = (string)cmd.ext;
+                            string from = this.Username;
+
+                            // If `to` is a group id, relay to members
+                            if (GroupRegistry.TryGet(to, out var group))
+                            {
+                                foreach (var member in group.Members)
+                                {
+                                    if (member == from) continue; // don't send back to sender
+                                    var target = OnlineRegistry.Get(member);
+                                    if (target != null)
+                                    {
+                                        try
+                                        {
+                                            await target.SendAsync(new
+                                            {
+                                                type = "MSG_RECV_IMAGE",
+                                                from = from,
+                                                groupId = to,
+                                                image = b64,
+                                                ext = ext,
+                                                time = DateTime.UtcNow
+                                            }, ct);
+                                        }
+                                        catch { /* ignore per-target errors */ }
+                                    }
+                                }
+
+                                // Echo to sender as MSG_SENT (optional)
+                                await SendAsync(new { type = "MSG_SENT", to = to, message = "[Image]", time = DateTime.UtcNow }, ct);
+                            }
+                            else
+                            {
+                                var target = OnlineRegistry.Get(to);
+
+                                if (target != null)
+                                {
+                                    // send to recipient
+                                    await target.SendAsync(new
+                                    {
+                                        type = "MSG_RECV_IMAGE",
+                                        from = this.Username,
+                                        image = b64,
+                                        ext = ext,
+                                        time = DateTime.UtcNow
+                                    }, ct);
+
+                                    // echo for sender
+                                    await SendAsync(new
+                                    {
+                                        type = "MSG_SENT",
+                                        to = to,
+                                        message = "[Image]",
+                                        time = DateTime.UtcNow
+                                    }, ct);
+                                }
+                                else
+                                {
+                                    await SendAsync(new { type = "ERROR", text = "User offline" }, ct);
+                                }
+                            }
+
+                            break;
+                        }
+
                     case "LIST":
                         {
                             Console.WriteLine($"LIST from {Username}");
@@ -287,6 +356,19 @@ namespace Server.ServerCore
                         await SendAsync(new { type = "ERROR", text = "unknown command" }, ct);
                         break;
                 }
+            }
+        }
+
+        // Public wrapper to send messages to this client session
+        public Task SendObjectAsync(object obj)
+        {
+            try
+            {
+                return SendAsync(obj, CancellationToken.None);
+            }
+            catch
+            {
+                return Task.CompletedTask;
             }
         }
 
