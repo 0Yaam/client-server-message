@@ -674,16 +674,14 @@ namespace Client.Forms
             try
             {
                 var candidates = _latestUsers.Where(x => !string.Equals(x, _me?.Username, StringComparison.Ordinal)).ToArray();
-                using (var dlg = new CreateGroup(candidates))
+                using (var dlg = new Controls.Group(candidates))
                 {
                     dlg.GroupCreated += async (s, ev) =>
                     {
                         try
                         {
-
                             var members = new List<string>(ev.Members);
                             if (!members.Contains(_me.Username)) members.Add(_me.Username);
-
 
                             await _tcp.SendAsync(new
                             {
@@ -691,8 +689,6 @@ namespace Client.Forms
                                 name = ev.GroupName,
                                 members = members.ToArray()
                             });
-
-
                         }
                         catch (Exception ex)
                         {

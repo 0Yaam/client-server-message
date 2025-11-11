@@ -40,5 +40,5 @@ C:\Users\TruongDan\Documents\Works\client-server-message\Client\obj\Debug\Client
 C:\Users\TruongDan\Documents\Works\client-server-message\Client\obj\Debug\Client.csproj.Up2Date
 C:\Users\TruongDan\Documents\Works\client-server-message\Client\obj\Debug\Client.exe
 C:\Users\TruongDan\Documents\Works\client-server-message\Client\obj\Debug\Client.pdb
-C:\Users\TruongDan\Documents\Works\client-server-message\Client\obj\Debug\Client.Forms.CreateGroup.resources
 C:\Users\TruongDan\Documents\Works\client-server-message\Client\obj\Debug\Client.Forms.Profile.resources
+C:\Users\TruongDan\Documents\Works\client-server-message\Client\obj\Debug\Client.Forms.Controls.Group.resources
