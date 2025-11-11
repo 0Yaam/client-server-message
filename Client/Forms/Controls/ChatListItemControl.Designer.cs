@@ -53,8 +53,10 @@
 
 
 
-            this.tblMain.AutoSize = true;
-            this.tblMain.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            //
+            // tblMain
+            //
+            this.tblMain.AutoSize = false;
             this.tblMain.ColumnCount = 2;
             this.tblMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 64F));
             this.tblMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -65,14 +67,17 @@
             this.tblMain.Margin = new System.Windows.Forms.Padding(0);
             this.tblMain.Name = "tblMain";
             this.tblMain.RowCount = 1;
-            this.tblMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.tblMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tblMain.Size = new System.Drawing.Size(300, 70);
             this.tblMain.TabIndex = 0;
 
 
 
+            //
+            // pbAvatar
+            //
             this.pbAvatar.ImageRotate = 0F;
-            this.pbAvatar.Location = new System.Drawing.Point(4, 4);
+            this.pbAvatar.Location = new System.Drawing.Point(4, 7);
             this.pbAvatar.Margin = new System.Windows.Forms.Padding(4);
             this.pbAvatar.Name = "pbAvatar";
             this.pbAvatar.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
@@ -83,8 +88,10 @@
 
 
 
-            this.tblContent.AutoSize = true;
-            this.tblContent.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            //
+            // tblContent
+            //
+            this.tblContent.AutoSize = false;
             this.tblContent.ColumnCount = 1;
             this.tblContent.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tblContent.Controls.Add(this.tblHeader, 0, 0);
@@ -101,8 +108,10 @@
 
 
 
-            this.tblHeader.AutoSize = true;
-            this.tblHeader.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            //
+            // tblHeader
+            //
+            this.tblHeader.AutoSize = false;
             this.tblHeader.ColumnCount = 2;
             this.tblHeader.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tblHeader.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
@@ -119,6 +128,9 @@
 
 
 
+            //
+            // lblName
+            //
             this.lblName.AutoSize = true;
             this.lblName.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblName.Location = new System.Drawing.Point(8, 0);
@@ -131,6 +143,9 @@
 
 
 
+            //
+            // lblTime
+            //
             this.lblTime.AutoSize = true;
             this.lblTime.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblTime.Location = new System.Drawing.Point(188, 0);
@@ -143,6 +158,9 @@
 
 
 
+            //
+            // lblLastMessage
+            //
             this.lblLastMessage.AutoSize = true;
             this.lblLastMessage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblLastMessage.Location = new System.Drawing.Point(8, 24);
@@ -155,13 +173,15 @@
 
 
 
+            //
+            // ChatListItemControl
+            //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tblMain);
             this.Name = "ChatListItemControl";
             this.Padding = new System.Windows.Forms.Padding(4);
             this.Size = new System.Drawing.Size(300, 72);
             this.tblMain.ResumeLayout(false);
-            this.tblMain.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAvatar)).EndInit();
             this.tblContent.ResumeLayout(false);
             this.tblContent.PerformLayout();

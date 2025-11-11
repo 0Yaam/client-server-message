@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 
-
+// new usings for client integration
 using Client.Services;
 using Client.Forms;
 
@@ -30,11 +30,11 @@ namespace Server
             InitializeListView();
             InitializeRefreshTimer();
 
-
+            // Hook double-click
             lvListUser.DoubleClick -= LvListUser_DoubleClick;
             lvListUser.DoubleClick += LvListUser_DoubleClick;
 
-
+            // Hook menu and buttons
             msPrivateChat.Click -= MsPrivateChat_Click;
             msPrivateChat.Click += MsPrivateChat_Click;
 
@@ -43,16 +43,60 @@ namespace Server
 
             chkSelectAll.CheckedChanged -= ChkSelectAll_CheckedChanged;
             chkSelectAll.CheckedChanged += ChkSelectAll_CheckedChanged;
+
+            // Hook search controls safely
+            var txtSearch = this.Controls.Find("txtServerSearch", true).FirstOrDefault() as TextBox;
+            if (txtSearch != null)
+            {
+                txtSearch.TextChanged -= TxtServerSearch_TextChanged;
+                txtSearch.TextChanged += TxtServerSearch_TextChanged;
+            }
+
+            var rdDisplay = this.Controls.Find("radioButton1", true).FirstOrDefault() as RadioButton;
+            if (rdDisplay != null)
+            {
+                rdDisplay.CheckedChanged -= SearchOptionChanged;
+                rdDisplay.CheckedChanged += SearchOptionChanged;
+            }
+
+            var rdUser = this.Controls.Find("radioButton3", true).FirstOrDefault() as RadioButton;
+            if (rdUser != null)
+            {
+                rdUser.CheckedChanged -= SearchOptionChanged;
+                rdUser.CheckedChanged += SearchOptionChanged;
+            }
+
+            var cbb = this.Controls.Find("cbbRole", true).FirstOrDefault() as ComboBox;
+            if (cbb != null)
+            {
+                cbb.SelectedIndexChanged -= CbbRole_SelectedIndexChanged;
+                cbb.SelectedIndexChanged += CbbRole_SelectedIndexChanged;
+            }
+        }
+
+        private void CbbRole_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RefreshUsersList();
+        }
+
+        private void SearchOptionChanged(object sender, EventArgs e)
+        {
+            RefreshUsersList();
+        }
+
+        private void TxtServerSearch_TextChanged(object sender, EventArgs e)
+        {
+            RefreshUsersList();
         }
 
         private void InitializeListView()
         {
-
+            // Cấu hình ListView để hiển thị thông tin users
             lvListUser.View = View.Details;
             lvListUser.FullRowSelect = true;
             lvListUser.GridLines = true;
 
-
+            // Thêm các cột
             lvListUser.Columns.Add("Tên đăng nhập", 120);
             lvListUser.Columns.Add("Tên hiển thị", 150);
             lvListUser.Columns.Add("Vai trò", 80);
@@ -68,12 +112,13 @@ namespace Server
             var displayName = it.SubItems[1].Text;
             var passwordHash = it.SubItems.Count > 4 ? it.SubItems[4].Text : string.Empty;
 
-            using (var dlg = new Server.AdminProfile(username, displayName, passwordHash))
+            // Open UpdateForm instead of AdminProfile
+            using (var dlg = new Server.Forms.UpdateForm(username))
             {
                 var res = dlg.ShowDialog(this);
                 if (res == DialogResult.OK)
                 {
-
+                    // Refresh list to show updated info
                     RefreshUsersList();
                 }
             }
@@ -82,7 +127,7 @@ namespace Server
         private void InitializeRefreshTimer()
         {
             _refreshTimer = new System.Windows.Forms.Timer();
-            _refreshTimer.Interval = 2000;
+            _refreshTimer.Interval = 2000; // Refresh every 2 seconds
             _refreshTimer.Tick += RefreshTimer_Tick;
         }
 
@@ -109,8 +154,54 @@ namespace Server
 
             try
             {
-                var users = AuthManager.GetAllUsers();
+                var users = AuthManager.GetAllUsers().ToList();
                 var onlineUsers = OnlineRegistry.ListUsernames();
+
+                // Apply role filter from cbbRole (All/Admin/User). Ensure cbbRole items initialized.
+                string roleFilter = cbbRole.SelectedItem as string;
+                if (!string.IsNullOrEmpty(roleFilter) && roleFilter != "Tất cả")
+                {
+                    users = users.Where(u => u.Role.ToString().Equals(roleFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+
+                // Apply text search
+                var q = txtServerSearch.Text?.Trim() ?? string.Empty;
+                if (!string.IsNullOrEmpty(q))
+                {
+                    // determine which radio is checked via control lookup
+                    var rdDisplay = this.Controls.Find("radioButton1", true).FirstOrDefault() as RadioButton;
+                    var rdUser = this.Controls.Find("radioButton3", true).FirstOrDefault() as RadioButton;
+
+                    if (rdDisplay != null && rdDisplay.Checked)
+                    {
+                        // display name
+                        users = users.Where(u => (!string.IsNullOrEmpty(u.DisplayName) && u.DisplayName.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0)).ToList();
+                    }
+                    else if (rdUser != null && rdUser.Checked)
+                    {
+                        // username
+                        users = users.Where(u => (!string.IsNullOrEmpty(u.Username) && u.Username.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0)).ToList();
+                    }
+                    else
+                    {
+                        // fallback: search both
+                        users = users.Where(u => (u.Username != null && u.Username.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) || (u.DisplayName != null && u.DisplayName.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0)).ToList();
+                    }
+                }
+
+                // Preserve checked usernames before clearing
+                var checkedSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                try
+                {
+                    foreach (ListViewItem it in lvListUser.Items)
+                    {
+                        if (it.Checked && it.SubItems.Count > 0)
+                        {
+                            checkedSet.Add(it.SubItems[0].Text);
+                        }
+                    }
+                }
+                catch { }
 
                 lvListUser.BeginUpdate();
                 lvListUser.Items.Clear();
@@ -121,14 +212,14 @@ namespace Server
                     item.SubItems.Add(user.DisplayName ?? user.Username);
                     item.SubItems.Add(user.Role.ToString());
 
-
+                    // Check if user is online
                     bool isOnline = onlineUsers.Contains(user.Username);
                     item.SubItems.Add(isOnline ? "Online" : "Offline");
 
-
+                    // Show password hash (can't show plaintext)
                     item.SubItems.Add(user.PasswordHash ?? string.Empty);
 
-
+                    // Color coding for online/offline
                     if (isOnline)
                     {
                         item.BackColor = Color.LightGreen;
@@ -137,6 +228,20 @@ namespace Server
                     {
                         item.BackColor = Color.White;
                     }
+
+                    // restore checked state or honor chkSelectAll
+                    try
+                    {
+                        if (chkSelectAll.Checked)
+                        {
+                            item.Checked = true;
+                        }
+                        else
+                        {
+                            item.Checked = checkedSet.Contains(user.Username);
+                        }
+                    }
+                    catch { }
 
                     lvListUser.Items.Add(item);
                 }
@@ -171,11 +276,20 @@ namespace Server
                 _server.Start();
 
                 _cts = new CancellationTokenSource();
-                _ = _server.AcceptLoopAsync(_cts.Token);
+                _ = _server.AcceptLoopAsync(_cts.Token); // không chặn UI
 
-
+                // Start refresh timer
                 _refreshTimer.Start();
 
+                // Initial refresh
+                // populate role combo
+                if (cbbRole.Items.Count == 0)
+                {
+                    cbbRole.Items.Add("Tất cả");
+                    cbbRole.Items.Add("Admin");
+                    cbbRole.Items.Add("User");
+                    cbbRole.SelectedIndex = 0;
+                }
 
                 RefreshUsersList();
                 RefreshOnlineList();
@@ -201,7 +315,7 @@ namespace Server
             MessageBox.Show("Server stopped");
             btnStart.Enabled = true;
 
-
+            // Clear lists
             lvListUser.Items.Clear();
             listBoxOnline.Items.Clear();
         }
@@ -246,18 +360,36 @@ namespace Server
         {
             try
             {
-
+                // Ensure server is running
                 if (_server == null)
                 {
                     MessageBox.Show("Server chưa chạy. Bắt đầu server trước khi mở private chat.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
+                // Determine host and port from UI (use defaults if empty)
+                string host = "127.0.0.1";
+                int port = 9000;
+                try
+                {
+                    if (!string.IsNullOrWhiteSpace(txtIP.Text)) host = txtIP.Text.Trim();
+                    if (!string.IsNullOrWhiteSpace(txtPort.Text) && int.TryParse(txtPort.Text.Trim(), out var p)) port = p;
+                }
+                catch { }
 
+                // Create a TcpService as admin client connecting to specified host/port
                 var tcp = new TcpService();
-                await tcp.ConnectAsync("127.0.0.1", 9000);
+                try
+                {
+                    await tcp.ConnectAsync(host, port);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Không thể kết nối tới server (kiểm tra IP/Port hoặc server chưa chạy).", "Lỗi kết nối", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
-
+                // Use admin credentials by default
                 string adminUser = "admin";
                 string adminPass = "123";
 
@@ -273,7 +405,7 @@ namespace Server
                 dynamic resp = Newtonsoft.Json.JsonConvert.DeserializeObject(line);
                 if ((string)resp.type == "AUTH_OK")
                 {
-
+                    // Construct Account using info from server
                     string roleStr = (string)resp.role;
                     var role = roleStr == "Admin" ? UserRole.Admin : UserRole.User;
                     var acc = new Account(adminUser, adminPass, "", role)
@@ -281,7 +413,7 @@ namespace Server
                         DisplayName = "Zola"
                     };
 
-
+                    // Open client ChatForm inside server process
                     var chat = new Client.Forms.ChatForm(acc, tcp);
                     chat.Text = "Admin Chat - Zola";
                     chat.Show();

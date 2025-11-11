@@ -9,6 +9,7 @@ namespace Client.Forms.Controls
 {
     public partial class ChatListItemControl : UserControl
     {
+        private const int PreferredItemWidth = 380;
 
         [Browsable(true)]
         [Category("Data")]
@@ -41,17 +42,24 @@ namespace Client.Forms.Controls
             set { _time = value; if (lblTime != null) lblTime.Text = FormatTime(_time); }
         }
 
-
         [Browsable(true)]
         [Category("Appearance")]
-        public Color HoverColor { get; set; } = Color.FromArgb(245, 245, 245);
+        public Color HoverColor { get; set; } = Color.FromArgb(245, 247, 250);
 
         [Browsable(true)]
         [Category("Appearance")]
         public Color SelectedColor { get; set; } = Color.FromArgb(220, 235, 255);
 
-        public bool Selected { get; private set; }
+        [Browsable(true)]
+        [Category("Appearance")]
+        public Color BaseColor { get; set; } = Color.FromArgb(250, 251, 253);
 
+        [Browsable(true)]
+        [Category("Appearance")]
+        public int CornerRadius { get; set; } = 8;
+
+        public bool Selected { get; private set; }
+        private bool _isHover = false;
 
         public event EventHandler ItemClicked;
 
@@ -60,10 +68,10 @@ namespace Client.Forms.Controls
             InitializeComponent();
             DoubleBuffered = true;
 
-
-            if (Height < 64) Height = 72;
-            BackColor = Color.White;
-
+            // enforce consistent height
+            this.Height = 72;
+            // Use subtle background so items are visible against parent
+            this.BackColor = Color.White; // avoid transparent to prevent invisible background in some containers
 
             if (lblName != null) lblName.Font = new Font(lblName.Font.FontFamily, 10F, FontStyle.Bold);
             if (lblTime != null)
@@ -78,21 +86,49 @@ namespace Client.Forms.Controls
                 lblLastMessage.AutoEllipsis = true;
             }
 
-
-            this.AutoSize = true;
+            this.AutoSize = false; // fixed size for uniformity
             this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
 
+            // set default width to preferred size
+            this.Width = PreferredItemWidth;
+            this.MinimumSize = new Size(Math.Min(PreferredItemWidth, 150), 64);
+            this.MaximumSize = new Size(PreferredItemWidth, 0);
 
             AttachHandlersRecursive(this);
 
+            // setup avatar to a pleasant fixed size but respect designer if set
+            TryFixAvatarSize(48);
 
-            MakeAvatarCircle();
+            // ensure children visible
+            BringChildrenToFront();
+        }
+
+        private void BringChildrenToFront()
+        {
+            try
+            {
+                if (pbAvatar != null) pbAvatar.BringToFront();
+                if (tblMain != null) tblMain.BringToFront();
+            }
+            catch { }
+        }
+
+        private void TryFixAvatarSize(int size)
+        {
+            try
+            {
+                if (pbAvatar == null) return;
+                // only set size if designer left default very large/small
+                pbAvatar.Width = pbAvatar.Height = size;
+                pbAvatar.SizeMode = PictureBoxSizeMode.Zoom;
+                MakeAvatarCircle();
+            }
+            catch { }
         }
 
         protected override void OnParentChanged(EventArgs e)
         {
             base.OnParentChanged(e);
-
 
             if (Parent != null)
             {
@@ -114,34 +150,29 @@ namespace Client.Forms.Controls
             {
                 if (Parent == null) return;
 
-
-                var flp = Parent as FlowLayoutPanel;
                 int parentInnerWidth = Parent.ClientSize.Width - Parent.Padding.Left - Parent.Padding.Right;
+                if (parentInnerWidth <= 0)
+                {
+                    // Fallback to a safe width until parent lays out
+                    parentInnerWidth = PreferredItemWidth;
+                }
 
-
-                int target = Math.Max(80, parentInnerWidth - this.Margin.Left - this.Margin.Right);
-
+                // If parent is wider than preferred, use preferred. Otherwise fit into parent but not less than 150
+                int available = Math.Max(150, parentInnerWidth - this.Margin.Left - this.Margin.Right);
+                int target = Math.Min(PreferredItemWidth, available);
 
                 this.MaximumSize = new Size(target, 0);
-
-
                 this.Width = target;
             }
-            catch
-            {
-
-            }
+            catch { }
         }
 
         private void AttachHandlersRecursive(Control root)
         {
-
             void ForwardClick(object s, EventArgs e) => ItemClicked?.Invoke(this, EventArgs.Empty);
 
-
-            void OnEnter(object s, EventArgs e) { if (!Selected) BackColor = HoverColor; }
-            void OnLeave(object s, EventArgs e) { if (!Selected) BackColor = Color.White; }
-
+            void OnEnter(object s, EventArgs e) { _isHover = true; if (!Selected) Invalidate(); }
+            void OnLeave(object s, EventArgs e) { _isHover = false; if (!Selected) Invalidate(); }
 
             this.Click -= ForwardClick;
             this.Click += ForwardClick;
@@ -149,7 +180,6 @@ namespace Client.Forms.Controls
             this.MouseEnter += OnEnter;
             this.MouseLeave -= OnLeave;
             this.MouseLeave += OnLeave;
-
 
             foreach (Control c in root.Controls)
             {
@@ -162,7 +192,6 @@ namespace Client.Forms.Controls
                 c.MouseLeave -= OnLeave;
                 c.MouseLeave += OnLeave;
 
-
                 if (c.HasChildren) AttachHandlersRecursive(c);
             }
         }
@@ -170,7 +199,7 @@ namespace Client.Forms.Controls
         public void SetSelected(bool selected)
         {
             Selected = selected;
-            BackColor = selected ? SelectedColor : Color.White;
+            Invalidate();
         }
 
         public void Bind(string username, string displayName, string lastMessage, DateTime time)
@@ -184,19 +213,20 @@ namespace Client.Forms.Controls
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-            MakeAvatarCircle();
-
+            TryFixAvatarSize(Math.Max(40, Math.Min(56, this.Height - 20)));
 
             try
             {
                 if (pbAvatar == null || lblLastMessage == null) return;
-
 
                 int paddingHorizontal = this.Padding.Left + this.Padding.Right;
                 int contentWidth = Math.Max(80, this.ClientSize.Width - pbAvatar.Width - paddingHorizontal - 24);
                 lblLastMessage.MaximumSize = new Size(contentWidth, 0);
             }
             catch { }
+
+            // ensure children visible order
+            BringChildrenToFront();
         }
 
         private static string FormatTime(DateTime t)
@@ -222,7 +252,7 @@ namespace Client.Forms.Controls
                     pbAvatar.Region = new Region(gp);
                 }
             }
-            catch {  }
+            catch { }
         }
 
         public void SetAvatar(Image img)
@@ -239,6 +269,38 @@ namespace Client.Forms.Controls
                 }
             }
             catch { }
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            var g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            var rect = this.ClientRectangle;
+            rect.Inflate(-2, -2);
+
+            // use white base color to ensure visibility against container background
+            Color fill = this.Selected ? SelectedColor : (_isHover ? HoverColor : Color.White);
+
+            using (var brush = new SolidBrush(fill))
+            using (var path = GetRoundRect(rect, CornerRadius))
+            {
+                g.FillPath(brush, path);
+            }
+        }
+
+        private static GraphicsPath GetRoundRect(Rectangle r, int radius)
+        {
+            int d = radius * 2;
+            var path = new GraphicsPath();
+            path.AddArc(r.X, r.Y, d, d, 180, 90);
+            path.AddArc(r.Right - d, r.Y, d, d, 270, 90);
+            path.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90);
+            path.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
+            path.CloseFigure();
+            return path;
         }
     }
 }

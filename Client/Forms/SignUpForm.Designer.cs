@@ -37,9 +37,9 @@
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoBox)).BeginInit();
             this.SuspendLayout();
-
-
-
+            // 
+            // pnlMain
+            // 
             this.pnlMain.BorderRadius = 20;
             this.pnlMain.Controls.Add(this.guna2HtmlLabel1);
             this.pnlMain.Controls.Add(this.btnBack);
@@ -55,9 +55,9 @@
             this.pnlMain.Name = "pnlMain";
             this.pnlMain.Size = new System.Drawing.Size(420, 550);
             this.pnlMain.TabIndex = 0;
-
-
-
+            // 
+            // guna2HtmlLabel1
+            // 
             this.guna2HtmlLabel1.BackColor = System.Drawing.Color.Transparent;
             this.guna2HtmlLabel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.guna2HtmlLabel1.Location = new System.Drawing.Point(158, 131);
@@ -65,9 +65,9 @@
             this.guna2HtmlLabel1.Size = new System.Drawing.Size(82, 27);
             this.guna2HtmlLabel1.TabIndex = 8;
             this.guna2HtmlLabel1.Text = "Đăng ký";
-
-
-
+            // 
+            // btnBack
+            // 
             this.btnBack.BorderRadius = 10;
             this.btnBack.FillColor = System.Drawing.Color.LightGray;
             this.btnBack.Font = new System.Drawing.Font("Segoe UI", 10F);
@@ -78,9 +78,9 @@
             this.btnBack.TabIndex = 0;
             this.btnBack.Text = "Quay lại";
             this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
-
-
-
+            // 
+            // btnRegister
+            // 
             this.btnRegister.BorderRadius = 10;
             this.btnRegister.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(135)))), ((int)(((byte)(255)))));
             this.btnRegister.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
@@ -91,13 +91,14 @@
             this.btnRegister.TabIndex = 1;
             this.btnRegister.Text = "Đăng ký";
             this.btnRegister.Click += new System.EventHandler(this.btnRegister_Click);
-
-
-
+            // 
+            // txtConfirm
+            // 
             this.txtConfirm.BorderRadius = 10;
             this.txtConfirm.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtConfirm.DefaultText = "";
             this.txtConfirm.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtConfirm.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(243)))), ((int)(((byte)(247)))));
             this.txtConfirm.Location = new System.Drawing.Point(70, 355);
             this.txtConfirm.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.txtConfirm.Name = "txtConfirm";
@@ -106,9 +107,9 @@
             this.txtConfirm.SelectedText = "";
             this.txtConfirm.Size = new System.Drawing.Size(280, 45);
             this.txtConfirm.TabIndex = 2;
-
-
-
+            // 
+            // txtPassword
+            // 
             this.txtPassword.BorderRadius = 10;
             this.txtPassword.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtPassword.DefaultText = "";
@@ -121,9 +122,9 @@
             this.txtPassword.SelectedText = "";
             this.txtPassword.Size = new System.Drawing.Size(280, 45);
             this.txtPassword.TabIndex = 3;
-
-
-
+            // 
+            // txtUsername
+            // 
             this.txtUsername.BorderRadius = 10;
             this.txtUsername.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtUsername.DefaultText = "";
@@ -135,9 +136,9 @@
             this.txtUsername.SelectedText = "";
             this.txtUsername.Size = new System.Drawing.Size(280, 45);
             this.txtUsername.TabIndex = 4;
-
-
-
+            // 
+            // txtDisplayName
+            // 
             this.txtDisplayName.BorderRadius = 10;
             this.txtDisplayName.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtDisplayName.DefaultText = "";
@@ -149,9 +150,9 @@
             this.txtDisplayName.SelectedText = "";
             this.txtDisplayName.Size = new System.Drawing.Size(280, 45);
             this.txtDisplayName.TabIndex = 5;
-
-
-
+            // 
+            // logoBox
+            // 
             this.logoBox.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.logoBox.BorderRadius = 45;
             this.logoBox.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(135)))), ((int)(((byte)(255)))));
@@ -162,9 +163,9 @@
             this.logoBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.logoBox.TabIndex = 7;
             this.logoBox.TabStop = false;
-
-
-
+            // 
+            // SignUpForm
+            // 
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(243)))), ((int)(((byte)(247)))));
             this.ClientSize = new System.Drawing.Size(420, 550);
             this.Controls.Add(this.pnlMain);

@@ -269,5 +269,69 @@ namespace Server.ServerCore
                 return _users.ToArray();
             }
         }
+
+        public static Account GetUser(string username)
+        {
+            lock (_lock)
+            {
+                return _users.FirstOrDefault(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+            }
+        }
+
+        public static bool UpdateUser(string originalUsername, string newUsername, string displayName, UserRole role, out string errorMessage)
+        {
+            lock (_lock)
+            {
+                errorMessage = string.Empty;
+                var acc = _users.FirstOrDefault(u => u.Username.Equals(originalUsername, StringComparison.OrdinalIgnoreCase));
+                if (acc == null)
+                {
+                    errorMessage = "Tài khoản không tồn tại";
+                    return false;
+                }
+
+                // If changing username, ensure new username not already taken (unless same as original)
+                if (!string.Equals(originalUsername, newUsername, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (_users.Any(u => u.Username.Equals(newUsername, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        errorMessage = "Tên đăng nhập mới đã tồn tại";
+                        return false;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(newUsername) || newUsername.Length < 3)
+                    {
+                        errorMessage = "Tên đăng nhập phải có ít nhất 3 ký tự";
+                        return false;
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(displayName))
+                {
+                    errorMessage = "Tên hiển thị không được để trống";
+                    return false;
+                }
+
+                try
+                {
+                    // apply changes
+                    acc.DisplayName = displayName;
+                    acc.Role = role;
+
+                    if (!string.Equals(originalUsername, newUsername, StringComparison.OrdinalIgnoreCase))
+                    {
+                        acc.Username = newUsername;
+                    }
+
+                    SaveUsers();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    errorMessage = "Lỗi khi cập nhật tài khoản: " + ex.Message;
+                    return false;
+                }
+            }
+        }
     }
 }

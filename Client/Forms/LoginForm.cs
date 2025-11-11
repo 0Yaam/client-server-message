@@ -30,7 +30,7 @@ namespace Client
 
             try
             {
-                await _tcp.ConnectAsync("127.0.0.1", 9000);
+                await _tcp.ConnectAsync(SERVER_HOST, SERVER_PORT);
                 await _tcp.SendAsync(new { type = "AUTH", username, password });
 
                 var line = await _tcp.ReadLineAsync(CancellationToken.None);
@@ -55,7 +55,8 @@ namespace Client
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Không kết nối được server: " + ex.Message);
+                // show friendly message when server unreachable
+                MessageBox.Show("Hiện server đóng cửa", "Lỗi kết nối", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

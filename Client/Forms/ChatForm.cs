@@ -21,7 +21,10 @@ namespace Client.Forms
         private string _currentPeer = null;
         private readonly System.Windows.Forms.Timer _listTimer = new System.Windows.Forms.Timer { Interval = 2000 };
 
+        // Keep special local users (e.g. server alias Zola) so they survive LIST refresh
+        private readonly HashSet<string> _localSpecialUsers = new HashSet<string>(StringComparer.Ordinal);
 
+        // Conversation storage so UI can be rebuilt without losing history
         private class ConversationMessage
         {
             public bool IsOutgoing { get; set; }
@@ -67,7 +70,11 @@ namespace Client.Forms
             {
                 if (string.IsNullOrEmpty(username)) return;
 
+                // If it's a group id, skip
                 if (_groupMembers.ContainsKey(username)) return;
+
+                // Track as a special local user so it survives server LIST refresh
+                _localSpecialUsers.Add(username);
 
                 bool exists = flpUsers.Controls.OfType<Controls.ChatListItemControl>().Any(i => i.Username == username);
                 if (!exists)
@@ -75,7 +82,7 @@ namespace Client.Forms
                     var item = new Controls.ChatListItemControl
                     {
                         Width = flpUsers.ClientSize.Width - 6,
-                        Margin = new Padding(3, 0, 3, 2)
+                        Margin = new Padding(10, 4, 10, 4) // increased horizontal spacing
                     };
                     item.Bind(username: username, displayName: username, lastMessage: "Nhấn để chat", time: DateTime.Now);
 
@@ -134,22 +141,22 @@ namespace Client.Forms
                         string from = (string)msg.from;
                         string text = (string)msg.message;
 
-
+                        // Ensure sender exists in user list (so admin/system senders like Zola appear)
                         BeginInvoke(new Action(() => EnsureUserInList(from)));
 
-
-                        string groupId = msg.groupId;
+                        // Kiểm tra có phải tin nhắn nhóm không
+                        string groupId = msg.groupId; // có thể null nếu là 1:1
 
                         BeginInvoke(new Action(() =>
                         {
                             if (!string.IsNullOrEmpty(groupId))
                             {
-
+                                // Tin nhắn nhóm
                                 AppendIncomingGroup(groupId, from, text);
                             }
                             else
                             {
-
+                                // Tin nhắn 1:1
                                 AppendIncoming(from, text);
                             }
                         }));
@@ -161,15 +168,15 @@ namespace Client.Forms
 
                         BeginInvoke(new Action(() =>
                         {
-
+                            // Kiểm tra xem có phải gửi tới nhóm không
                             if (_groupMembers.ContainsKey(to))
                             {
-
+                                // Gửi tới nhóm
                                 AppendOutgoingGroup(to, text);
                             }
                             else
                             {
-
+                                // Gửi 1:1
                                 AppendOutgoing(text);
                             }
                         }));
@@ -186,23 +193,23 @@ namespace Client.Forms
                     }
                     else if (type == "AVATAR_UPDATED")
                     {
-
+                        // Receive avatar update broadcast from server
                         string username = (string)msg.username;
                         string b64 = (string)msg.image;
-                        string ext = (string)msg.ext;
+                        string ext = (string)msg.ext; // may include dot
 
                         try
                         {
                             var data = Convert.FromBase64String(b64);
                             var saved = SaveAvatarLocal(username, data, ext);
 
-
+                            // update local account if matches
                             if (string.Equals(_me?.Username, username, StringComparison.OrdinalIgnoreCase))
                             {
                                 _me.Avatar = saved;
                             }
 
-
+                            // Update UI
                             BeginInvoke(new Action(() =>
                             {
                                 foreach (Control c in flpUsers.Controls)
@@ -233,7 +240,7 @@ namespace Client.Forms
                         string b64 = (string)msg.image;
                         string ext = (string)msg.ext;
 
-
+                        // Ensure sender exists in user list
                         BeginInvoke(new Action(() => EnsureUserInList(from)));
 
                         try
@@ -404,21 +411,31 @@ namespace Client.Forms
             flpUsers.SuspendLayout();
             try
             {
-
+                // Keep existing groups, only update users
                 var existingGroups = flpUsers.Controls.OfType<Controls.ChatListItemControl>()
                     .Where(i => _groupMembers.ContainsKey(i.Username))
                     .ToList();
 
                 flpUsers.Controls.Clear();
 
-
+                // Re-add groups first
                 foreach (var grp in existingGroups)
                 {
                     flpUsers.Controls.Add(grp);
                 }
 
+                // Build final list: server users + local special users (dedup)
+                var finalUsers = new List<string>();
+                if (users != null) finalUsers.AddRange(users);
 
-                foreach (var u in users)
+                // add local special users (e.g. Zola) if not already present
+                foreach (var su in _localSpecialUsers)
+                {
+                    if (!finalUsers.Contains(su)) finalUsers.Add(su);
+                }
+
+                // Add users
+                foreach (var u in finalUsers)
                 {
                     string preview = "Nhấn để chat";
                     DateTime time = DateTime.Now;
@@ -429,14 +446,18 @@ namespace Client.Forms
                         time = last.Timestamp;
                     }
 
+                    // skip if this is a group id (groups already added)
+                    if (_groupMembers.ContainsKey(u)) continue;
+
                     var item = new Controls.ChatListItemControl
                     {
-                        Width = flpUsers.ClientSize.Width - 6,
-                        Margin = new Padding(3, 0, 3, 2)
+                        // Avoid setting Width directly to prevent collapse when flpUsers width is not measured yet
+                        MinimumSize = new Size(150, 64),
+                        Margin = new Padding(10, 4, 10, 4) // increased horizontal spacing
                     };
                     item.Bind(username: u, displayName: u, lastMessage: preview, time: time);
 
-
+                    // Try to load local avatar
                     var avatarPath = FindLocalAvatar(u);
                     if (!string.IsNullOrEmpty(avatarPath) && File.Exists(avatarPath))
                     {
@@ -491,7 +512,7 @@ namespace Client.Forms
             var item = new Controls.ChatListItemControl
             {
                 Width = flpUsers.ClientSize.Width - 6,
-                Margin = new Padding(3, 0, 3, 2)
+                Margin = new Padding(10, 4, 10, 4) // increased horizontal spacing
             };
             item.Bind(username: groupId, displayName: groupName, lastMessage: "Nhóm chat mới", time: DateTime.Now);
 

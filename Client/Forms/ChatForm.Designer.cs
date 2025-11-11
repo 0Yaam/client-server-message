@@ -53,16 +53,16 @@
             this.guna2Panel1.SuspendLayout();
             this.pnlLeft.SuspendLayout();
             this.SuspendLayout();
-
-
-
+            // 
+            // cmsTaoNhom
+            // 
             this.cmsTaoNhom.Name = "cmsTaoNhom";
             this.cmsTaoNhom.Size = new System.Drawing.Size(128, 22);
             this.cmsTaoNhom.Text = "Tạo nhóm";
             this.cmsTaoNhom.Click += new System.EventHandler(this.cmsTaoNhom_Click);
-
-
-
+            // 
+            // Menu
+            // 
             this.Menu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cmsTaoNhom,
@@ -79,30 +79,30 @@
             this.Menu.RenderStyle.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
             this.Menu.Size = new System.Drawing.Size(129, 48);
             this.Menu.Text = "☰";
-
-
-
+            // 
+            // cmsXoaBan
+            // 
             this.cmsXoaBan.Name = "cmsXoaBan";
             this.cmsXoaBan.Size = new System.Drawing.Size(128, 22);
             this.cmsXoaBan.Text = "Xóa Bạn";
-
-
-
+            // 
+            // btnSend
+            // 
             this.btnSend.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.btnSend.BorderRadius = 10;
             this.btnSend.Dock = System.Windows.Forms.DockStyle.Right;
             this.btnSend.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnSend.ForeColor = System.Drawing.SystemColors.Window;
-            this.btnSend.Location = new System.Drawing.Point(505, 8);
+            this.btnSend.Location = new System.Drawing.Point(571, 8);
             this.btnSend.Margin = new System.Windows.Forms.Padding(2);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(74, 36);
             this.btnSend.TabIndex = 1;
             this.btnSend.Text = "Gửi";
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
-
-
-
+            // 
+            // txtMessage
+            // 
             this.txtMessage.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.txtMessage.BorderRadius = 10;
             this.txtMessage.Cursor = System.Windows.Forms.Cursors.IBeam;
@@ -116,12 +116,12 @@
             this.txtMessage.Name = "txtMessage";
             this.txtMessage.PlaceholderText = "Nhập tin nhắn...";
             this.txtMessage.SelectedText = "";
-            this.txtMessage.Size = new System.Drawing.Size(571, 36);
+            this.txtMessage.Size = new System.Drawing.Size(637, 36);
             this.txtMessage.TabIndex = 0;
             this.txtMessage.TextChanged += new System.EventHandler(this.txtMessage_TextChanged);
-
-
-
+            // 
+            // pnlInput
+            // 
             this.pnlInput.Controls.Add(this.btnAttach);
             this.pnlInput.Controls.Add(this.btnSend);
             this.pnlInput.Controls.Add(this.txtMessage);
@@ -131,37 +131,37 @@
             this.pnlInput.Margin = new System.Windows.Forms.Padding(2);
             this.pnlInput.Name = "pnlInput";
             this.pnlInput.Padding = new System.Windows.Forms.Padding(8);
-            this.pnlInput.Size = new System.Drawing.Size(587, 52);
+            this.pnlInput.Size = new System.Drawing.Size(653, 52);
             this.pnlInput.TabIndex = 1;
-
-
-
+            // 
+            // btnAttach
+            // 
             this.btnAttach.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAttach.BorderRadius = 8;
             this.btnAttach.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(135)))), ((int)(((byte)(255)))));
             this.btnAttach.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnAttach.ForeColor = System.Drawing.Color.White;
-            this.btnAttach.Location = new System.Drawing.Point(467, 11);
+            this.btnAttach.Location = new System.Drawing.Point(533, 11);
             this.btnAttach.Name = "btnAttach";
             this.btnAttach.Size = new System.Drawing.Size(33, 30);
             this.btnAttach.TabIndex = 4;
             this.btnAttach.Text = ".";
             this.btnAttach.Click += new System.EventHandler(this.btnAttach_Click);
-
-
-
+            // 
+            // pnlChat
+            // 
             this.pnlChat.Controls.Add(this.flpMessages);
             this.pnlChat.Controls.Add(this.pnlInput);
             this.pnlChat.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlChat.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(243)))), ((int)(((byte)(247)))));
-            this.pnlChat.Location = new System.Drawing.Point(213, 32);
+            this.pnlChat.Location = new System.Drawing.Point(265, 32);
             this.pnlChat.Margin = new System.Windows.Forms.Padding(2);
             this.pnlChat.Name = "pnlChat";
-            this.pnlChat.Size = new System.Drawing.Size(587, 418);
+            this.pnlChat.Size = new System.Drawing.Size(653, 418);
             this.pnlChat.TabIndex = 6;
-
-
-
+            // 
+            // flpMessages
+            // 
             this.flpMessages.AutoScroll = true;
             this.flpMessages.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.flpMessages.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -170,24 +170,24 @@
             this.flpMessages.Margin = new System.Windows.Forms.Padding(8);
             this.flpMessages.Name = "flpMessages";
             this.flpMessages.Padding = new System.Windows.Forms.Padding(11, 12, 11, 12);
-            this.flpMessages.Size = new System.Drawing.Size(587, 366);
+            this.flpMessages.Size = new System.Drawing.Size(653, 366);
             this.flpMessages.TabIndex = 0;
             this.flpMessages.WrapContents = false;
-
-
-
+            // 
+            // pnlHeader
+            // 
             this.pnlHeader.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.pnlHeader.Controls.Add(this.lblHeader);
             this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlHeader.FillColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.pnlHeader.Location = new System.Drawing.Point(213, 0);
+            this.pnlHeader.Location = new System.Drawing.Point(265, 0);
             this.pnlHeader.Margin = new System.Windows.Forms.Padding(2);
             this.pnlHeader.Name = "pnlHeader";
-            this.pnlHeader.Size = new System.Drawing.Size(587, 32);
+            this.pnlHeader.Size = new System.Drawing.Size(653, 32);
             this.pnlHeader.TabIndex = 5;
-
-
-
+            // 
+            // lblHeader
+            // 
             this.lblHeader.AutoSize = true;
             this.lblHeader.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.lblHeader.Font = new System.Drawing.Font("Segoe UI Semibold", 12F);
@@ -197,9 +197,9 @@
             this.lblHeader.Size = new System.Drawing.Size(208, 21);
             this.lblHeader.TabIndex = 0;
             this.lblHeader.Text = "Chưa chọn cuộc trò chuyện";
-
-
-
+            // 
+            // txtSearch
+            // 
             this.txtSearch.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.txtSearch.BorderRadius = 10;
             this.txtSearch.Cursor = System.Windows.Forms.Cursors.IBeam;
@@ -212,11 +212,11 @@
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.PlaceholderText = "Tìm kiếm...";
             this.txtSearch.SelectedText = "";
-            this.txtSearch.Size = new System.Drawing.Size(179, 32);
+            this.txtSearch.Size = new System.Drawing.Size(231, 32);
             this.txtSearch.TabIndex = 0;
-
-
-
+            // 
+            // btnMenu
+            // 
             this.btnMenu.BorderRadius = 6;
             this.btnMenu.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnMenu.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
@@ -232,9 +232,9 @@
             this.btnMenu.TabIndex = 2;
             this.btnMenu.Text = "☰";
             this.btnMenu.Click += new System.EventHandler(this.btnMenu_Click);
-
-
-
+            // 
+            // flpUsers
+            // 
             this.flpUsers.AutoScroll = true;
             this.flpUsers.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.flpUsers.ContextMenuStrip = this.Menu;
@@ -243,12 +243,12 @@
             this.flpUsers.Margin = new System.Windows.Forms.Padding(8);
             this.flpUsers.Name = "flpUsers";
             this.flpUsers.Padding = new System.Windows.Forms.Padding(11, 12, 11, 12);
-            this.flpUsers.Size = new System.Drawing.Size(211, 418);
+            this.flpUsers.Size = new System.Drawing.Size(262, 418);
             this.flpUsers.TabIndex = 4;
             this.flpUsers.WrapContents = false;
-
-
-
+            // 
+            // guna2Panel1
+            // 
             this.guna2Panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.guna2Panel1.Controls.Add(this.txtSearch);
             this.guna2Panel1.Controls.Add(this.btnMenu);
@@ -256,11 +256,11 @@
             this.guna2Panel1.Location = new System.Drawing.Point(0, 0);
             this.guna2Panel1.Margin = new System.Windows.Forms.Padding(2);
             this.guna2Panel1.Name = "guna2Panel1";
-            this.guna2Panel1.Size = new System.Drawing.Size(213, 32);
+            this.guna2Panel1.Size = new System.Drawing.Size(265, 32);
             this.guna2Panel1.TabIndex = 3;
-
-
-
+            // 
+            // pnlLeft
+            // 
             this.pnlLeft.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.pnlLeft.Controls.Add(this.flpUsers);
             this.pnlLeft.Controls.Add(this.guna2Panel1);
@@ -269,14 +269,14 @@
             this.pnlLeft.Location = new System.Drawing.Point(0, 0);
             this.pnlLeft.Margin = new System.Windows.Forms.Padding(2);
             this.pnlLeft.Name = "pnlLeft";
-            this.pnlLeft.Size = new System.Drawing.Size(213, 450);
+            this.pnlLeft.Size = new System.Drawing.Size(265, 450);
             this.pnlLeft.TabIndex = 4;
-
-
-
+            // 
+            // ChatForm
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(918, 450);
             this.Controls.Add(this.pnlChat);
             this.Controls.Add(this.pnlHeader);
             this.Controls.Add(this.pnlLeft);

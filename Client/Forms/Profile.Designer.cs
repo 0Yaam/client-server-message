@@ -37,38 +37,42 @@
             this.txtOldPassword = new Guna.UI2.WinForms.Guna2TextBox();
             this.txtNewPasswỏd = new Guna.UI2.WinForms.Guna2TextBox();
             this.btnChangePass = new Guna.UI2.WinForms.Guna2Button();
+            this.guna2HtmlLabel1 = new Guna.UI2.WinForms.Guna2HtmlLabel();
+            this.guna2HtmlLabel2 = new Guna.UI2.WinForms.Guna2HtmlLabel();
             ((System.ComponentModel.ISupportInitialize)(this.guna2PictureBox1)).BeginInit();
             this.SuspendLayout();
-
-
-
+            // 
+            // guna2PictureBox1
+            // 
+            this.guna2PictureBox1.BorderRadius = 20;
             this.guna2PictureBox1.ImageRotate = 0F;
             this.guna2PictureBox1.Location = new System.Drawing.Point(279, 22);
             this.guna2PictureBox1.Name = "guna2PictureBox1";
             this.guna2PictureBox1.Size = new System.Drawing.Size(200, 200);
             this.guna2PictureBox1.TabIndex = 0;
             this.guna2PictureBox1.TabStop = false;
-
-
-
+            // 
+            // lblDisplayName
+            // 
             this.lblDisplayName.BackColor = System.Drawing.Color.Transparent;
-            this.lblDisplayName.Location = new System.Drawing.Point(25, 54);
+            this.lblDisplayName.Location = new System.Drawing.Point(40, 55);
             this.lblDisplayName.Name = "lblDisplayName";
             this.lblDisplayName.Size = new System.Drawing.Size(65, 15);
             this.lblDisplayName.TabIndex = 1;
             this.lblDisplayName.Text = "DisplayName";
-
-
-
+            // 
+            // btnBrowse
+            // 
             this.btnBrowse.Location = new System.Drawing.Point(279, 228);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(26, 23);
             this.btnBrowse.TabIndex = 2;
             this.btnBrowse.Text = "...";
             this.btnBrowse.UseVisualStyleBackColor = true;
-
-
-
+            // 
+            // btnLogout
+            // 
+            this.btnLogout.BorderRadius = 5;
             this.btnLogout.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnLogout.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnLogout.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -80,27 +84,28 @@
             this.btnLogout.Size = new System.Drawing.Size(118, 23);
             this.btnLogout.TabIndex = 3;
             this.btnLogout.Text = "Logout";
-
-
-
+            // 
+            // lblRole
+            // 
             this.lblRole.BackColor = System.Drawing.Color.Transparent;
-            this.lblRole.Location = new System.Drawing.Point(25, 22);
+            this.lblRole.Location = new System.Drawing.Point(40, 23);
             this.lblRole.Name = "lblRole";
             this.lblRole.Size = new System.Drawing.Size(25, 15);
             this.lblRole.TabIndex = 4;
             this.lblRole.Text = "Role";
-
-
-
+            // 
+            // lblUserName
+            // 
             this.lblUserName.BackColor = System.Drawing.Color.Transparent;
-            this.lblUserName.Location = new System.Drawing.Point(25, 87);
+            this.lblUserName.Location = new System.Drawing.Point(40, 88);
             this.lblUserName.Name = "lblUserName";
             this.lblUserName.Size = new System.Drawing.Size(53, 15);
             this.lblUserName.TabIndex = 5;
             this.lblUserName.Text = "UserName";
-
-
-
+            // 
+            // txtOldPassword
+            // 
+            this.txtOldPassword.BorderRadius = 3;
             this.txtOldPassword.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtOldPassword.DefaultText = "";
             this.txtOldPassword.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
@@ -110,15 +115,16 @@
             this.txtOldPassword.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtOldPassword.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtOldPassword.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtOldPassword.Location = new System.Drawing.Point(63, 117);
+            this.txtOldPassword.Location = new System.Drawing.Point(67, 117);
             this.txtOldPassword.Name = "txtOldPassword";
             this.txtOldPassword.PlaceholderText = "";
             this.txtOldPassword.SelectedText = "";
             this.txtOldPassword.Size = new System.Drawing.Size(197, 25);
             this.txtOldPassword.TabIndex = 6;
-
-
-
+            // 
+            // txtNewPasswỏd
+            // 
+            this.txtNewPasswỏd.BorderRadius = 3;
             this.txtNewPasswỏd.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtNewPasswỏd.DefaultText = "";
             this.txtNewPasswỏd.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
@@ -128,15 +134,16 @@
             this.txtNewPasswỏd.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtNewPasswỏd.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtNewPasswỏd.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtNewPasswỏd.Location = new System.Drawing.Point(63, 161);
+            this.txtNewPasswỏd.Location = new System.Drawing.Point(67, 161);
             this.txtNewPasswỏd.Name = "txtNewPasswỏd";
             this.txtNewPasswỏd.PlaceholderText = "";
             this.txtNewPasswỏd.SelectedText = "";
             this.txtNewPasswỏd.Size = new System.Drawing.Size(197, 25);
             this.txtNewPasswỏd.TabIndex = 8;
-
-
-
+            // 
+            // btnChangePass
+            // 
+            this.btnChangePass.BorderRadius = 5;
             this.btnChangePass.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btnChangePass.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btnChangePass.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
@@ -148,12 +155,32 @@
             this.btnChangePass.Size = new System.Drawing.Size(129, 23);
             this.btnChangePass.TabIndex = 9;
             this.btnChangePass.Text = "Change password";
-
-
-
+            // 
+            // guna2HtmlLabel1
+            // 
+            this.guna2HtmlLabel1.BackColor = System.Drawing.Color.Transparent;
+            this.guna2HtmlLabel1.Location = new System.Drawing.Point(8, 122);
+            this.guna2HtmlLabel1.Name = "guna2HtmlLabel1";
+            this.guna2HtmlLabel1.Size = new System.Drawing.Size(44, 15);
+            this.guna2HtmlLabel1.TabIndex = 10;
+            this.guna2HtmlLabel1.Text = "Old pass";
+            // 
+            // guna2HtmlLabel2
+            // 
+            this.guna2HtmlLabel2.BackColor = System.Drawing.Color.Transparent;
+            this.guna2HtmlLabel2.Location = new System.Drawing.Point(8, 167);
+            this.guna2HtmlLabel2.Name = "guna2HtmlLabel2";
+            this.guna2HtmlLabel2.Size = new System.Drawing.Size(50, 15);
+            this.guna2HtmlLabel2.TabIndex = 11;
+            this.guna2HtmlLabel2.Text = "New pass";
+            // 
+            // Profile
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(503, 259);
+            this.Controls.Add(this.guna2HtmlLabel2);
+            this.Controls.Add(this.guna2HtmlLabel1);
             this.Controls.Add(this.btnChangePass);
             this.Controls.Add(this.txtNewPasswỏd);
             this.Controls.Add(this.txtOldPassword);
@@ -182,5 +209,7 @@
         private Guna.UI2.WinForms.Guna2TextBox txtOldPassword;
         private Guna.UI2.WinForms.Guna2TextBox txtNewPasswỏd;
         private Guna.UI2.WinForms.Guna2Button btnChangePass;
+        private Guna.UI2.WinForms.Guna2HtmlLabel guna2HtmlLabel1;
+        private Guna.UI2.WinForms.Guna2HtmlLabel guna2HtmlLabel2;
     }
 }
