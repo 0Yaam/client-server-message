@@ -192,6 +192,8 @@ namespace Client.Forms.Controls
                     lblMessage.MaximumSize = new Size(labelMaxWidth, 0);
                     lblMessage.AutoSize = true;
                     lblMessage.Margin = new Padding(8, 8, 8, 4);
+                    // Left-align message text for both incoming and outgoing
+                    lblMessage.TextAlign = ContentAlignment.TopLeft;
                 }
 
                 if (pbImage != null) pbImage.Visible = false;
@@ -201,12 +203,14 @@ namespace Client.Forms.Controls
             if (IsOutgoing)
             {
                 BackColor = Color.FromArgb(179, 229, 252);
-                if (lblMessage != null) lblMessage.TextAlign = ContentAlignment.MiddleRight;
-                if (lblTime != null) lblTime.TextAlign = ContentAlignment.MiddleRight;
+                // Ensure left alignment for outgoing as requested
+                if (lblMessage != null) lblMessage.TextAlign = ContentAlignment.TopLeft;
+                if (lblTime != null) lblTime.TextAlign = ContentAlignment.MiddleLeft;
 
                 this.Dock = DockStyle.None;
                 this.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-                this.Margin = new Padding(50, 5, 10, 5);
+                // Push outgoing bubble further to the right by increasing left margin
+                this.Margin = new Padding(500, 5, 10, 5);
 
 
                 if (lblTime != null) lblTime.Anchor = AnchorStyles.Right;
@@ -215,7 +219,7 @@ namespace Client.Forms.Controls
             else
             {
                 BackColor = Color.FromArgb(240, 240, 240);
-                if (lblMessage != null) lblMessage.TextAlign = ContentAlignment.MiddleLeft;
+                if (lblMessage != null) lblMessage.TextAlign = ContentAlignment.TopLeft;
                 if (lblTime != null) lblTime.TextAlign = ContentAlignment.MiddleLeft;
 
                 this.Dock = DockStyle.None;
