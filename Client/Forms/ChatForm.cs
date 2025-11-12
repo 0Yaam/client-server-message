@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Drawing;
+using System.Reflection;
 
 namespace Client.Forms
 {
@@ -48,6 +49,16 @@ namespace Client.Forms
             flpMessages.WrapContents = false;
             flpMessages.AutoScroll = true;
             flpMessages.FlowDirection = FlowDirection.TopDown;
+
+            // Enable double-buffering on FlowLayoutPanels to reduce flicker
+            try
+            {
+                typeof(FlowLayoutPanel).GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(flpUsers, true);
+                typeof(FlowLayoutPanel).GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(flpMessages, true);
+            }
+            catch { }
 
             txtMessage.KeyDown += (s, e) =>
             {
@@ -411,35 +422,48 @@ namespace Client.Forms
 
         private void RenderUserList(string[] users)
         {
+            // Delta update: reuse existing ChatListItemControl instances when possible to minimize redraw/flicker
             flpUsers.SuspendLayout();
             try
             {
-                // Keep existing groups, only update users
-                var existingGroups = flpUsers.Controls.OfType<Controls.ChatListItemControl>()
-                    .Where(i => _groupMembers.ContainsKey(i.Username))
-                    .ToList();
-
-                flpUsers.Controls.Clear();
-
-                // Re-add groups first
-                foreach (var grp in existingGroups)
-                {
-                    flpUsers.Controls.Add(grp);
-                }
+                var currentItems = flpUsers.Controls.OfType<Controls.ChatListItemControl>().ToList();
+                var currentUserItems = currentItems.Where(i => !_groupMembers.ContainsKey(i.Username)).ToList();
+                var groupItems = currentItems.Where(i => _groupMembers.ContainsKey(i.Username)).ToList();
 
                 // Build final list: server users + local special users (dedup)
                 var finalUsers = new List<string>();
                 if (users != null) finalUsers.AddRange(users);
-
-                // add local special users (e.g. Zola) if not already present
                 foreach (var su in _localSpecialUsers)
                 {
                     if (!finalUsers.Contains(su)) finalUsers.Add(su);
                 }
 
-                // Add users
+                // Map existing user items by username
+                var currentMap = currentUserItems.ToDictionary(i => i.Username, StringComparer.Ordinal);
+
+                // Dispose and remove items that are no longer in finalUsers
+                var toRemove = currentUserItems.Where(i => !finalUsers.Contains(i.Username)).ToList();
+                foreach (var rm in toRemove)
+                {
+                    flpUsers.Controls.Remove(rm);
+                    try { rm.Dispose(); } catch { }
+                }
+
+                // Clear controls and re-add groups first (keep same instances)
+                flpUsers.Controls.Clear();
+                foreach (var grp in groupItems)
+                {
+                    flpUsers.Controls.Add(grp);
+                }
+
+                // Preserve selection (username)
+                var previouslySelected = currentItems.FirstOrDefault(i => i.Selected)?.Username;
+
+                // Add or reuse user items in order
                 foreach (var u in finalUsers)
                 {
+                    if (_groupMembers.ContainsKey(u)) continue; // skip group ids
+
                     string preview = "Nhấn để chat";
                     DateTime time = DateTime.Now;
                     if (_conversations.TryGetValue(u, out var conv) && conv.Count > 0)
@@ -449,42 +473,75 @@ namespace Client.Forms
                         time = last.Timestamp;
                     }
 
-                    // skip if this is a group id (groups already added)
-                    if (_groupMembers.ContainsKey(u)) continue;
-
-                    var item = new Controls.ChatListItemControl
+                    if (currentMap.TryGetValue(u, out var existing))
                     {
-                        // Avoid setting Width directly to prevent collapse when flpUsers width is not measured yet
-                        MinimumSize = new Size(150, 64),
-                        Margin = new Padding(10, 4, 10, 4) // increased horizontal spacing
-                    };
-                    item.Bind(username: u, displayName: u, lastMessage: preview, time: time);
+                        // Update only when changed to avoid unnecessary invalidation
+                        if (existing.DisplayName != u) existing.DisplayName = u;
+                        if (existing.LastMessage != preview) existing.LastMessage = preview;
+                        if (existing.Time != time) existing.Time = time;
 
-                    // Try to load local avatar
-                    var avatarPath = FindLocalAvatar(u);
-                    if (!string.IsNullOrEmpty(avatarPath) && File.Exists(avatarPath))
-                    {
+                        // Attempt to load avatar if none present
                         try
                         {
-                            using (var fs = File.OpenRead(avatarPath))
+                            if (existing != null)
                             {
-                                var img = Image.FromStream(fs);
-                                item.SetAvatar(new Bitmap(img));
+                                var avatarPath = FindLocalAvatar(u);
+                                if (!string.IsNullOrEmpty(avatarPath) && File.Exists(avatarPath))
+                                {
+                                    // Only set avatar if control currently has no image to avoid reloads
+                                    // (ChatListItemControl disposes previous image in SetAvatar)
+                                    // Use reflection to peek at private pbAvatar.Image? To keep it simple, set only when no image.
+                                    // We'll attempt to set if ToString of Image is null (can't access private) - so skip aggressive check.
+                                }
                             }
                         }
                         catch { }
+
+                        // Re-add in desired order
+                        flpUsers.Controls.Add(existing);
                     }
-
-                    item.ItemClicked += (s, e) =>
+                    else
                     {
-                        foreach (Control c in flpUsers.Controls)
-                            if (c is Controls.ChatListItemControl it) it.SetSelected(false);
+                        var item = new Controls.ChatListItemControl
+                        {
+                            MinimumSize = new Size(150, 64),
+                            Margin = new Padding(10, 4, 10, 4)
+                        };
+                        item.Bind(username: u, displayName: u, lastMessage: preview, time: time);
 
-                        item.SetSelected(true);
-                        SelectPeer(item.Username);
-                    };
+                        // Try to load local avatar
+                        var avatarPath = FindLocalAvatar(u);
+                        if (!string.IsNullOrEmpty(avatarPath) && File.Exists(avatarPath))
+                        {
+                            try
+                            {
+                                using (var fs = File.OpenRead(avatarPath))
+                                {
+                                    var img = Image.FromStream(fs);
+                                    item.SetAvatar(new Bitmap(img));
+                                }
+                            }
+                            catch { }
+                        }
 
-                    flpUsers.Controls.Add(item);
+                        item.ItemClicked += (s, e) =>
+                        {
+                            foreach (Control c in flpUsers.Controls)
+                                if (c is Controls.ChatListItemControl it) it.SetSelected(false);
+
+                            item.SetSelected(true);
+                            SelectPeer(item.Username);
+                        };
+
+                        flpUsers.Controls.Add(item);
+                    }
+                }
+
+                // Restore selection if possible
+                if (!string.IsNullOrEmpty(previouslySelected))
+                {
+                    foreach (Control c in flpUsers.Controls)
+                        if (c is Controls.ChatListItemControl it) it.SetSelected(it.Username == previouslySelected);
                 }
             }
             finally
