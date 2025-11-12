@@ -281,8 +281,8 @@ namespace Client.Forms.Controls
             var rect = this.ClientRectangle;
             rect.Inflate(-2, -2);
 
-            // use white base color to ensure visibility against container background
-            Color fill = this.Selected ? SelectedColor : (_isHover ? HoverColor : Color.White);
+            // Selected or hovered use the same hover color for clear distinction
+            Color fill = (Selected || _isHover) ? HoverColor : Color.White;
 
             using (var brush = new SolidBrush(fill))
             using (var path = GetRoundRect(rect, CornerRadius))

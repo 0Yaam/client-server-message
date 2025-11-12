@@ -24,6 +24,9 @@ namespace Client.Forms
         // Keep special local users (e.g. server alias Zola) so they survive LIST refresh
         private readonly HashSet<string> _localSpecialUsers = new HashSet<string>(StringComparer.Ordinal);
 
+        // Cache avatar chosen when creating a group (keyed by group name)
+        private readonly Dictionary<string, string> _pendingGroupAvatarByName = new Dictionary<string, string>(StringComparer.Ordinal);
+
         // Conversation storage so UI can be rebuilt without losing history
         private class ConversationMessage
         {
@@ -495,30 +498,45 @@ namespace Client.Forms
         {
             if (string.IsNullOrEmpty(groupId)) return;
 
-
             foreach (Control c in flpUsers.Controls)
             {
                 if (c is Controls.ChatListItemControl existing && existing.Username == groupId)
                 {
-
                     existing.DisplayName = groupName;
                     return;
                 }
             }
-
 
             _groupMembers[groupId] = members ?? new string[0];
 
             var item = new Controls.ChatListItemControl
             {
                 Width = flpUsers.ClientSize.Width - 6,
-                Margin = new Padding(10, 4, 10, 4) // increased horizontal spacing
+                Margin = new Padding(10, 4, 10, 4)
             };
             item.Bind(username: groupId, displayName: groupName, lastMessage: "Nhóm chat mới", time: DateTime.Now);
 
+            // Apply locally chosen avatar if available (mapped by group name)
+            try
+            {
+                string avatarPath;
+                if (!string.IsNullOrEmpty(groupName) && _pendingGroupAvatarByName.TryGetValue(groupName, out avatarPath))
+                {
+                    if (!string.IsNullOrEmpty(avatarPath) && File.Exists(avatarPath))
+                    {
+                        using (var fs = File.OpenRead(avatarPath))
+                        {
+                            var img = Image.FromStream(fs);
+                            item.SetAvatar(new Bitmap(img));
+                        }
+                    }
+                    // keep it for future rebuilds or remove after set; here we keep it
+                }
+            }
+            catch { }
+
             item.ItemClicked += (senderItem, args) =>
             {
-
                 foreach (Control c in flpUsers.Controls)
                     if (c is Controls.ChatListItemControl it) it.SetSelected(false);
 
@@ -527,7 +545,6 @@ namespace Client.Forms
             };
 
             flpUsers.Controls.Add(item);
-
 
             if (!_conversations.ContainsKey(groupId))
                 _conversations[groupId] = new List<ConversationMessage>();
@@ -680,6 +697,12 @@ namespace Client.Forms
                     {
                         try
                         {
+                            // cache avatar by group name so we can apply it when server returns GROUP_CREATED
+                            if (!string.IsNullOrEmpty(ev.GroupName) && !string.IsNullOrEmpty(ev.AvatarPath))
+                            {
+                                _pendingGroupAvatarByName[ev.GroupName] = ev.AvatarPath;
+                            }
+
                             var members = new List<string>(ev.Members);
                             if (!members.Contains(_me.Username)) members.Add(_me.Username);
 
@@ -816,6 +839,42 @@ namespace Client.Forms
                     MessageBox.Show("Không thể gửi ảnh: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private void cmsXoaBan_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Ưu tiên item đang chọn
+                var selected = flpUsers.Controls
+                    .OfType<Controls.ChatListItemControl>()
+                    .FirstOrDefault(i => i != null && i.Selected);
+
+                // Nếu chưa chọn, lấy control dưới vị trí chuột khi mở menu
+                if (selected == null)
+                {
+                    var pt = flpUsers.PointToClient(Cursor.Position);
+                    selected = flpUsers.Controls
+                        .OfType<Controls.ChatListItemControl>()
+                        .FirstOrDefault(c => c.Bounds.Contains(pt));
+                }
+
+                if (selected == null) return;
+
+                // Không xóa nhóm (chỉ xóa người khỏi danh sách chat)
+                if (_groupMembers.ContainsKey(selected.Username)) return;
+
+                flpUsers.Controls.Remove(selected);
+                try { selected.Dispose(); } catch { }
+
+                if (string.Equals(_currentPeer, selected.Username, StringComparison.Ordinal))
+                {
+                    _currentPeer = null;
+                    if (lblHeader != null) lblHeader.Text = string.Empty;
+                    flpMessages.Controls.Clear();
+                }
+            }
+            catch { }
         }
     }
 }
