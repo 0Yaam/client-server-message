@@ -39,13 +39,11 @@ namespace Server.ServerCore
                 acc = _users.Find(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
                 if (acc == null) return false;
 
-                // Nếu không có salt (tài khoản cũ), so sánh trực tiếp
                 if (string.IsNullOrEmpty(acc.Salt))
                 {
                     return acc.PasswordHash == password;
                 }
 
-                // Hash password với salt và so sánh
                 string hashedPassword = HashPassword(password, acc.Salt);
                 return acc.PasswordHash == hashedPassword;
             }

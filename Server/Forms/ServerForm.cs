@@ -112,13 +112,11 @@ namespace Server
             var displayName = it.SubItems[1].Text;
             var passwordHash = it.SubItems.Count > 4 ? it.SubItems[4].Text : string.Empty;
 
-            // Open UpdateForm instead of AdminProfile
             using (var dlg = new Server.Forms.UpdateForm(username))
             {
                 var res = dlg.ShowDialog(this);
                 if (res == DialogResult.OK)
                 {
-                    // Refresh list to show updated info
                     RefreshUsersList();
                 }
             }
@@ -157,7 +155,6 @@ namespace Server
                 var users = AuthManager.GetAllUsers().ToList();
                 var onlineUsers = OnlineRegistry.ListUsernames();
 
-                // Apply role filter from cbbRole (All/Admin/User). Ensure cbbRole items initialized.
                 string roleFilter = cbbRole.SelectedItem as string;
                 if (!string.IsNullOrEmpty(roleFilter) && roleFilter != "Tất cả")
                 {
@@ -168,7 +165,6 @@ namespace Server
                 var q = txtServerSearch.Text?.Trim() ?? string.Empty;
                 if (!string.IsNullOrEmpty(q))
                 {
-                    // determine which radio is checked via control lookup
                     var rdDisplay = this.Controls.Find("radioButton1", true).FirstOrDefault() as RadioButton;
                     var rdUser = this.Controls.Find("radioButton3", true).FirstOrDefault() as RadioButton;
 
@@ -212,11 +208,9 @@ namespace Server
                     item.SubItems.Add(user.DisplayName ?? user.Username);
                     item.SubItems.Add(user.Role.ToString());
 
-                    // Check if user is online
                     bool isOnline = onlineUsers.Contains(user.Username);
                     item.SubItems.Add(isOnline ? "Online" : "Offline");
 
-                    // Show password hash (can't show plaintext)
                     item.SubItems.Add(user.PasswordHash ?? string.Empty);
 
                     // Color coding for online/offline
@@ -276,8 +270,7 @@ namespace Server
                 _server.Start();
 
                 _cts = new CancellationTokenSource();
-                _ = _server.AcceptLoopAsync(_cts.Token); // không chặn UI
-
+                _ = _server.AcceptLoopAsync(_cts.Token); 
                 // Start refresh timer
                 _refreshTimer.Start();
 

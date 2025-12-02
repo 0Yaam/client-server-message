@@ -115,7 +115,6 @@ namespace Server.ServerCore
                             string groupName = (string)cmd.name;
                             var members = ((JArray)cmd.members).ToObject<string[]>();
 
-                            // create server-side group id
                             string groupId = Guid.NewGuid().ToString();
 
                             // persist group info
@@ -139,11 +138,10 @@ namespace Server.ServerCore
                                     {
                                         await target.SendAsync(groupCreatedMsg, ct);
                                     }
-                                    catch { /* ignore send errors */ }
+                                    catch {}
                                 }
                             }
 
-                            // Optionally confirm to creator with groupId
                             await SendAsync(new { type = "GROUP_CREATE_OK", groupId = groupId, name = groupName, members = members }, ct);
                             break;
                         }
@@ -153,8 +151,7 @@ namespace Server.ServerCore
                             string to = (string)cmd.to;
                             string msg = (string)cmd.message;
                             string from = this.Username;
-
-                            // If `to` is a group id, relay to members
+                            //if to is a group id, relay to members,
                             if (GroupRegistry.TryGet(to, out var group))
                             {
                                 foreach (var member in group.Members)
@@ -174,7 +171,7 @@ namespace Server.ServerCore
                                                 time = DateTime.UtcNow
                                             }, ct);
                                         }
-                                        catch { /* ignore per-target errors */ }
+                                        catch {  }
                                     }
                                 }
 
