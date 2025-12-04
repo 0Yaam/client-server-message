@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Client.Services
 {
@@ -13,6 +13,7 @@ namespace Client.Services
         private TcpClient _tcp;
         private NetworkStream _ns;
 
+        // Kết nối TCP tới server
         public async Task<bool> ConnectAsync(string host, int port)
         {
             _tcp = new TcpClient();
@@ -21,6 +22,7 @@ namespace Client.Services
             return true;
         }
 
+        // Gửi một đối tượng JSON (kết thúc bằng newline)
         public async Task SendAsync(object obj)
         {
             var json = JsonConvert.SerializeObject(obj) + "\n";
@@ -28,6 +30,7 @@ namespace Client.Services
             await _ns.WriteAsync(data, 0, data.Length);
         }
 
+        // Đọc một dòng JSON từ stream (dừng khi gặp '\n')
         public async Task<string> ReadLineAsync(CancellationToken ct)
         {
             var ms = new MemoryStream();
@@ -45,6 +48,7 @@ namespace Client.Services
             return Encoding.UTF8.GetString(ms.ToArray());
         }
 
+        // Đóng kết nối an toàn
         public async Task CloseAsync()
         {
             try { _ns?.Close(); } catch { }

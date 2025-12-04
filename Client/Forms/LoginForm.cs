@@ -20,9 +20,9 @@ namespace Client
             InitializeComponent();
             this.AcceptButton = btnLogin;
             txtUsername.Focus();
-
         }
 
+        // Xử lý nút Đăng nhập
         private async void btnLogin_Click(object sender, EventArgs e)
         {
             string username = txtUsername.Text.Trim();
@@ -55,16 +55,18 @@ namespace Client
             }
             catch (Exception ex)
             {
-                // show friendly message when server unreachable
+                // Thông báo khi không thể kết nối tới server
                 MessageBox.Show("Hiện server đóng cửa", "Lỗi kết nối", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
+        // Đóng ứng dụng
         private void btnExit_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
+        // Mở form Đăng ký
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             var form = new SignUpForm();

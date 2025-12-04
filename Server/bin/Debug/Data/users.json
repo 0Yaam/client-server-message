@@ -30,5 +30,13 @@
     "Role": 0,
     "DisplayName": "Boloro",
     "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\boloro.png"
+  },
+  {
+    "Username": "vuong",
+    "PasswordHash": "BsqQqFTFyO/SUwq99Jczvepsx0d9eVXw9+NKfXEtGcM=",
+    "Salt": "mexhuruGqX5z5TkQwjvrOsNFUHzqNvp62uFs45gc7Tg=",
+    "Role": 0,
+    "DisplayName": "Vuong",
+    "Avatar": ""
   }
 ]

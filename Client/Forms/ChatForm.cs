@@ -22,13 +22,13 @@ namespace Client.Forms
         private string _currentPeer = null;
         private readonly System.Windows.Forms.Timer _listTimer = new System.Windows.Forms.Timer { Interval = 2000 };
 
-        // Keep special local users (e.g. server alias Zola) so they survive LIST refresh
+        // Local users preserved across LIST refresh
         private readonly HashSet<string> _localSpecialUsers = new HashSet<string>(StringComparer.Ordinal);
 
-        // Cache avatar chosen when creating a group (keyed by group name)
+        // Pending group avatars by group name
         private readonly Dictionary<string, string> _pendingGroupAvatarByName = new Dictionary<string, string>(StringComparer.Ordinal);
 
-        // Conversation storage so UI can be rebuilt without losing history
+        // Conversation history store
         private class ConversationMessage
         {
             public bool IsOutgoing { get; set; }
@@ -39,6 +39,10 @@ namespace Client.Forms
         private readonly Dictionary<string, List<ConversationMessage>> _conversations = new Dictionary<string, List<ConversationMessage>>();
         private readonly Dictionary<string, string[]> _groupMembers = new Dictionary<string, string[]>();
         private string[] _latestUsers = Array.Empty<string>();
+        private string[] _allUsers = Array.Empty<string>();
+
+        // Hàng đợi tin nhắn offline theo người nhận
+        private readonly Dictionary<string, List<string>> _pendingOutgoingByUser = new Dictionary<string, List<string>>(StringComparer.Ordinal);
 
         public ChatForm(Account me, TcpService tcp)
         {
@@ -50,7 +54,7 @@ namespace Client.Forms
             flpMessages.AutoScroll = true;
             flpMessages.FlowDirection = FlowDirection.TopDown;
 
-            // Enable double-buffering on FlowLayoutPanels to reduce flicker
+            // Enable double-buffering to reduce flicker
             try
             {
                 typeof(FlowLayoutPanel).GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic)
@@ -69,14 +73,56 @@ namespace Client.Forms
                 }
             };
 
-            this.Load += async (s, e) => { try { await _tcp.SendAsync(new { type = "LIST" }); } catch { } };
+            // Request initial user list on load
+            this.Load += async (s, e) =>
+            {
+                try
+                {
+                    LoadAllUsersLocal();
+                    RenderUserList(_latestUsers);
+                    await _tcp.SendAsync(new { type = "LIST" });
+                }
+                catch { }
+            };
 
+            // Periodically refresh user list
             _listTimer.Tick += async (s, e) => { try { await _tcp.SendAsync(new { type = "LIST" }); } catch { } };
             _listTimer.Start();
 
+            // Start background listener
             _ = Task.Run(ListenLoop);
         }
         public ChatForm() : this(new Account("demo", "", "", UserRole.User), null) { }
+
+        private void LoadAllUsersLocal()
+        {
+            try
+            {
+                var accs = AccountJsonService_LoginSafe();
+                if (accs != null)
+                {
+                    _allUsers = accs.Where(a => !string.Equals(a.Username, _me.Username, StringComparison.OrdinalIgnoreCase))
+                                    .Select(a => a.Username)
+                                    .Distinct(StringComparer.Ordinal)
+                                    .ToArray();
+                }
+            }
+            catch { _allUsers = Array.Empty<string>(); }
+        }
+
+        // Đọc danh sách tài khoản từ file JSON (an toàn)
+        private List<Account> AccountJsonService_LoginSafe()
+        {
+            try
+            {
+                // AccountJsonService ném lỗi khi thiếu file; xử lý an toàn
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "users.json");
+                if (!File.Exists(path)) return null;
+                var json = File.ReadAllText(path);
+                return JsonConvert.DeserializeObject<List<Account>>(json) ?? new List<Account>();
+            }
+            catch { return null; }
+        }
 
         private void EnsureUserInList(string username)
         {
@@ -84,10 +130,10 @@ namespace Client.Forms
             {
                 if (string.IsNullOrEmpty(username)) return;
 
-                // If it's a group id, skip
+                // Skip groups
                 if (_groupMembers.ContainsKey(username)) return;
 
-                // Track as a special local user so it survives server LIST refresh
+                // Preserve as local special user
                 _localSpecialUsers.Add(username);
 
                 bool exists = flpUsers.Controls.OfType<Controls.ChatListItemControl>().Any(i => i.Username == username);
@@ -96,7 +142,7 @@ namespace Client.Forms
                     var item = new Controls.ChatListItemControl
                     {
                         Width = flpUsers.ClientSize.Width - 6,
-                        Margin = new Padding(10, 4, 10, 4) // increased horizontal spacing
+                        Margin = new Padding(10, 4, 10, 4) // item margin
                     };
                     item.Bind(username: username, displayName: username, lastMessage: "Nhấn để chat", time: DateTime.Now);
 
@@ -109,8 +155,23 @@ namespace Client.Forms
                         SelectPeer(item.Username);
                     };
 
+                    // Mặc định làm mờ nếu offline
+                    bool isOnline = _latestUsers?.Contains(username) == true;
+                    ApplyOnlineVisual(item, isOnline);
+
                     flpUsers.Controls.Add(item);
                 }
+            }
+            catch { }
+        }
+
+        private void ApplyOnlineVisual(Controls.ChatListItemControl item, bool isOnline)
+        {
+            try
+            {
+                item.Enabled = true; // luôn tương tác được
+                var fore = isOnline ? SystemColors.ControlText : Color.Gray;
+                item.ForeColor = fore;
             }
             catch { }
         }
@@ -135,9 +196,11 @@ namespace Client.Forms
                         _latestUsers = arr ?? Array.Empty<string>();
                         BeginInvoke(new Action(() =>
                         {
-                            RenderUserList(arr);
-                            if (arr.Length > 0 && string.IsNullOrEmpty(_currentPeer))
-                                SelectPeer(arr[0]);
+                            RenderUserList(_latestUsers);
+                            // Flush pending messages in background to avoid UI blocking
+                            _ = FlushPendingToOnlineAsync(_latestUsers);
+                            if (_latestUsers.Length > 0 && string.IsNullOrEmpty(_currentPeer))
+                                SelectPeer(_latestUsers[0]);
                         }));
                     }
                     else if (type == "PASS_CHANGE_OK")
@@ -155,22 +218,22 @@ namespace Client.Forms
                         string from = (string)msg.from;
                         string text = (string)msg.message;
 
-                        // Ensure sender exists in user list (so admin/system senders like Zola appear)
+                        // Ensure sender appears in list
                         BeginInvoke(new Action(() => EnsureUserInList(from)));
 
-                        // Kiểm tra có phải tin nhắn nhóm không
-                        string groupId = msg.groupId; // có thể null nếu là 1:1
+                        // Check if message is for a group
+                        string groupId = msg.groupId; // may be null for 1:1
 
                         BeginInvoke(new Action(() =>
                         {
                             if (!string.IsNullOrEmpty(groupId))
                             {
-                                // Tin nhắn nhóm
+                                // Group message
                                 AppendIncomingGroup(groupId, from, text);
                             }
                             else
                             {
-                                // Tin nhắn 1:1
+                                // Direct message
                                 AppendIncoming(from, text);
                             }
                         }));
@@ -182,15 +245,13 @@ namespace Client.Forms
 
                         BeginInvoke(new Action(() =>
                         {
-                            // Kiểm tra xem có phải gửi tới nhóm không
+                            // Decide group vs direct
                             if (_groupMembers.ContainsKey(to))
                             {
-                                // Gửi tới nhóm
                                 AppendOutgoingGroup(to, text);
                             }
                             else
                             {
-                                // Gửi 1:1
                                 AppendOutgoing(text);
                             }
                         }));
@@ -207,7 +268,7 @@ namespace Client.Forms
                     }
                     else if (type == "AVATAR_UPDATED")
                     {
-                        // Receive avatar update broadcast from server
+                        // Handle avatar update broadcast
                         string username = (string)msg.username;
                         string b64 = (string)msg.image;
                         string ext = (string)msg.ext; // may include dot
@@ -217,13 +278,13 @@ namespace Client.Forms
                             var data = Convert.FromBase64String(b64);
                             var saved = SaveAvatarLocal(username, data, ext);
 
-                            // update local account if matches
+                            // Update local account avatar path if current user
                             if (string.Equals(_me?.Username, username, StringComparison.OrdinalIgnoreCase))
                             {
                                 _me.Avatar = saved;
                             }
 
-                            // Update UI
+                            // Update UI avatar for matching list items
                             BeginInvoke(new Action(() =>
                             {
                                 foreach (Control c in flpUsers.Controls)
@@ -254,7 +315,7 @@ namespace Client.Forms
                         string b64 = (string)msg.image;
                         string ext = (string)msg.ext;
 
-                        // Ensure sender exists in user list
+                        // Ensure sender appears in list
                         BeginInvoke(new Action(() => EnsureUserInList(from)));
 
                         try
@@ -335,18 +396,30 @@ namespace Client.Forms
 
             if (string.IsNullOrEmpty(_currentPeer))
             {
-                MessageBox.Show("Nothing happend");
+                MessageBox.Show("Chưa chọn người nhận");
                 return;
             }
 
             try
             {
-                await _tcp.SendAsync(new
+                // Gửi trực tiếp nếu là nhóm hoặc người đang online
+                bool isGroup = _groupMembers.ContainsKey(_currentPeer);
+                bool isOnline = _latestUsers?.Contains(_currentPeer) == true;
+                if (isGroup || isOnline)
                 {
-                    type = "MSG_TO",
-                    to = _currentPeer,
-                    message = text
-                });
+                    await _tcp.SendAsync(new
+                    {
+                        type = "MSG_TO",
+                        to = _currentPeer,
+                        message = text
+                    });
+                }
+                else
+                {
+                    // Lưu vào hàng đợi offline để gửi khi người nhận online
+                    QueueOfflineMessage(_currentPeer, text);
+                }
+
                 txtMessage.Clear();
                 txtMessage.Focus();
             }
@@ -356,6 +429,59 @@ namespace Client.Forms
             }
         }
 
+        private void QueueOfflineMessage(string to, string text)
+        {
+            if (string.IsNullOrEmpty(to) || string.IsNullOrEmpty(text)) return;
+            if (!_pendingOutgoingByUser.TryGetValue(to, out var list))
+            {
+                list = new List<string>();
+                _pendingOutgoingByUser[to] = list;
+            }
+            list.Add(text);
+
+            // Hiển thị ngay tin nhắn đã xếp hàng
+            var now = DateTime.Now;
+            AddMessageToConversation(to, true, text, now, sender: null);
+            if (string.Equals(_currentPeer, to, StringComparison.Ordinal))
+            {
+                var bubble = new Controls.MessageBubbleControl
+                {
+                    IsOutgoing = true,
+                    MessageText = text,
+                    Timestamp = now
+                };
+                flpMessages.Controls.Add(bubble);
+                bubble.UpdateLayoutBubble();
+                flpMessages.ScrollControlIntoView(bubble);
+            }
+        }
+
+        private async Task FlushPendingToOnlineAsync(string[] onlineUsers)
+        {
+            try
+            {
+                if (onlineUsers == null || onlineUsers.Length == 0) return;
+                foreach (var u in onlineUsers)
+                {
+                    if (_pendingOutgoingByUser.TryGetValue(u, out var list) && list.Count > 0)
+                    {
+                        // copy to avoid mutation during send
+                        var snapshot = list.ToArray();
+                        foreach (var msg in snapshot)
+                        {
+                            try
+                            {
+                                await _tcp.SendAsync(new { type = "MSG_TO", to = u, message = msg });
+                                list.Remove(msg);
+                            }
+                            catch { }
+                        }
+                        if (list.Count == 0) _pendingOutgoingByUser.Remove(u);
+                    }
+                }
+            }
+            catch { }
+        }
 
         private void SelectPeer(string username)
         {
@@ -422,7 +548,7 @@ namespace Client.Forms
 
         private void RenderUserList(string[] users)
         {
-            // Delta update: reuse existing ChatListItemControl instances when possible to minimize redraw/flicker
+            // Update user list with minimal redraw
             flpUsers.SuspendLayout();
             try
             {
@@ -430,18 +556,24 @@ namespace Client.Forms
                 var currentUserItems = currentItems.Where(i => !_groupMembers.ContainsKey(i.Username)).ToList();
                 var groupItems = currentItems.Where(i => _groupMembers.ContainsKey(i.Username)).ToList();
 
-                // Build final list: server users + local special users (dedup)
-                var finalUsers = new List<string>();
-                if (users != null) finalUsers.AddRange(users);
-                foreach (var su in _localSpecialUsers)
-                {
-                    if (!finalUsers.Contains(su)) finalUsers.Add(su);
-                }
+                // Merge server users with local special users and all users from local store
+                var finalUsersSet = new HashSet<string>(StringComparer.Ordinal);
+                if (_allUsers != null) foreach (var u in _allUsers) finalUsersSet.Add(u);
+                if (users != null) foreach (var u in users) finalUsersSet.Add(u);
+                foreach (var su in _localSpecialUsers) finalUsersSet.Add(su);
 
-                // Map existing user items by username
+                var finalUsers = finalUsersSet.Where(u => !string.Equals(u, _me.Username, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                // Sort: online first then offline, then by name
+                finalUsers = finalUsers
+                    .OrderByDescending(u => users != null && users.Contains(u))
+                    .ThenBy(u => u, StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+                // Map existing items by username
                 var currentMap = currentUserItems.ToDictionary(i => i.Username, StringComparer.Ordinal);
 
-                // Dispose and remove items that are no longer in finalUsers
+                // Remove stale items
                 var toRemove = currentUserItems.Where(i => !finalUsers.Contains(i.Username)).ToList();
                 foreach (var rm in toRemove)
                 {
@@ -449,20 +581,20 @@ namespace Client.Forms
                     try { rm.Dispose(); } catch { }
                 }
 
-                // Clear controls and re-add groups first (keep same instances)
+                // Rebuild controls, keep groups
                 flpUsers.Controls.Clear();
                 foreach (var grp in groupItems)
                 {
                     flpUsers.Controls.Add(grp);
                 }
 
-                // Preserve selection (username)
+                // Save selection
                 var previouslySelected = currentItems.FirstOrDefault(i => i.Selected)?.Username;
 
-                // Add or reuse user items in order
+                // Add or reuse user items
                 foreach (var u in finalUsers)
                 {
-                    if (_groupMembers.ContainsKey(u)) continue; // skip group ids
+                    if (_groupMembers.ContainsKey(u)) continue;
 
                     string preview = "Nhấn để chat";
                     DateTime time = DateTime.Now;
@@ -475,29 +607,13 @@ namespace Client.Forms
 
                     if (currentMap.TryGetValue(u, out var existing))
                     {
-                        // Update only when changed to avoid unnecessary invalidation
                         if (existing.DisplayName != u) existing.DisplayName = u;
                         if (existing.LastMessage != preview) existing.LastMessage = preview;
                         if (existing.Time != time) existing.Time = time;
 
-                        // Attempt to load avatar if none present
-                        try
-                        {
-                            if (existing != null)
-                            {
-                                var avatarPath = FindLocalAvatar(u);
-                                if (!string.IsNullOrEmpty(avatarPath) && File.Exists(avatarPath))
-                                {
-                                    // Only set avatar if control currently has no image to avoid reloads
-                                    // (ChatListItemControl disposes previous image in SetAvatar)
-                                    // Use reflection to peek at private pbAvatar.Image? To keep it simple, set only when no image.
-                                    // We'll attempt to set if ToString of Image is null (can't access private) - so skip aggressive check.
-                                }
-                            }
-                        }
-                        catch { }
+                        bool isOnline = users != null && users.Contains(u);
+                        ApplyOnlineVisual(existing, isOnline);
 
-                        // Re-add in desired order
                         flpUsers.Controls.Add(existing);
                     }
                     else
@@ -509,7 +625,7 @@ namespace Client.Forms
                         };
                         item.Bind(username: u, displayName: u, lastMessage: preview, time: time);
 
-                        // Try to load local avatar
+                        // Load local avatar when present
                         var avatarPath = FindLocalAvatar(u);
                         if (!string.IsNullOrEmpty(avatarPath) && File.Exists(avatarPath))
                         {
@@ -533,6 +649,9 @@ namespace Client.Forms
                             SelectPeer(item.Username);
                         };
 
+                        bool isOnline = users != null && users.Contains(u);
+                        ApplyOnlineVisual(item, isOnline);
+
                         flpUsers.Controls.Add(item);
                     }
                 }
@@ -549,7 +668,6 @@ namespace Client.Forms
                 flpUsers.ResumeLayout();
             }
         }
-
 
         private void AddGroupToUserList(string groupId, string groupName, string[] members)
         {
@@ -573,7 +691,7 @@ namespace Client.Forms
             };
             item.Bind(username: groupId, displayName: groupName, lastMessage: "Nhóm chat mới", time: DateTime.Now);
 
-            // Apply locally chosen avatar if available (mapped by group name)
+            // Apply cached group avatar if present
             try
             {
                 string avatarPath;
@@ -587,7 +705,6 @@ namespace Client.Forms
                             item.SetAvatar(new Bitmap(img));
                         }
                     }
-                    // keep it for future rebuilds or remove after set; here we keep it
                 }
             }
             catch { }
@@ -747,14 +864,15 @@ namespace Client.Forms
         {
             try
             {
-                var candidates = _latestUsers.Where(x => !string.Equals(x, _me?.Username, StringComparison.Ordinal)).ToArray();
+                var candidates = _allUsers.Length > 0 ? _allUsers : _latestUsers;
+                candidates = candidates.Where(x => !string.Equals(x, _me?.Username, StringComparison.OrdinalIgnoreCase)).ToArray();
                 using (var dlg = new Controls.Group(candidates))
                 {
                     dlg.GroupCreated += async (s, ev) =>
                     {
                         try
                         {
-                            // cache avatar by group name so we can apply it when server returns GROUP_CREATED
+                            // Cache avatar for applying when server returns GROUP_CREATED
                             if (!string.IsNullOrEmpty(ev.GroupName) && !string.IsNullOrEmpty(ev.AvatarPath))
                             {
                                 _pendingGroupAvatarByName[ev.GroupName] = ev.AvatarPath;
@@ -902,12 +1020,12 @@ namespace Client.Forms
         {
             try
             {
-                // Ưu tiên item đang chọn
+                // Prefer currently selected item
                 var selected = flpUsers.Controls
                     .OfType<Controls.ChatListItemControl>()
                     .FirstOrDefault(i => i != null && i.Selected);
 
-                // Nếu chưa chọn, lấy control dưới vị trí chuột khi mở menu
+                // If none selected, pick control under mouse
                 if (selected == null)
                 {
                     var pt = flpUsers.PointToClient(Cursor.Position);
@@ -918,7 +1036,7 @@ namespace Client.Forms
 
                 if (selected == null) return;
 
-                // Không xóa nhóm (chỉ xóa người khỏi danh sách chat)
+                // Do not remove groups
                 if (_groupMembers.ContainsKey(selected.Username)) return;
 
                 flpUsers.Controls.Remove(selected);

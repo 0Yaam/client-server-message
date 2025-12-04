@@ -1,12 +1,6 @@
 ﻿using Client.Services;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -25,6 +19,7 @@ namespace Client
             this.AcceptButton = btnRegister;
         }
 
+        // Quay lại màn hình Đăng nhập
         private void btnBack_Click(object sender, EventArgs e)
         {
             FormLogin login = new FormLogin();
@@ -32,6 +27,7 @@ namespace Client
             this.Hide();
         }
 
+        // Xử lý nút Đăng ký
         private async void btnRegister_Click(object sender, EventArgs e)
         {
             string displayName = txtDisplayName.Text.Trim();
@@ -39,48 +35,13 @@ namespace Client
             string password = txtPassword.Text.Trim();
             string confirmPassword = txtConfirm.Text.Trim();
 
-
-            if (string.IsNullOrEmpty(displayName))
-            {
-                MessageBox.Show("Vui lòng nhập tên hiển thị!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtDisplayName.Focus();
-                return;
-            }
-
-            if (string.IsNullOrEmpty(username))
-            {
-                MessageBox.Show("Vui lòng nhập tên đăng nhập!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtUsername.Focus();
-                return;
-            }
-
-            if (username.Length < 3)
-            {
-                MessageBox.Show("Tên đăng nhập phải có ít nhất 3 ký tự!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtUsername.Focus();
-                return;
-            }
-
-            if (string.IsNullOrEmpty(password))
-            {
-                MessageBox.Show("Vui lòng nhập mật khẩu!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtPassword.Focus();
-                return;
-            }
-
-            if (password.Length < 6)
-            {
-                MessageBox.Show("Mật khẩu phải có ít nhất 6 ký tự!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtPassword.Focus();
-                return;
-            }
-
-            if (password != confirmPassword)
-            {
-                MessageBox.Show("Mật khẩu xác nhận không khớp!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtConfirm.Focus();
-                return;
-            }
+            // Kiểm tra dữ liệu nhập
+            if (string.IsNullOrEmpty(displayName)) { MessageBox.Show("Vui lòng nhập tên hiển thị!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning); txtDisplayName.Focus(); return; }
+            if (string.IsNullOrEmpty(username)) { MessageBox.Show("Vui lòng nhập tên đăng nhập!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning); txtUsername.Focus(); return; }
+            if (username.Length < 3) { MessageBox.Show("Tên đăng nhập phải có ít nhất 3 ký tự!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning); txtUsername.Focus(); return; }
+            if (string.IsNullOrEmpty(password)) { MessageBox.Show("Vui lòng nhập mật khẩu!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning); txtPassword.Focus(); return; }
+            if (password.Length < 6) { MessageBox.Show("Mật khẩu phải có ít nhất 6 ký tự!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning); txtPassword.Focus(); return; }
+            if (password != confirmPassword) { MessageBox.Show("Mật khẩu xác nhận không khớp!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning); txtConfirm.Focus(); return; }
 
             btnRegister.Enabled = false;
             btnRegister.Text = "Đang đăng ký...";
@@ -109,7 +70,6 @@ namespace Client
                 if (responseType == "REGISTER_OK")
                 {
                     MessageBox.Show("Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
 
                     FormLogin login = new FormLogin();
                     login.Show();

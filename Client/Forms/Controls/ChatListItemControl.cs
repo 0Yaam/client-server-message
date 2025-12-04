@@ -68,11 +68,8 @@ namespace Client.Forms.Controls
             InitializeComponent();
             DoubleBuffered = true;
 
-            // enforce consistent height
             this.Height = 72;
-            // Use subtle background so items are visible against parent
-            this.BackColor = Color.White; // avoid transparent to prevent invisible background in some containers
-
+            this.BackColor = Color.White; 
             if (lblName != null) lblName.Font = new Font(lblName.Font.FontFamily, 10F, FontStyle.Bold);
             if (lblTime != null)
             {
@@ -86,20 +83,16 @@ namespace Client.Forms.Controls
                 lblLastMessage.AutoEllipsis = true;
             }
 
-            this.AutoSize = false; // fixed size for uniformity
-            this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            this.AutoSize = false;             this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
 
-            // set default width to preferred size
             this.Width = PreferredItemWidth;
             this.MinimumSize = new Size(Math.Min(PreferredItemWidth, 150), 64);
             this.MaximumSize = new Size(PreferredItemWidth, 0);
 
             AttachHandlersRecursive(this);
 
-            // setup avatar to a pleasant fixed size but respect designer if set
             TryFixAvatarSize(48);
 
-            // ensure children visible
             BringChildrenToFront();
         }
 
@@ -118,14 +111,13 @@ namespace Client.Forms.Controls
             try
             {
                 if (pbAvatar == null) return;
-                // only set size if designer left default very large/small
                 pbAvatar.Width = pbAvatar.Height = size;
                 pbAvatar.SizeMode = PictureBoxSizeMode.Zoom;
                 MakeAvatarCircle();
             }
             catch { }
         }
-
+        // Adjust width when parent changes size
         protected override void OnParentChanged(EventArgs e)
         {
             base.OnParentChanged(e);
@@ -153,11 +145,9 @@ namespace Client.Forms.Controls
                 int parentInnerWidth = Parent.ClientSize.Width - Parent.Padding.Left - Parent.Padding.Right;
                 if (parentInnerWidth <= 0)
                 {
-                    // Fallback to a safe width until parent lays out
                     parentInnerWidth = PreferredItemWidth;
                 }
 
-                // If parent is wider than preferred, use preferred. Otherwise fit into parent but not less than 150
                 int available = Math.Max(150, parentInnerWidth - this.Margin.Left - this.Margin.Right);
                 int target = Math.Min(PreferredItemWidth, available);
 
@@ -281,7 +271,6 @@ namespace Client.Forms.Controls
             var rect = this.ClientRectangle;
             rect.Inflate(-2, -2);
 
-            // Selected or hovered use the same hover color for clear distinction
             Color fill = (Selected || _isHover) ? HoverColor : Color.White;
 
             using (var brush = new SolidBrush(fill))

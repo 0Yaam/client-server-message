@@ -23,12 +23,12 @@ namespace Client.Forms
             _me = me ?? throw new ArgumentNullException(nameof(me));
             _tcp = tcp;
 
-
+            // Hiển thị thông tin tài khoản
             lblDisplayName.Text = _me.DisplayName ?? _me.Username;
             lblUserName.Text = _me.Username;
             lblRole.Text = _me.Role.ToString();
 
-
+            // Tải avatar hiện tại nếu có
             try
             {
                 if (!string.IsNullOrEmpty(_me.Avatar) && File.Exists(_me.Avatar))
@@ -46,19 +46,17 @@ namespace Client.Forms
             btnChangePass.Click += btnChangePass_Click;
         }
 
+        // Đăng xuất ra màn hình đăng nhập
         private void BtnLogout_Click(object sender, EventArgs e)
         {
-
             try
             {
-
                 try { _tcp?.CloseAsync().Wait(500); } catch { }
             }
             catch { }
 
             var login = new FormLogin();
             login.Show();
-
 
             if (this.Owner != null)
             {
@@ -68,6 +66,7 @@ namespace Client.Forms
             this.Close();
         }
 
+        // Chọn và upload avatar mới
         private async void BtnBrowse_Click(object sender, EventArgs e)
         {
             using (var dlg = new OpenFileDialog())
@@ -77,24 +76,23 @@ namespace Client.Forms
                 {
                     try
                     {
-
+                        // Lưu avatar vào thư mục Data/Avatars
                         var destDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Avatars");
                         Directory.CreateDirectory(destDir);
                         var dest = Path.Combine(destDir, Path.GetFileName(dlg.FileName));
                         File.Copy(dlg.FileName, dest, true);
 
-
+                        // Cập nhật đường dẫn avatar cục bộ
                         _me.Avatar = dest;
 
-
+                        // Hiển thị avatar mới
                         using (var fs = File.OpenRead(dest))
                         {
                             var img = Image.FromStream(fs);
-
                             guna2PictureBox1.Image = new Bitmap(img);
                         }
 
-
+                        // Upload avatar lên server
                         try
                         {
                             if (_tcp != null)
@@ -103,12 +101,9 @@ namespace Client.Forms
                                 string b64 = Convert.ToBase64String(data);
                                 string ext = Path.GetExtension(dest);
                                 await _tcp.SendAsync(new { type = "AVATAR_UPLOAD", image = b64, ext = ext });
-
-
                             }
                         }
                         catch { }
-
                     }
                     catch (Exception ex)
                     {
@@ -118,7 +113,7 @@ namespace Client.Forms
             }
         }
 
-
+        // Đổi mật khẩu cục bộ và gửi yêu cầu lên server
         private async void btnChangePass_Click(object sender, EventArgs e)
         {
             var oldPass = txtOldPassword.Text;
@@ -138,7 +133,7 @@ namespace Client.Forms
 
             try
             {
-
+                // Kiểm tra khớp mật khẩu cũ với dữ liệu cục bộ
                 bool oldMatches = false;
                 if (string.IsNullOrEmpty(_me.Salt))
                 {
@@ -152,18 +147,17 @@ namespace Client.Forms
 
                 if (!oldMatches)
                 {
-
                     var res = MessageBox.Show("Mật khẩu cũ không trùng với dữ liệu cục bộ. Bạn có muốn tiếp tục và ghi đè?","Cảnh báo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                     if (res != DialogResult.Yes) return;
                 }
 
-
+                // Tạo salt + hash mới và lưu cục bộ
                 var newSalt = GenerateSalt();
                 var newHash = HashPassword(newPass, newSalt);
                 _me.Salt = newSalt;
                 _me.PasswordHash = newHash;
 
-
+                // Cập nhật file Data/users.json cục bộ
                 try
                 {
                     var dataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
@@ -182,7 +176,6 @@ namespace Client.Forms
                         }
                         else
                         {
-
                             arr.Add(_me);
                         }
 
@@ -190,19 +183,17 @@ namespace Client.Forms
                     }
                     else
                     {
-
                         var arr = new Account[] { _me };
                         File.WriteAllText(file, JsonConvert.SerializeObject(arr, Formatting.Indented));
                     }
                 }
                 catch {  }
 
-
+                // Gửi yêu cầu đổi mật khẩu tới server
                 try
                 {
                     if (_tcp != null)
                     {
-
                         _ = _tcp.SendAsync(new { type = "PASS_CHANGE", oldPassword = oldPass, newPassword = newPass });
                     }
                 }
@@ -216,6 +207,7 @@ namespace Client.Forms
             }
         }
 
+        // Sinh salt ngẫu nhiên
         private static string GenerateSalt()
         {
             using (var rng = new RNGCryptoServiceProvider())
@@ -226,6 +218,7 @@ namespace Client.Forms
             }
         }
 
+        // Hash mật khẩu với salt
         private static string HashPassword(string password, string salt)
         {
             using (var sha256 = SHA256.Create())
