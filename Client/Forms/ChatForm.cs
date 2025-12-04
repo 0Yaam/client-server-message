@@ -116,7 +116,35 @@ namespace Client.Forms
             try
             {
                 // AccountJsonService ném lỗi khi thiếu file; xử lý an toàn
-                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "users.json");
+                // Ưu tiên Client/Data, fallback sang Server/Data (tìm ngược nhiều cấp)
+                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                var clientPath = Path.Combine(baseDir, "Data", "users.json");
+                string path = clientPath;
+
+                if (!File.Exists(path))
+                {
+                    try
+                    {
+                        var dir = new DirectoryInfo(baseDir);
+                        for (int i = 0; i < 6 && dir != null; i++)
+                        {
+                            var candidates = new[]
+                            {
+                                Path.Combine(dir.FullName, "Server", "bin", "Debug", "Data", "users.json"),
+                                Path.Combine(dir.FullName, "Server", "bin", "Release", "Data", "users.json"),
+                                Path.Combine(dir.FullName, "Server", "Data", "users.json")
+                            };
+                            foreach (var c in candidates)
+                            {
+                                if (File.Exists(c)) { path = c; break; }
+                            }
+                            if (File.Exists(path)) break;
+                            dir = dir.Parent;
+                        }
+                    }
+                    catch { }
+                }
+
                 if (!File.Exists(path)) return null;
                 var json = File.ReadAllText(path);
                 return JsonConvert.DeserializeObject<List<Account>>(json) ?? new List<Account>();
@@ -380,11 +408,41 @@ namespace Client.Forms
         {
             try
             {
-                var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Avatars");
-                if (!Directory.Exists(dir)) return null;
-                var files = Directory.GetFiles(dir, username + ".*");
-                if (files.Length == 0) return null;
-                return files[0];
+                // Tìm avatar ở Client/Data/Avatars, nếu không có thì fallback Server/Data/Avatars (tìm ngược nhiều cấp)
+                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                // 1) Client/Data/Avatars
+                var clientAvt = Path.Combine(baseDir, "Data", "Avatars");
+                if (Directory.Exists(clientAvt))
+                {
+                    var files = Directory.GetFiles(clientAvt, username + ".*");
+                    if (files.Length > 0) return files[0];
+                }
+
+                // 2) Server/bin/{Debug|Release}/Data/Avatars or Server/Data/Avatars by walking up
+                try
+                {
+                    var dir = new DirectoryInfo(baseDir);
+                    for (int i = 0; i < 6 && dir != null; i++)
+                    {
+                        var candidates = new[]
+                        {
+                            Path.Combine(dir.FullName, "Server", "bin", "Debug", "Data", "Avatars"),
+                            Path.Combine(dir.FullName, "Server", "bin", "Release", "Data", "Avatars"),
+                            Path.Combine(dir.FullName, "Server", "Data", "Avatars"),
+                        };
+                        foreach (var serverAvt in candidates)
+                        {
+                            if (Directory.Exists(serverAvt))
+                            {
+                                var files = Directory.GetFiles(serverAvt, username + ".*");
+                                if (files.Length > 0) return files[0];
+                            }
+                        }
+                        dir = dir.Parent;
+                    }
+                }
+                catch { }
+                return null;
             }
             catch { return null; }
         }

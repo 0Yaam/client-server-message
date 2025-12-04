@@ -46,5 +46,23 @@ namespace Server.ServerCore
             if (string.IsNullOrEmpty(groupId)) return false;
             lock (_lock) return _map.Remove(groupId);
         }
+
+        public static List<GroupInfo> ListByMember(string username)
+        {
+            if (string.IsNullOrEmpty(username)) return new List<GroupInfo>();
+            lock (_lock)
+            {
+                var result = new List<GroupInfo>();
+                foreach (var kv in _map)
+                {
+                    var info = kv.Value;
+                    if (info?.Members != null && Array.IndexOf(info.Members, username) >= 0)
+                    {
+                        result.Add(info);
+                    }
+                }
+                return result;
+            }
+        }
     }
 }

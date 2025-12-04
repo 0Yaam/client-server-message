@@ -13,7 +13,7 @@
     "Salt": "",
     "Role": 0,
     "DisplayName": null,
-    "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\user.png"
+    "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\user.jpg"
   },
   {
     "Username": "thinh",
@@ -37,6 +37,14 @@
     "Salt": "mexhuruGqX5z5TkQwjvrOsNFUHzqNvp62uFs45gc7Tg=",
     "Role": 0,
     "DisplayName": "Vuong",
+    "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\vuong.jpg"
+  },
+  {
+    "Username": "huynh",
+    "PasswordHash": "ayVtQYDcEJk/6XGOOHs8gSS0QN5gEdL5mT2uBjVTSQg=",
+    "Salt": "9GzD1xagOncHfeEFtUIexEHrHpujYFwStlpNAfuYQe0=",
+    "Role": 0,
+    "DisplayName": "huynh",
     "Avatar": ""
   }
 ]

@@ -20,13 +20,41 @@ namespace Client.Services
         {
             if (loaded) return;
 
-            if (!File.Exists(JsonPath))
+            string path = JsonPath;
+            if (!File.Exists(path))
             {
-                throw new FileNotFoundException("File users.json không tồn tại!");
+                try
+                {
+                    // Walk up to find Server/bin/{Debug|Release}/Data/users.json or Server/Data/users.json
+                    var dir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+                    for (int i = 0; i < 6 && dir != null; i++)
+                    {
+                        var candidates = new[]
+                        {
+                            Path.Combine(dir.FullName, "Server", "bin", "Debug", "Data", "users.json"),
+                            Path.Combine(dir.FullName, "Server", "bin", "Release", "Data", "users.json"),
+                            Path.Combine(dir.FullName, "Server", "Data", "users.json")
+                        };
+                        foreach (var c in candidates)
+                        {
+                            if (File.Exists(c)) { path = c; break; }
+                        }
+                        if (File.Exists(path)) break;
+                        dir = dir.Parent;
+                    }
+                }
+                catch { }
             }
 
-            string json = File.ReadAllText(JsonPath, Encoding.UTF8);
-            _accounts = JsonConvert.DeserializeObject<List<Account>>(json);
+            if (!File.Exists(path))
+            {
+                _accounts = new List<Account>();
+                loaded = true;
+                return;
+            }
+
+            string json = File.ReadAllText(path, Encoding.UTF8);
+            _accounts = JsonConvert.DeserializeObject<List<Account>>(json) ?? new List<Account>();
             loaded = true;
         }
 

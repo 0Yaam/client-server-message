@@ -52,6 +52,18 @@ namespace Server.ServerCore
                         OnlineRegistry.Add(this);
                         await SendAsync(new { type = "AUTH_OK", username = Username, role = Role.ToString() }, ct);
 
+                        // Sync existing groups for this user immediately after auth
+                        try
+                        {
+                            var groups = GroupRegistry.ListByMember(Username);
+                            foreach (var g in groups)
+                            {
+                                var msg = new { type = "GROUP_CREATED", groupId = g.GroupId, name = g.Name, members = g.Members };
+                                await SendAsync(msg, ct);
+                            }
+                        }
+                        catch { }
+
                         await CommandLoopAsync(ct);
                     }
                     else
