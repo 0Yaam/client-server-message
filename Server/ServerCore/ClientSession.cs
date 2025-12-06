@@ -64,6 +64,25 @@ namespace Server.ServerCore
                         }
                         catch { }
 
+                        // Send all pending offline messages
+                        try
+                        {
+                            var pendingMessages = OfflineMessageStore.GetAndClear(Username);
+                            foreach (var offlineMsg in pendingMessages)
+                            {
+                                var msg = new
+                                {
+                                    type = "MSG_RECV",
+                                    from = offlineMsg.From,
+                                    groupId = offlineMsg.GroupId,
+                                    message = offlineMsg.Message,
+                                    time = offlineMsg.Timestamp
+                                };
+                                await SendAsync(msg, ct);
+                            }
+                        }
+                        catch { }
+
                         await CommandLoopAsync(ct);
                     }
                     else
@@ -185,6 +204,11 @@ namespace Server.ServerCore
                                         }
                                         catch {  }
                                     }
+                                    else
+                                    {
+                                        // Member is offline, store message for later delivery
+                                        OfflineMessageStore.Store(member, from, msg, to);
+                                    }
                                 }
 
                                 // Echo to sender as MSG_SENT
@@ -216,7 +240,17 @@ namespace Server.ServerCore
                                 }
                                 else
                                 {
-                                    await SendAsync(new { type = "ERROR", text = "User offline" }, ct);
+                                    // User is offline, store message for later delivery
+                                    OfflineMessageStore.Store(to, this.Username, msg, null);
+                                    
+                                    // Still echo to sender
+                                    await SendAsync(new
+                                    {
+                                        type = "MSG_SENT",
+                                        to = to,
+                                        message = msg,
+                                        time = DateTime.UtcNow
+                                    }, ct);
                                 }
                             }
 

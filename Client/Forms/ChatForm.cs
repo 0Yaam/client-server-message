@@ -254,8 +254,7 @@ namespace Client.Forms
                         BeginInvoke(new Action(() =>
                         {
                             RenderUserList(_latestUsers);
-                            // Flush pending messages in background to avoid UI blocking
-                            _ = FlushPendingToOnlineAsync(_latestUsers);
+                            // Server now handles offline messages, no need to flush from client
                             if (_latestUsers.Length > 0 && string.IsNullOrEmpty(_currentPeer))
                                 SelectPeer(_latestUsers[0]);
                         }));
@@ -498,58 +497,13 @@ namespace Client.Forms
 
             try
             {
-                // Gửi trực tiếp nếu là nhóm hoặc người đang online
-                bool isGroup = _groupMembers.ContainsKey(_currentPeer);
-                bool isOnline = _latestUsers?.Contains(_currentPeer) == true;
-                
-                if (isGroup)
+                // Always send to server (server handles offline storage)
+                await _tcp.SendAsync(new
                 {
-                    // Check if all group members are online
-                    if (_groupMembers.TryGetValue(_currentPeer, out var members))
-                    {
-                        var offlineMembers = members.Where(m => 
-                            !string.Equals(m, _me?.Username, StringComparison.OrdinalIgnoreCase) &&
-                            !(_latestUsers?.Contains(m) == true)).ToList();
-                        
-                        if (offlineMembers.Count > 0)
-                        {
-                            // Warning: Some members are offline
-                            var result = MessageBox.Show(
-                                $"Có {offlineMembers.Count} thành viên đang offline: {string.Join(", ", offlineMembers)}.\n" +
-                                "Họ sẽ không nhận được tin nhắn này.\n\n" +
-                                "Bạn có muốn gửi không?",
-                                "Cảnh báo",
-                                MessageBoxButtons.YesNo,
-                                MessageBoxIcon.Warning);
-                            
-                            if (result != DialogResult.Yes)
-                            {
-                                return;
-                            }
-                        }
-                    }
-                    
-                    await _tcp.SendAsync(new
-                    {
-                        type = "MSG_TO",
-                        to = _currentPeer,
-                        message = text
-                    });
-                }
-                else if (isOnline)
-                {
-                    await _tcp.SendAsync(new
-                    {
-                        type = "MSG_TO",
-                        to = _currentPeer,
-                        message = text
-                    });
-                }
-                else
-                {
-                    // Lưu vào hàng đợi offline để gửi khi người nhận online
-                    QueueOfflineMessage(_currentPeer, text);
-                }
+                    type = "MSG_TO",
+                    to = _currentPeer,
+                    message = text
+                });
 
                 txtMessage.Clear();
                 txtMessage.Focus();
