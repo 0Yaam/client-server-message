@@ -54,6 +54,15 @@ namespace Client.Forms
             flpMessages.AutoScroll = true;
             flpMessages.FlowDirection = FlowDirection.TopDown;
 
+            // Ensure user list lays out vertically without wrapping
+            try
+            {
+                flpUsers.WrapContents = false;
+                flpUsers.AutoScroll = true;
+                flpUsers.FlowDirection = FlowDirection.TopDown;
+            }
+            catch { }
+
             // Enable double-buffering to reduce flicker
             try
             {
@@ -115,34 +124,36 @@ namespace Client.Forms
         {
             try
             {
-                // AccountJsonService ném lỗi khi thiếu file; xử lý an toàn
-                // Ưu tiên Client/Data, fallback sang Server/Data (tìm ngược nhiều cấp)
+                // Ưu tiên Server/bin/Debug/Data/users.json (danh sách chính)
                 var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                var clientPath = Path.Combine(baseDir, "Data", "users.json");
-                string path = clientPath;
+                string path = null;
 
-                if (!File.Exists(path))
+                try
                 {
-                    try
+                    var dir = new DirectoryInfo(baseDir);
+                    for (int i = 0; i < 6 && dir != null; i++)
                     {
-                        var dir = new DirectoryInfo(baseDir);
-                        for (int i = 0; i < 6 && dir != null; i++)
+                        var candidates = new[]
                         {
-                            var candidates = new[]
-                            {
-                                Path.Combine(dir.FullName, "Server", "bin", "Debug", "Data", "users.json"),
-                                Path.Combine(dir.FullName, "Server", "bin", "Release", "Data", "users.json"),
-                                Path.Combine(dir.FullName, "Server", "Data", "users.json")
-                            };
-                            foreach (var c in candidates)
-                            {
-                                if (File.Exists(c)) { path = c; break; }
-                            }
-                            if (File.Exists(path)) break;
-                            dir = dir.Parent;
+                            Path.Combine(dir.FullName, "Server", "bin", "Debug", "Data", "users.json"),
+                            Path.Combine(dir.FullName, "Server", "bin", "Release", "Data", "users.json"),
+                            Path.Combine(dir.FullName, "Server", "Data", "users.json")
+                        };
+                        foreach (var c in candidates)
+                        {
+                            if (File.Exists(c)) { path = c; break; }
                         }
+                        if (path != null) break;
+                        dir = dir.Parent;
                     }
-                    catch { }
+                }
+                catch { }
+
+                // Fallback sang Client/Data nếu không tìm thấy Server
+                if (path == null || !File.Exists(path))
+                {
+                    var clientPath = Path.Combine(baseDir, "Data", "users.json");
+                    if (File.Exists(clientPath)) path = clientPath;
                 }
 
                 if (!File.Exists(path)) return null;
@@ -167,10 +178,17 @@ namespace Client.Forms
                 bool exists = flpUsers.Controls.OfType<Controls.ChatListItemControl>().Any(i => i.Username == username);
                 if (!exists)
                 {
+                    // Use parent panel width for reliable sizing
+                    int panelWidth = pnlLeft?.ClientSize.Width ?? 265;
+                    int itemWidth = Math.Max(240, panelWidth - 20);
                     var item = new Controls.ChatListItemControl
                     {
-                        Width = flpUsers.ClientSize.Width - 6,
-                        Margin = new Padding(10, 4, 10, 4) // item margin
+                        Width = itemWidth,
+                        Height = 72,
+                        MinimumSize = new Size(itemWidth, 72),
+                        MaximumSize = new Size(itemWidth, 72),
+                        Margin = new Padding(10, 4, 10, 4),
+                        Anchor = AnchorStyles.Left | AnchorStyles.Top
                     };
                     item.Bind(username: username, displayName: username, lastMessage: "Nhấn để chat", time: DateTime.Now);
 
@@ -187,7 +205,15 @@ namespace Client.Forms
                     bool isOnline = _latestUsers?.Contains(username) == true;
                     ApplyOnlineVisual(item, isOnline);
 
+                    // Force item to take full width using parent panel width
+                    int panelW = pnlLeft?.ClientSize.Width ?? 265;
+                    int availWidth = Math.Max(240, panelW - 20);
+                    item.Width = availWidth;
+                    item.MinimumSize = new Size(availWidth, 72);
+                    item.MaximumSize = new Size(availWidth, 72);
+
                     flpUsers.Controls.Add(item);
+                    flpUsers.SetFlowBreak(item, true);
                 }
             }
             catch { }
@@ -610,6 +636,10 @@ namespace Client.Forms
             flpUsers.SuspendLayout();
             try
             {
+                // Calculate item width once at the start
+                int panelW = pnlLeft?.ClientSize.Width ?? 265;
+                int itemWidth = Math.Max(240, panelW - 20);
+                
                 var currentItems = flpUsers.Controls.OfType<Controls.ChatListItemControl>().ToList();
                 var currentUserItems = currentItems.Where(i => !_groupMembers.ContainsKey(i.Username)).ToList();
                 var groupItems = currentItems.Where(i => _groupMembers.ContainsKey(i.Username)).ToList();
@@ -639,15 +669,15 @@ namespace Client.Forms
                     try { rm.Dispose(); } catch { }
                 }
 
-                // Rebuild controls, keep groups
-                flpUsers.Controls.Clear();
-                foreach (var grp in groupItems)
-                {
-                    flpUsers.Controls.Add(grp);
-                }
-
-                // Save selection
+                // Save selection before rebuild
                 var previouslySelected = currentItems.FirstOrDefault(i => i.Selected)?.Username;
+
+                // Rebuild controls - Add groups first, then users
+                // Keep track of all items to add
+                var itemsToAdd = new List<Controls.ChatListItemControl>();
+                
+                // Add groups first
+                itemsToAdd.AddRange(groupItems);
 
                 // Add or reuse user items
                 foreach (var u in finalUsers)
@@ -672,14 +702,19 @@ namespace Client.Forms
                         bool isOnline = users != null && users.Contains(u);
                         ApplyOnlineVisual(existing, isOnline);
 
-                        flpUsers.Controls.Add(existing);
+                        itemsToAdd.Add(existing);
                     }
                     else
                     {
+                        // Use calculated item width
                         var item = new Controls.ChatListItemControl
                         {
-                            MinimumSize = new Size(150, 64),
-                            Margin = new Padding(10, 4, 10, 4)
+                            Width = itemWidth,
+                            Height = 72,
+                            MinimumSize = new Size(itemWidth, 72),
+                            MaximumSize = new Size(itemWidth, 72),
+                            Margin = new Padding(10, 4, 10, 4),
+                            Anchor = AnchorStyles.Left | AnchorStyles.Top
                         };
                         item.Bind(username: u, displayName: u, lastMessage: preview, time: time);
 
@@ -710,8 +745,22 @@ namespace Client.Forms
                         bool isOnline = users != null && users.Contains(u);
                         ApplyOnlineVisual(item, isOnline);
 
-                        flpUsers.Controls.Add(item);
+                        itemsToAdd.Add(item);
                     }
+                }
+
+                // Now clear and add all items at once with proper sizing
+                flpUsers.Controls.Clear();
+                
+                foreach (var item in itemsToAdd)
+                {
+                    // Force each item to take full width so they stack vertically
+                    item.Width = itemWidth;
+                    item.MinimumSize = new Size(itemWidth, 72);
+                    item.MaximumSize = new Size(itemWidth, 72);
+                    
+                    flpUsers.Controls.Add(item);
+                    flpUsers.SetFlowBreak(item, true);
                 }
 
                 // Restore selection if possible
@@ -742,10 +791,17 @@ namespace Client.Forms
 
             _groupMembers[groupId] = members ?? new string[0];
 
+            // Use parent panel width for reliable sizing
+            int panelWidth = pnlLeft?.ClientSize.Width ?? 265;
+            int itemWidth = Math.Max(240, panelWidth - 20);
             var item = new Controls.ChatListItemControl
             {
-                Width = flpUsers.ClientSize.Width - 6,
-                Margin = new Padding(10, 4, 10, 4)
+                Width = itemWidth,
+                Height = 72,
+                MinimumSize = new Size(itemWidth, 72),
+                MaximumSize = new Size(itemWidth, 72),
+                Margin = new Padding(10, 4, 10, 4),
+                Anchor = AnchorStyles.Left | AnchorStyles.Top
             };
             item.Bind(username: groupId, displayName: groupName, lastMessage: "Nhóm chat mới", time: DateTime.Now);
 
@@ -776,7 +832,15 @@ namespace Client.Forms
                 SelectPeer(item.Username);
             };
 
+            // Force item to take full width using parent panel width
+            int pnlW = pnlLeft?.ClientSize.Width ?? 265;
+            int availW = Math.Max(240, pnlW - 20);
+            item.Width = availW;
+            item.MinimumSize = new Size(availW, 72);
+            item.MaximumSize = new Size(availW, 72);
+
             flpUsers.Controls.Add(item);
+            flpUsers.SetFlowBreak(item, true);
 
             if (!_conversations.ContainsKey(groupId))
                 _conversations[groupId] = new List<ConversationMessage>();

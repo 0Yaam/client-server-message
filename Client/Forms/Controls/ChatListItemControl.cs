@@ -83,11 +83,11 @@ namespace Client.Forms.Controls
                 lblLastMessage.AutoEllipsis = true;
             }
 
-            this.AutoSize = false;             this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            this.AutoSize = false;
 
             this.Width = PreferredItemWidth;
-            this.MinimumSize = new Size(Math.Min(PreferredItemWidth, 150), 64);
-            this.MaximumSize = new Size(PreferredItemWidth, 0);
+            this.MinimumSize = new Size(Math.Min(PreferredItemWidth, 150), 72);
+            this.MaximumSize = new Size(PreferredItemWidth, 72);
 
             AttachHandlersRecursive(this);
 
@@ -122,22 +122,25 @@ namespace Client.Forms.Controls
         {
             base.OnParentChanged(e);
 
-            if (Parent != null)
-            {
-                Parent.Resize -= Parent_Resize;
-                Parent.Resize += Parent_Resize;
-            }
-
-            AdjustWidthToParent();
+            // Removed auto-adjust logic - width is now controlled by ChatForm
+            // if (Parent != null)
+            // {
+            //     Parent.Resize -= Parent_Resize;
+            //     Parent.Resize += Parent_Resize;
+            // }
+            // AdjustWidthToParent();
         }
 
         private void Parent_Resize(object sender, EventArgs e)
         {
-            AdjustWidthToParent();
+            // Removed auto-adjust logic - width is now controlled by ChatForm
+            // AdjustWidthToParent();
         }
 
         private void AdjustWidthToParent()
         {
+            // This method is now unused - width is controlled by ChatForm
+            // Kept for backward compatibility
             try
             {
                 if (Parent == null) return;
@@ -151,8 +154,9 @@ namespace Client.Forms.Controls
                 int available = Math.Max(150, parentInnerWidth - this.Margin.Left - this.Margin.Right);
                 int target = Math.Min(PreferredItemWidth, available);
 
-                this.MaximumSize = new Size(target, 0);
+                this.MaximumSize = new Size(target, 72);
                 this.Width = target;
+                this.Height = 72;
             }
             catch { }
         }

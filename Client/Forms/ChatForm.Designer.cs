@@ -239,12 +239,13 @@
             this.flpUsers.AutoScroll = true;
             this.flpUsers.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.flpUsers.ContextMenuStrip = this.Menu;
+            this.flpUsers.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flpUsers.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flpUsers.Location = new System.Drawing.Point(0, 32);
-            this.flpUsers.Margin = new System.Windows.Forms.Padding(8);
+            this.flpUsers.Margin = new System.Windows.Forms.Padding(0);
             this.flpUsers.Name = "flpUsers";
-            this.flpUsers.Padding = new System.Windows.Forms.Padding(11, 12, 11, 12);
-            this.flpUsers.Size = new System.Drawing.Size(262, 418);
+            this.flpUsers.Padding = new System.Windows.Forms.Padding(0);
+            this.flpUsers.Size = new System.Drawing.Size(265, 418);
             this.flpUsers.TabIndex = 4;
             this.flpUsers.WrapContents = false;
             // 
