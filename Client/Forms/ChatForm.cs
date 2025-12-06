@@ -43,6 +43,9 @@ namespace Client.Forms
 
         // Hàng đợi tin nhắn offline theo người nhận
         private readonly Dictionary<string, List<string>> _pendingOutgoingByUser = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        
+        // Track sent messages to avoid duplicate display
+        private readonly HashSet<string> _displayedOutgoingMessages = new HashSet<string>(StringComparer.Ordinal);
 
         public ChatForm(Account me, TcpService tcp)
         {
@@ -299,6 +302,15 @@ namespace Client.Forms
 
                         BeginInvoke(new Action(() =>
                         {
+                            // Check if already displayed (from offline queue)
+                            string msgKey = $"{to}:{text}";
+                            if (_displayedOutgoingMessages.Contains(msgKey))
+                            {
+                                // Already displayed, just remove from tracking
+                                _displayedOutgoingMessages.Remove(msgKey);
+                                return;
+                            }
+                            
                             // Decide group vs direct
                             if (_groupMembers.ContainsKey(to))
                             {
@@ -489,7 +501,42 @@ namespace Client.Forms
                 // Gửi trực tiếp nếu là nhóm hoặc người đang online
                 bool isGroup = _groupMembers.ContainsKey(_currentPeer);
                 bool isOnline = _latestUsers?.Contains(_currentPeer) == true;
-                if (isGroup || isOnline)
+                
+                if (isGroup)
+                {
+                    // Check if all group members are online
+                    if (_groupMembers.TryGetValue(_currentPeer, out var members))
+                    {
+                        var offlineMembers = members.Where(m => 
+                            !string.Equals(m, _me?.Username, StringComparison.OrdinalIgnoreCase) &&
+                            !(_latestUsers?.Contains(m) == true)).ToList();
+                        
+                        if (offlineMembers.Count > 0)
+                        {
+                            // Warning: Some members are offline
+                            var result = MessageBox.Show(
+                                $"Có {offlineMembers.Count} thành viên đang offline: {string.Join(", ", offlineMembers)}.\n" +
+                                "Họ sẽ không nhận được tin nhắn này.\n\n" +
+                                "Bạn có muốn gửi không?",
+                                "Cảnh báo",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Warning);
+                            
+                            if (result != DialogResult.Yes)
+                            {
+                                return;
+                            }
+                        }
+                    }
+                    
+                    await _tcp.SendAsync(new
+                    {
+                        type = "MSG_TO",
+                        to = _currentPeer,
+                        message = text
+                    });
+                }
+                else if (isOnline)
                 {
                     await _tcp.SendAsync(new
                     {
@@ -526,6 +573,11 @@ namespace Client.Forms
             // Hiển thị ngay tin nhắn đã xếp hàng
             var now = DateTime.Now;
             AddMessageToConversation(to, true, text, now, sender: null);
+            
+            // Mark as displayed to avoid duplicate on MSG_SENT
+            string msgKey = $"{to}:{text}";
+            _displayedOutgoingMessages.Add(msgKey);
+            
             if (string.Equals(_currentPeer, to, StringComparison.Ordinal))
             {
                 var bubble = new Controls.MessageBubbleControl
