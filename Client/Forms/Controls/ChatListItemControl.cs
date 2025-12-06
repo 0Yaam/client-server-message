@@ -117,30 +117,21 @@ namespace Client.Forms.Controls
             }
             catch { }
         }
-        // Adjust width when parent changes size
         protected override void OnParentChanged(EventArgs e)
         {
             base.OnParentChanged(e);
 
-            // Removed auto-adjust logic - width is now controlled by ChatForm
-            // if (Parent != null)
-            // {
-            //     Parent.Resize -= Parent_Resize;
-            //     Parent.Resize += Parent_Resize;
-            // }
-            // AdjustWidthToParent();
+            // Width controlled by ChatForm
         }
 
         private void Parent_Resize(object sender, EventArgs e)
         {
-            // Removed auto-adjust logic - width is now controlled by ChatForm
-            // AdjustWidthToParent();
+            // No-op: width handled by ChatForm
         }
 
         private void AdjustWidthToParent()
         {
-            // This method is now unused - width is controlled by ChatForm
-            // Kept for backward compatibility
+            // Unused: kept for compatibility
             try
             {
                 if (Parent == null) return;
