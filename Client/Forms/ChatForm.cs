@@ -102,7 +102,7 @@ namespace Client.Forms
             // Start background listener
             _ = Task.Run(ListenLoop);
         }
-        public ChatForm() : this(new Account("demo", "", "", UserRole.User), null) { }
+        public ChatForm() : this(new Account("demo", "", UserRole.User), null) { }
 
         private void LoadAllUsersLocal()
         {

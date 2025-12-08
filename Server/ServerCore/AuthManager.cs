@@ -3,8 +3,6 @@ using Shared.OL;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Linq;
 
 namespace Server.ServerCore
@@ -23,8 +21,8 @@ namespace Server.ServerCore
             {
                 var seed = new List<Account>
                 {
-                    new Account("admin", "123", "", UserRole.Admin),
-                    new Account("user",  "123", "", UserRole.User)
+                    new Account("admin", "123", UserRole.Admin),
+                    new Account("user",  "123", UserRole.User)
                 };
                 File.WriteAllText(_filePath, JsonConvert.SerializeObject(seed, Formatting.Indented));
             }
@@ -39,13 +37,7 @@ namespace Server.ServerCore
                 acc = _users.Find(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
                 if (acc == null) return false;
 
-                if (string.IsNullOrEmpty(acc.Salt))
-                {
-                    return acc.PasswordHash == password;
-                }
-
-                string hashedPassword = HashPassword(password, acc.Salt);
-                return acc.PasswordHash == hashedPassword;
+                return acc.Password == password;
             }
         }
 
@@ -85,12 +77,8 @@ namespace Server.ServerCore
 
                 try
                 {
-                    // Tạo salt và hash password
-                    string salt = GenerateSalt();
-                    string passwordHash = HashPassword(password, salt);
-
                     // Tạo account mới
-                    var newAccount = new Account(username, passwordHash, salt, UserRole.User)
+                    var newAccount = new Account(username, password, UserRole.User)
                     {
                         DisplayName = displayName,
                         Avatar = string.Empty
@@ -140,10 +128,7 @@ namespace Server.ServerCore
 
                 try
                 {
-                    var salt = GenerateSalt();
-                    var hash = HashPassword(newPassword, salt);
-                    acc.Salt = salt;
-                    acc.PasswordHash = hash;
+                    acc.Password = newPassword;
                     SaveUsers();
                     return true;
                 }
@@ -176,10 +161,7 @@ namespace Server.ServerCore
 
                 try
                 {
-                    var salt = GenerateSalt();
-                    var hash = HashPassword(newPassword, salt);
-                    acc.Salt = salt;
-                    acc.PasswordHash = hash;
+                    acc.Password = newPassword;
                     SaveUsers();
                     return true;
                 }
@@ -224,26 +206,6 @@ namespace Server.ServerCore
                     errorMessage = "Lỗi lưu avatar: " + ex.Message;
                     return false;
                 }
-            }
-        }
-
-        private static string GenerateSalt()
-        {
-            using (var rng = new RNGCryptoServiceProvider())
-            {
-                byte[] saltBytes = new byte[32];
-                rng.GetBytes(saltBytes);
-                return Convert.ToBase64String(saltBytes);
-            }
-        }
-
-        private static string HashPassword(string password, string salt)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                string saltedPassword = salt + password;
-                byte[] hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(saltedPassword));
-                return Convert.ToBase64String(hashedBytes);
             }
         }
 

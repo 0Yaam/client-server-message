@@ -110,7 +110,7 @@ namespace Server
             var it = lvListUser.SelectedItems[0];
             var username = it.SubItems[0].Text;
             var displayName = it.SubItems[1].Text;
-            var passwordHash = it.SubItems.Count > 4 ? it.SubItems[4].Text : string.Empty;
+            var password = it.SubItems.Count > 4 ? it.SubItems[4].Text : string.Empty;
 
             using (var dlg = new Server.Forms.UpdateForm(username))
             {
@@ -211,7 +211,7 @@ namespace Server
                     bool isOnline = onlineUsers.Contains(user.Username);
                     item.SubItems.Add(isOnline ? "Online" : "Offline");
 
-                    item.SubItems.Add(user.PasswordHash ?? string.Empty);
+                    item.SubItems.Add(user.Password ?? string.Empty);
 
                     // Color coding for online/offline
                     if (isOnline)
@@ -398,7 +398,7 @@ namespace Server
                     // Construct Account using info from server
                     string roleStr = (string)resp.role;
                     var role = roleStr == "Admin" ? UserRole.Admin : UserRole.User;
-                    var acc = new Account(adminUser, adminPass, "", role)
+                    var acc = new Account(adminUser, adminPass, role)
                     {
                         DisplayName = "Zola"
                     };

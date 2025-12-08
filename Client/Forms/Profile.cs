@@ -3,8 +3,6 @@ using Shared.OL;
 using System;
 using System.Drawing;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
@@ -134,16 +132,7 @@ namespace Client.Forms
             try
             {
                 // Kiểm tra khớp mật khẩu cũ với dữ liệu cục bộ
-                bool oldMatches = false;
-                if (string.IsNullOrEmpty(_me.Salt))
-                {
-                    oldMatches = _me.PasswordHash == oldPass;
-                }
-                else
-                {
-                    var hashedOld = HashPassword(oldPass, _me.Salt);
-                    oldMatches = _me.PasswordHash == hashedOld;
-                }
+                bool oldMatches = _me.Password == oldPass;
 
                 if (!oldMatches)
                 {
@@ -151,11 +140,8 @@ namespace Client.Forms
                     if (res != DialogResult.Yes) return;
                 }
 
-                // Tạo salt + hash mới và lưu cục bộ
-                var newSalt = GenerateSalt();
-                var newHash = HashPassword(newPass, newSalt);
-                _me.Salt = newSalt;
-                _me.PasswordHash = newHash;
+                // Lưu mật khẩu mới cục bộ
+                _me.Password = newPass;
 
                 // Cập nhật file Data/users.json cục bộ
                 try
@@ -171,8 +157,7 @@ namespace Client.Forms
                         var found = arr.FirstOrDefault(a => a.Username.Equals(_me.Username, StringComparison.OrdinalIgnoreCase));
                         if (found != null)
                         {
-                            found.PasswordHash = _me.PasswordHash;
-                            found.Salt = _me.Salt;
+                            found.Password = _me.Password;
                         }
                         else
                         {
@@ -204,28 +189,6 @@ namespace Client.Forms
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi thay đổi mật khẩu: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        // Sinh salt ngẫu nhiên
-        private static string GenerateSalt()
-        {
-            using (var rng = new RNGCryptoServiceProvider())
-            {
-                byte[] saltBytes = new byte[32];
-                rng.GetBytes(saltBytes);
-                return Convert.ToBase64String(saltBytes);
-            }
-        }
-
-        // Hash mật khẩu với salt
-        private static string HashPassword(string password, string salt)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                string saltedPassword = salt + password;
-                byte[] hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(saltedPassword));
-                return Convert.ToBase64String(hashedBytes);
             }
         }
     }

@@ -68,7 +68,7 @@ namespace Client.Services
 
             foreach (var a in _accounts)
             {
-                if (a.Username == username && a.PasswordHash == password)
+                if (a.Username == username && a.Password == password)
                 {
                     acc = a;
                     return true;

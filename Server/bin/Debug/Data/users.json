@@ -1,50 +1,51 @@
 [
   {
     "Username": "admin",
-    "PasswordHash": "123",
-    "Salt": "",
+    "Password": "123",
     "Role": 1,
     "DisplayName": "Admin dep trai",
     "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\admin.jpg"
   },
   {
     "Username": "user",
-    "PasswordHash": "123",
-    "Salt": "",
+    "Password": "123",
     "Role": 0,
-    "DisplayName": null,
+    "DisplayName": "user server",
     "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\user.jpg"
   },
   {
     "Username": "thinh",
-    "PasswordHash": "LqaL5mjrQk+v93BIrsIAoe0gr/uX7PU1FOsoY3S30LI=",
-    "Salt": "EK8J1FXKxbZATtCIe/BDHqm8rln4RvsVSSmT/z4m0jc=",
+    "Password": "thinh123",
     "Role": 0,
-    "DisplayName": "Hưng Thinh",
+    "DisplayName": "Hưng Thịnh",
     "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\thinh.png"
   },
   {
-    "Username": "boloro",
-    "PasswordHash": "pD0bKmkwEYz3oSS6Yx/VNlFB0ltiySkg6v1sn2rdF5M=",
-    "Salt": "rgFDcksKdHjqGM8c0GWlo8veB+cZXB0n/eYwGdLLCw0=",
+    "Username": "bo",
+    "Password": "hoaibo",
     "Role": 0,
-    "DisplayName": "Boloro",
+    "DisplayName": "Hoài Bo",
     "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\boloro.png"
   },
   {
     "Username": "vuong",
-    "PasswordHash": "BsqQqFTFyO/SUwq99Jczvepsx0d9eVXw9+NKfXEtGcM=",
-    "Salt": "mexhuruGqX5z5TkQwjvrOsNFUHzqNvp62uFs45gc7Tg=",
+    "Password": "123vuong",
     "Role": 0,
-    "DisplayName": "Vuong",
+    "DisplayName": "Khánh Vương",
     "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\vuong.jpg"
   },
   {
     "Username": "huynh",
-    "PasswordHash": "ayVtQYDcEJk/6XGOOHs8gSS0QN5gEdL5mT2uBjVTSQg=",
-    "Salt": "9GzD1xagOncHfeEFtUIexEHrHpujYFwStlpNAfuYQe0=",
+    "Password": "vuong123",
     "Role": 0,
-    "DisplayName": "huynh",
+    "DisplayName": "Thế Huỳnh",
+    "Avatar": ""
+  },
+  {
+    "Username": "vuong1",
+    "Password": "vuong123",
+    "Role": 0,
+    "DisplayName": "Phan Khanh Vuong",
     "Avatar": ""
   }
 ]

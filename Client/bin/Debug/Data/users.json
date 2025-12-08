@@ -1,26 +1,30 @@
 [
   {
     "Username": "admin",
-    "PasswordHash": "123",
-    "Salt": "",
+    "Password": null,
     "Role": 1,
     "DisplayName": null,
     "Avatar": null
   },
   {
     "Username": "user",
-    "PasswordHash": "123",
-    "Salt": "",
+    "Password": null,
     "Role": 0,
     "DisplayName": null,
     "Avatar": null
   },
   {
     "Username": "thinh",
-    "PasswordHash": "fMiO9/OZV9Lpi270GdV0t1ff6I6wEUcfbj+lXF36w2Y=",
-    "Salt": "91N2QFPLWfJGkN3SNZKiYyD5Rs25ORe6VhvPSHoPJuc=",
+    "Password": null,
     "Role": 0,
     "DisplayName": "thinh",
+    "Avatar": "default.png"
+  },
+  {
+    "Username": "vuong",
+    "Password": "123vuong",
+    "Role": 0,
+    "DisplayName": "vuong",
     "Avatar": "default.png"
   }
 ]

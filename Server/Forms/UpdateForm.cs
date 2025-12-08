@@ -56,8 +56,6 @@ namespace Server.Forms
 
             txtDisplayName.Text = acc.DisplayName;
             txtUserName.Text = acc.Username;
-            // Salt readonly text box is guna2TextBox1
-            guna2TextBox1.Text = acc.Salt ?? string.Empty;
 
             // Set role
             cbbRole.SelectedItem = acc.Role.ToString();

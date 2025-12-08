@@ -9,18 +9,18 @@ namespace Server
     {
         private readonly string _username;
         private readonly string _displayName;
-        private string _passwordHash;
+        private string _password;
 
-        public AdminProfile(string username, string displayName, string passwordHash)
+        public AdminProfile(string username, string displayName, string password)
         {
             InitializeComponent();
             _username = username;
             _displayName = displayName;
-            _passwordHash = passwordHash;
+            _password = password;
 
             txtUsername.Text = _username;
             txtDisplayName.Text = _displayName;
-            txtPassword.Text = _passwordHash;
+            txtPassword.Text = _password;
         }
 
         private void btnSetPassword_Click(object sender, EventArgs e)
