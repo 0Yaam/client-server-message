@@ -274,8 +274,6 @@ namespace Server
                 // Start refresh timer
                 _refreshTimer.Start();
 
-                // Initial refresh
-                // populate role combo
                 if (cbbRole.Items.Count == 0)
                 {
                     cbbRole.Items.Add("Tất cả");
@@ -360,7 +358,6 @@ namespace Server
                     return;
                 }
 
-                // Determine host and port from UI (use defaults if empty)
                 string host = "127.0.0.1";
                 int port = 9000;
                 try

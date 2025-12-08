@@ -148,7 +148,6 @@ namespace Server.ServerCore
 
                             string groupId = Guid.NewGuid().ToString();
 
-                            // persist group info
                             GroupRegistry.Add(groupId, groupName, members);
 
                             // notify all members (broadcast GROUP_CREATED)
@@ -182,12 +181,11 @@ namespace Server.ServerCore
                             string to = (string)cmd.to;
                             string msg = (string)cmd.message;
                             string from = this.Username;
-                            //if to is a group id, relay to members,
                             if (GroupRegistry.TryGet(to, out var group))
                             {
                                 foreach (var member in group.Members)
                                 {
-                                    if (member == from) continue; // don't send back to sender
+                                    if (member == from) continue;           
                                     var target = OnlineRegistry.Get(member);
                                     if (target != null)
                                     {
@@ -206,12 +204,10 @@ namespace Server.ServerCore
                                     }
                                     else
                                     {
-                                        // Member is offline, store message for later delivery
                                         OfflineMessageStore.Store(member, from, msg, to);
                                     }
                                 }
 
-                                // Echo to sender as MSG_SENT
                                 await SendAsync(new { type = "MSG_SENT", to = to, message = msg, time = DateTime.UtcNow }, ct);
                             }
                             else
@@ -220,7 +216,6 @@ namespace Server.ServerCore
 
                                 if (target != null)
                                 {
-                                    // send to recipient
                                     await target.SendAsync(new
                                     {
                                         type = "MSG_RECV",
@@ -229,7 +224,6 @@ namespace Server.ServerCore
                                         time = DateTime.UtcNow
                                     }, ct);
 
-                                    // echo for sender
                                     await SendAsync(new
                                     {
                                         type = "MSG_SENT",
@@ -240,10 +234,8 @@ namespace Server.ServerCore
                                 }
                                 else
                                 {
-                                    // User is offline, store message for later delivery
                                     OfflineMessageStore.Store(to, this.Username, msg, null);
                                     
-                                    // Still echo to sender
                                     await SendAsync(new
                                     {
                                         type = "MSG_SENT",
@@ -264,12 +256,11 @@ namespace Server.ServerCore
                             string ext = (string)cmd.ext;
                             string from = this.Username;
 
-                            // If `to` is a group id, relay to members
                             if (GroupRegistry.TryGet(to, out var group))
                             {
                                 foreach (var member in group.Members)
                                 {
-                                    if (member == from) continue; // don't send back to sender
+                                    if (member == from) continue;
                                     var target = OnlineRegistry.Get(member);
                                     if (target != null)
                                     {
@@ -285,11 +276,10 @@ namespace Server.ServerCore
                                                 time = DateTime.UtcNow
                                             }, ct);
                                         }
-                                        catch { /* ignore per-target errors */ }
+                                        catch {}
                                     }
                                 }
 
-                                // Echo to sender as MSG_SENT (optional)
                                 await SendAsync(new { type = "MSG_SENT", to = to, message = "[Image]", time = DateTime.UtcNow }, ct);
                             }
                             else
@@ -402,7 +392,6 @@ namespace Server.ServerCore
             }
         }
 
-        // Public wrapper to send messages to this client session
         public Task SendObjectAsync(object obj)
         {
             try

@@ -41,10 +41,8 @@ namespace Client.Forms
         private string[] _latestUsers = Array.Empty<string>();
         private string[] _allUsers = Array.Empty<string>();
 
-        // Hàng đợi tin nhắn offline theo người nhận
         private readonly Dictionary<string, List<string>> _pendingOutgoingByUser = new Dictionary<string, List<string>>(StringComparer.Ordinal);
         
-        // Track sent messages to avoid duplicate display
         private readonly HashSet<string> _displayedOutgoingMessages = new HashSet<string>(StringComparer.Ordinal);
 
         public ChatForm(Account me, TcpService tcp)

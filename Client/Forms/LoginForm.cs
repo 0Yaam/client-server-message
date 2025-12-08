@@ -55,12 +55,10 @@ namespace Client
             }
             catch (Exception ex)
             {
-                // Thông báo khi không thể kết nối tới server
                 MessageBox.Show("Hiện server đóng cửa", "Lỗi kết nối", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        // Đóng ứng dụng
         private void btnExit_Click(object sender, EventArgs e)
         {
             Application.Exit();

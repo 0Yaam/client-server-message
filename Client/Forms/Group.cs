@@ -46,9 +46,7 @@ namespace Client.Forms.Controls
         {
             try
             {
-                // Không thay đổi design: chỉ cấu hình tối thiểu khi runtime
-                lvList.View = View.List; // hiển thị đơn giản tên user
-            }
+                lvList.View = View.List;             }
             catch { }
         }
 
@@ -78,7 +76,6 @@ namespace Client.Forms.Controls
 
         private void pbAvatar_Click(object sender, EventArgs e)
         {
-            // Cho phép click avatar để chọn lại
             BrowseAvatar();
         }
 
@@ -88,7 +85,6 @@ namespace Client.Forms.Controls
 
         private void txtGroupName_TextChanged(object sender, EventArgs e)
         {
-            // Có thể thêm validate realtime nếu cần
         }
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
