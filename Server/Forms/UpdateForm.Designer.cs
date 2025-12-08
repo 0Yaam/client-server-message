@@ -39,8 +39,6 @@
             this.guna2HtmlLabel1 = new Guna.UI2.WinForms.Guna2HtmlLabel();
             this.cbbRole = new System.Windows.Forms.ComboBox();
             this.btnUpdate = new Guna.UI2.WinForms.Guna2Button();
-            this.guna2TextBox1 = new Guna.UI2.WinForms.Guna2TextBox();
-            this.Salt = new Guna.UI2.WinForms.Guna2HtmlLabel();
             this.btnExit = new Guna.UI2.WinForms.Guna2Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbAvatar)).BeginInit();
             this.SuspendLayout();
@@ -65,7 +63,7 @@
             // 
             // txtBrowse
             // 
-            this.txtBrowse.Location = new System.Drawing.Point(278, 227);
+            this.txtBrowse.Location = new System.Drawing.Point(246, 198);
             this.txtBrowse.Name = "txtBrowse";
             this.txtBrowse.Size = new System.Drawing.Size(26, 23);
             this.txtBrowse.TabIndex = 8;
@@ -174,40 +172,11 @@
             this.btnUpdate.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btnUpdate.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnUpdate.ForeColor = System.Drawing.Color.White;
-            this.btnUpdate.Location = new System.Drawing.Point(115, 237);
+            this.btnUpdate.Location = new System.Drawing.Point(12, 191);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(94, 30);
             this.btnUpdate.TabIndex = 20;
             this.btnUpdate.Text = "Update";
-            // 
-            // guna2TextBox1
-            // 
-            this.guna2TextBox1.BorderRadius = 5;
-            this.guna2TextBox1.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.guna2TextBox1.DefaultText = "";
-            this.guna2TextBox1.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
-            this.guna2TextBox1.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
-            this.guna2TextBox1.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
-            this.guna2TextBox1.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
-            this.guna2TextBox1.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.guna2TextBox1.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.guna2TextBox1.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.guna2TextBox1.Location = new System.Drawing.Point(88, 194);
-            this.guna2TextBox1.Name = "guna2TextBox1";
-            this.guna2TextBox1.PlaceholderText = "";
-            this.guna2TextBox1.ReadOnly = true;
-            this.guna2TextBox1.SelectedText = "";
-            this.guna2TextBox1.Size = new System.Drawing.Size(168, 27);
-            this.guna2TextBox1.TabIndex = 22;
-            // 
-            // Salt
-            // 
-            this.Salt.BackColor = System.Drawing.Color.Transparent;
-            this.Salt.Location = new System.Drawing.Point(12, 194);
-            this.Salt.Name = "Salt";
-            this.Salt.Size = new System.Drawing.Size(21, 15);
-            this.Salt.TabIndex = 21;
-            this.Salt.Text = "Salt";
             // 
             // btnExit
             // 
@@ -218,7 +187,7 @@
             this.btnExit.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btnExit.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnExit.ForeColor = System.Drawing.Color.White;
-            this.btnExit.Location = new System.Drawing.Point(384, 237);
+            this.btnExit.Location = new System.Drawing.Point(136, 191);
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new System.Drawing.Size(94, 30);
             this.btnExit.TabIndex = 9;
@@ -228,9 +197,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(501, 279);
-            this.Controls.Add(this.guna2TextBox1);
-            this.Controls.Add(this.Salt);
+            this.ClientSize = new System.Drawing.Size(501, 242);
             this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.cbbRole);
             this.Controls.Add(this.txtOldPassword);
@@ -264,8 +231,6 @@
         private Guna.UI2.WinForms.Guna2HtmlLabel guna2HtmlLabel1;
         private System.Windows.Forms.ComboBox cbbRole;
         private Guna.UI2.WinForms.Guna2Button btnUpdate;
-        private Guna.UI2.WinForms.Guna2TextBox guna2TextBox1;
-        private Guna.UI2.WinForms.Guna2HtmlLabel Salt;
         private Guna.UI2.WinForms.Guna2Button btnExit;
     }
 }
