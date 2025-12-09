@@ -50,7 +50,7 @@ namespace Server.ServerCore
                         Role = acc.Role;
 
                         OnlineRegistry.Add(this);
-                        await SendAsync(new { type = "AUTH_OK", username = Username, role = Role.ToString() }, ct);
+                        await SendAsync(new { type = "AUTH_OK", username = Username, role = Role.ToString(), displayName = acc.DisplayName ?? acc.Username }, ct);
 
                         // Sync existing groups for this user immediately after auth
                         try

@@ -41,8 +41,12 @@ namespace Client
                 {
                     var roleStr = (string)resp.role;
                     var role = roleStr == "Admin" ? UserRole.Admin : UserRole.User;
+                    var displayName = (string)resp.displayName;
 
-                    var acc = new Account(username, password, role);
+                    var acc = new Account(username, password, role)
+                    {
+                        DisplayName = displayName ?? username
+                    };
 
                     Hide();
                     var chat = new Client.Forms.ChatForm(acc, _tcp);

@@ -191,7 +191,7 @@ namespace Client.Forms
                         Margin = new Padding(10, 4, 10, 4),
                         Anchor = AnchorStyles.Left | AnchorStyles.Top
                     };
-                    item.Bind(username: username, displayName: username, lastMessage: "Nhấn để chat", time: DateTime.Now);
+                    item.Bind(username: username, displayName: FindDisplayName(username), lastMessage: "Nhấn để chat", time: DateTime.Now);
 
                     item.ItemClicked += (s, e) =>
                     {
@@ -439,6 +439,22 @@ namespace Client.Forms
             catch { return string.Empty; }
         }
 
+        private string FindDisplayName(string username)
+        {
+            try
+            {
+                var accs = AccountJsonService_LoginSafe();
+                if (accs != null)
+                {
+                    var acc = accs.FirstOrDefault(a => string.Equals(a.Username, username, StringComparison.OrdinalIgnoreCase));
+                    if (acc != null && !string.IsNullOrEmpty(acc.DisplayName))
+                        return acc.DisplayName;
+                }
+            }
+            catch { }
+            return username; // Fallback to username
+        }
+
         private string FindLocalAvatar(string username)
         {
             try
@@ -590,7 +606,7 @@ namespace Client.Forms
                 }
                 else
                 {
-                    lblHeader.Text = "Chat với: " + username;
+                    lblHeader.Text = "Chat với: " + FindDisplayName(username);
                 }
             }
 
@@ -616,7 +632,8 @@ namespace Client.Forms
                         }
                         else
                         {
-                            bubble.MessageText = $"[{m.Sender}] {m.Text}";
+                            var senderDisplayName = FindDisplayName(m.Sender);
+                            bubble.MessageText = $"[{senderDisplayName}] {m.Text}";
                         }
                     }
                     else
@@ -699,7 +716,8 @@ namespace Client.Forms
 
                     if (currentMap.TryGetValue(u, out var existing))
                     {
-                        if (existing.DisplayName != u) existing.DisplayName = u;
+                        var displayName = FindDisplayName(u);
+                        if (existing.DisplayName != displayName) existing.DisplayName = displayName;
                         if (existing.LastMessage != preview) existing.LastMessage = preview;
                         if (existing.Time != time) existing.Time = time;
 
@@ -720,7 +738,8 @@ namespace Client.Forms
                             Margin = new Padding(10, 4, 10, 4),
                             Anchor = AnchorStyles.Left | AnchorStyles.Top
                         };
-                        item.Bind(username: u, displayName: u, lastMessage: preview, time: time);
+                        var displayName = FindDisplayName(u);
+                        item.Bind(username: u, displayName: displayName, lastMessage: preview, time: time);
 
                         // Load local avatar when present
                         var avatarPath = FindLocalAvatar(u);
@@ -893,7 +912,8 @@ namespace Client.Forms
                 }
                 else
                 {
-                    preview = $"[{sender}] {text}";
+                    var senderDisplayName = FindDisplayName(sender);
+                    preview = $"[{senderDisplayName}] {text}";
                 }
             }
             else
@@ -952,10 +972,11 @@ namespace Client.Forms
 
             if (string.Equals(_currentPeer, groupId, StringComparison.Ordinal))
             {
+                var fromDisplayName = FindDisplayName(from);
                 var bubble = new Controls.MessageBubbleControl
                 {
                     IsOutgoing = false,
-                    MessageText = $"[{from}] {text}",
+                    MessageText = $"[{fromDisplayName}] {text}",
                     Timestamp = now
                 };
                 flpMessages.Controls.Add(bubble);

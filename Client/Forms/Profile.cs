@@ -132,12 +132,10 @@ namespace Client.Forms
             try
             {
                 // Kiểm tra khớp mật khẩu cũ với dữ liệu cục bộ
-                bool oldMatches = _me.Password == oldPass;
-
-                if (!oldMatches)
+                if (_me.Password != oldPass)
                 {
-                    var res = MessageBox.Show("Mật khẩu cũ không trùng với dữ liệu cục bộ. Bạn có muốn tiếp tục và ghi đè?","Cảnh báo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                    if (res != DialogResult.Yes) return;
+                    MessageBox.Show("Mật khẩu cũ không đúng!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
 
                 // Lưu mật khẩu mới cục bộ

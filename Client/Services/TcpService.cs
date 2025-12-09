@@ -39,7 +39,7 @@ namespace Client.Services
             while (!ct.IsCancellationRequested)
             {
                 int read = await _ns.ReadAsync(buffer, 0, 1, ct);
-                if (read == 0) return null; // Mất kết nối
+                if (read == 0) return null; 
                 if (buffer[0] == (byte)'\n')
                     break;
                 ms.WriteByte(buffer[0]);

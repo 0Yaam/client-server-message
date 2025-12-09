@@ -15,7 +15,7 @@
   },
   {
     "Username": "thinh",
-    "Password": "thinh123",
+    "Password": "thinh12",
     "Role": 0,
     "DisplayName": "Hưng Thịnh",
     "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\thinh.png"
@@ -29,7 +29,7 @@
   },
   {
     "Username": "vuong",
-    "Password": "123vuong",
+    "Password": "vuong123",
     "Role": 0,
     "DisplayName": "Khánh Vương",
     "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\vuong.jpg"

@@ -57,7 +57,7 @@
             // cmsTaoNhom
             // 
             this.cmsTaoNhom.Name = "cmsTaoNhom";
-            this.cmsTaoNhom.Size = new System.Drawing.Size(180, 22);
+            this.cmsTaoNhom.Size = new System.Drawing.Size(128, 22);
             this.cmsTaoNhom.Text = "Tạo nhóm";
             this.cmsTaoNhom.Click += new System.EventHandler(this.cmsTaoNhom_Click);
             // 
@@ -77,13 +77,13 @@
             this.Menu.RenderStyle.SelectionForeColor = System.Drawing.Color.White;
             this.Menu.RenderStyle.SeparatorColor = System.Drawing.Color.Gainsboro;
             this.Menu.RenderStyle.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-            this.Menu.Size = new System.Drawing.Size(181, 70);
+            this.Menu.Size = new System.Drawing.Size(129, 48);
             this.Menu.Text = "☰";
             // 
             // cmsXoaBan
             // 
             this.cmsXoaBan.Name = "cmsXoaBan";
-            this.cmsXoaBan.Size = new System.Drawing.Size(180, 22);
+            this.cmsXoaBan.Size = new System.Drawing.Size(128, 22);
             this.cmsXoaBan.Text = "Xóa Bạn";
             this.cmsXoaBan.Click += new System.EventHandler(this.cmsXoaBan_Click);
             // 
@@ -244,7 +244,6 @@
             this.flpUsers.Location = new System.Drawing.Point(0, 32);
             this.flpUsers.Margin = new System.Windows.Forms.Padding(0);
             this.flpUsers.Name = "flpUsers";
-            this.flpUsers.Padding = new System.Windows.Forms.Padding(0);
             this.flpUsers.Size = new System.Drawing.Size(265, 418);
             this.flpUsers.TabIndex = 4;
             this.flpUsers.WrapContents = false;

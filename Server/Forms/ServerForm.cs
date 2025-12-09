@@ -398,14 +398,16 @@ namespace Server
                     // Construct Account using info from server
                     string roleStr = (string)resp.role;
                     var role = roleStr == "Admin" ? UserRole.Admin : UserRole.User;
+                    string displayName = (string)resp.displayName ?? "Zola";
+                    
                     var acc = new Account(adminUser, adminPass, role)
                     {
-                        DisplayName = "Zola"
+                        DisplayName = displayName
                     };
 
                     // Open client ChatForm inside server process
                     var chat = new Client.Forms.ChatForm(acc, tcp);
-                    chat.Text = "Admin Chat - Zola";
+                    chat.Text = "Admin Chat - " + displayName;
                     chat.Show();
                 }
                 else
