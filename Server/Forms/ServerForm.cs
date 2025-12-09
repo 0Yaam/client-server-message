@@ -481,6 +481,7 @@ namespace Server
             }
 
             MessageBox.Show("Đã gửi tới " + targets.Count + " người.", "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            txtServerMessage.Clear();
         }
     }
 }
