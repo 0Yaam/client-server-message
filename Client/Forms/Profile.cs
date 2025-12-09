@@ -182,7 +182,6 @@ namespace Client.Forms
                 }
                 catch { }
 
-                MessageBox.Show("Mật khẩu đã được thay đổi cục bộ.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
