@@ -29,11 +29,23 @@ namespace Client.Forms
             // Tải avatar hiện tại nếu có
             try
             {
-                if (!string.IsNullOrEmpty(_me.Avatar) && File.Exists(_me.Avatar))
+                if (!string.IsNullOrEmpty(_me.Avatar))
                 {
-                    using (var fs = File.OpenRead(_me.Avatar))
+                    string avatarPath = _me.Avatar;
+                    
+                    // Nếu không phải đường dẫn tuyệt đối, tìm trong thư mục Data/Avatars
+                    if (!Path.IsPathRooted(avatarPath))
                     {
-                        guna2PictureBox1.Image = Image.FromStream(fs);
+                        var localAvatarDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Avatars");
+                        avatarPath = Path.Combine(localAvatarDir, _me.Avatar);
+                    }
+                    
+                    if (File.Exists(avatarPath))
+                    {
+                        using (var fs = File.OpenRead(avatarPath))
+                        {
+                            guna2PictureBox1.Image = Image.FromStream(fs);
+                        }
                     }
                 }
             }

@@ -38,8 +38,6 @@ namespace Server
             msPrivateChat.Click -= MsPrivateChat_Click;
             msPrivateChat.Click += MsPrivateChat_Click;
 
-            btnServerSend.Click -= BtnServerSend_Click;
-            btnServerSend.Click += BtnServerSend_Click;
 
             chkSelectAll.CheckedChanged -= ChkSelectAll_CheckedChanged;
             chkSelectAll.CheckedChanged += ChkSelectAll_CheckedChanged;
@@ -431,7 +429,8 @@ namespace Server
             }
         }
 
-        private async void BtnServerSend_Click(object sender, EventArgs e)
+
+        private async void btnServerSend_Click_1(object sender, EventArgs e)
         {
             var text = txtServerMessage.Text?.Trim();
             if (string.IsNullOrEmpty(text)) return;
@@ -468,7 +467,16 @@ namespace Server
                             time = DateTime.UtcNow
                         });
                     }
-                    catch { }
+                    catch
+                    {
+                        // if sending fails while user is supposed to be online, store as offline
+                        OfflineMessageStore.Store(uname, "Zola", text);
+                    }
+                }
+                else
+                {
+                    // user is offline -> store message for later delivery
+                    OfflineMessageStore.Store(uname, "Zola", text);
                 }
             }
 

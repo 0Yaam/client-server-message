@@ -154,6 +154,7 @@
             this.btnServerSend.Size = new System.Drawing.Size(100, 34);
             this.btnServerSend.TabIndex = 7;
             this.btnServerSend.Text = "Send";
+            this.btnServerSend.Click += new System.EventHandler(this.btnServerSend_Click_1);
             // 
             // txtIP
             // 

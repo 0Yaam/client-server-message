@@ -42,10 +42,12 @@ namespace Client
                     var roleStr = (string)resp.role;
                     var role = roleStr == "Admin" ? UserRole.Admin : UserRole.User;
                     var displayName = (string)resp.displayName;
+                    var avatar = (string)resp.avatar;
 
                     var acc = new Account(username, password, role)
                     {
-                        DisplayName = displayName ?? username
+                        DisplayName = displayName ?? username,
+                        Avatar = avatar ?? "default.png"
                     };
 
                     Hide();

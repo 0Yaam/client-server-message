@@ -50,7 +50,8 @@ namespace Server.ServerCore
                         Role = acc.Role;
 
                         OnlineRegistry.Add(this);
-                        await SendAsync(new { type = "AUTH_OK", username = Username, role = Role.ToString(), displayName = acc.DisplayName ?? acc.Username }, ct);
+                        string avatarFileName = !string.IsNullOrEmpty(acc.Avatar) ? System.IO.Path.GetFileName(acc.Avatar) : "default.png";
+                        await SendAsync(new { type = "AUTH_OK", username = Username, role = Role.ToString(), displayName = acc.DisplayName ?? acc.Username, avatar = avatarFileName }, ct);
 
                         // Sync existing groups for this user immediately after auth
                         try

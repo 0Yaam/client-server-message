@@ -79,6 +79,7 @@
             this.Menu.RenderStyle.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
             this.Menu.Size = new System.Drawing.Size(129, 48);
             this.Menu.Text = "☰";
+            this.Menu.Opening += new System.ComponentModel.CancelEventHandler(this.Menu_Opening);
             // 
             // cmsXoaBan
             // 
@@ -134,6 +135,7 @@
             this.pnlInput.Padding = new System.Windows.Forms.Padding(8);
             this.pnlInput.Size = new System.Drawing.Size(653, 52);
             this.pnlInput.TabIndex = 1;
+            this.pnlInput.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlInput_Paint);
             // 
             // btnAttach
             // 
@@ -160,6 +162,7 @@
             this.pnlChat.Name = "pnlChat";
             this.pnlChat.Size = new System.Drawing.Size(653, 418);
             this.pnlChat.TabIndex = 6;
+            this.pnlChat.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlChat_Paint);
             // 
             // flpMessages
             // 
@@ -174,6 +177,7 @@
             this.flpMessages.Size = new System.Drawing.Size(653, 366);
             this.flpMessages.TabIndex = 0;
             this.flpMessages.WrapContents = false;
+            this.flpMessages.Paint += new System.Windows.Forms.PaintEventHandler(this.flpMessages_Paint);
             // 
             // pnlHeader
             // 
@@ -186,6 +190,7 @@
             this.pnlHeader.Name = "pnlHeader";
             this.pnlHeader.Size = new System.Drawing.Size(653, 32);
             this.pnlHeader.TabIndex = 5;
+            this.pnlHeader.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlHeader_Paint);
             // 
             // lblHeader
             // 
@@ -198,6 +203,7 @@
             this.lblHeader.Size = new System.Drawing.Size(208, 21);
             this.lblHeader.TabIndex = 0;
             this.lblHeader.Text = "Chưa chọn cuộc trò chuyện";
+            this.lblHeader.Click += new System.EventHandler(this.lblHeader_Click);
             // 
             // txtSearch
             // 
@@ -215,6 +221,7 @@
             this.txtSearch.SelectedText = "";
             this.txtSearch.Size = new System.Drawing.Size(231, 32);
             this.txtSearch.TabIndex = 0;
+            this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
             // 
             // btnMenu
             // 
@@ -247,6 +254,7 @@
             this.flpUsers.Size = new System.Drawing.Size(265, 418);
             this.flpUsers.TabIndex = 4;
             this.flpUsers.WrapContents = false;
+            this.flpUsers.Paint += new System.Windows.Forms.PaintEventHandler(this.flpUsers_Paint);
             // 
             // guna2Panel1
             // 
@@ -259,6 +267,7 @@
             this.guna2Panel1.Name = "guna2Panel1";
             this.guna2Panel1.Size = new System.Drawing.Size(265, 32);
             this.guna2Panel1.TabIndex = 3;
+            this.guna2Panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.guna2Panel1_Paint);
             // 
             // pnlLeft
             // 
@@ -272,6 +281,7 @@
             this.pnlLeft.Name = "pnlLeft";
             this.pnlLeft.Size = new System.Drawing.Size(265, 450);
             this.pnlLeft.TabIndex = 4;
+            this.pnlLeft.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlLeft_Paint);
             // 
             // ChatForm
             // 

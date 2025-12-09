@@ -1198,5 +1198,55 @@ namespace Client.Forms
             }
             catch { }
         }
+
+        private void Menu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+        }
+
+        private void pnlInput_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void pnlChat_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void flpMessages_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void pnlHeader_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void lblHeader_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void flpUsers_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void guna2Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void pnlLeft_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }
