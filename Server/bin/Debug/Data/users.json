@@ -11,14 +11,14 @@
     "Password": "123",
     "Role": 0,
     "DisplayName": "user server",
-    "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\user.jpg"
+    "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\user.png"
   },
   {
     "Username": "thinh",
     "Password": "thinh12",
     "Role": 0,
     "DisplayName": "Hưng Thịnh",
-    "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\thinh.png"
+    "Avatar": "C:\\Users\\TruongDan\\Documents\\Works\\client-server-message\\Server\\bin\\Debug\\Data\\Avatars\\thinh.jpg"
   },
   {
     "Username": "bo",
